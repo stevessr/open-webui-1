@@ -15,7 +15,7 @@
 	export let getModels: Function;
 
 	// General
-	let themes = ['dark', 'light', 'rose-pine dark', 'rose-pine-dawn light', 'oled-dark'];
+	let themes = ['dark', 'light', 'rosepine', 'rosepine-dawn', 'oled-dark', 'pink', 'green', 'blue', 'gem'];
 	let selectedTheme = 'system';
 
 	let languages: Awaited<ReturnType<typeof getLanguages>> = [];
@@ -24,6 +24,12 @@
 	let system = '';
 
 	let showAdvanced = false;
+
+	// Opacity settings
+	let sidebarOpacity = 100; // Default to 100%
+	let bubbleOpacity = 100; // Default to 100%
+	let backgroundOpacity = 100; // Default to 100%
+
 
 	const toggleNotification = async () => {
 		const permission = await Notification.requestPermission();
@@ -133,7 +139,12 @@
 				num_gpu: params.num_gpu !== null ? params.num_gpu : undefined
 			},
 			keepAlive: keepAlive ? (isNaN(keepAlive) ? keepAlive : parseInt(keepAlive)) : undefined,
-			requestFormat: requestFormat !== null ? requestFormat : undefined
+			requestFormat: requestFormat !== null ? requestFormat : undefined,
+
+			// Save opacity settings
+			sidebarOpacity: sidebarOpacity !== 100 ? sidebarOpacity : undefined,
+			bubbleOpacity: bubbleOpacity !== 100 ? bubbleOpacity : undefined,
+			backgroundOpacity: backgroundOpacity !== 100 ? backgroundOpacity : undefined
 		});
 		dispatch('save');
 
@@ -145,6 +156,11 @@
 		selectedTheme = localStorage.theme ?? 'system';
 
 		languages = await getLanguages();
+
+		// Load opacity settings
+		sidebarOpacity = $settings?.sidebarOpacity ?? 100;
+		bubbleOpacity = $settings?.bubbleOpacity ?? 100;
+		backgroundOpacity = $settings?.backgroundOpacity ?? 100;
 
 		notificationEnabled = $settings.notificationEnabled ?? false;
 		system = $settings.system ?? '';
@@ -162,31 +178,51 @@
 	});
 
 	const applyTheme = (_theme: string) => {
-		let themeToApply = _theme === 'oled-dark' ? 'dark' : _theme;
+		let themeToApply = _theme;
 
 		if (_theme === 'system') {
 			themeToApply = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+		} else if (_theme === 'oled-dark') {
+			themeToApply = 'dark oled'; // Apply both dark and oled classes
+		} else if (_theme === 'rosepine') {
+			themeToApply = 'dark rosepine'; // Apply both dark and rosepine classes
+		} else if (_theme === 'rosepine-dawn') {
+			themeToApply = 'light rosepine-dawn'; // Apply both light and rosepine-dawn classes
+		} else if (_theme === 'pink') {
+			themeToApply = 'light pink'; // Assuming pink is a light theme
+		} else if (_theme === 'green') {
+			themeToApply = 'light green'; // Assuming green is a light theme
+		} else if (_theme === 'blue') {
+			themeToApply = 'light blue'; // Assuming blue is a light theme
+		} else if (_theme === 'gem') {
+			themeToApply = 'dark gem'; // Assuming gem is a dark theme
 		}
 
-		if (themeToApply === 'dark' && !_theme.includes('oled')) {
-			document.documentElement.style.setProperty('--color-gray-800', '#333');
-			document.documentElement.style.setProperty('--color-gray-850', '#262626');
-			document.documentElement.style.setProperty('--color-gray-900', '#171717');
-			document.documentElement.style.setProperty('--color-gray-950', '#0d0d0d');
-		}
 
-		themes
-			.filter((e) => e !== themeToApply)
-			.forEach((e) => {
-				e.split(' ').forEach((e) => {
-					document.documentElement.classList.remove(e);
-				});
+		// Remove all existing theme classes first
+		themes.forEach((e) => {
+			e.split(' ').forEach((cls) => {
+				document.documentElement.classList.remove(cls);
 			});
+		});
 
+
+		// Add the new theme classes
 		themeToApply.split(' ').forEach((e) => {
 			document.documentElement.classList.add(e);
 		});
 
+		// Handle specific dark/light mode styles that are not theme-specific
+		if (!themeToApply.includes('dark')) {
+			// Reset dark mode specific styles if not in dark mode
+			document.documentElement.style.setProperty('--color-gray-800', '');
+			document.documentElement.style.setProperty('--color-gray-850', '');
+			document.documentElement.style.setProperty('--color-gray-900', '');
+			document.documentElement.style.setProperty('--color-gray-950', '');
+		}
+
+
+		// Handle meta theme color (can be simplified or kept as is)
 		const metaThemeColor = document.querySelector('meta[name="theme-color"]');
 		if (metaThemeColor) {
 			if (_theme.includes('system')) {
@@ -199,13 +235,11 @@
 				console.log('Setting meta theme color: ' + _theme);
 				metaThemeColor.setAttribute(
 					'content',
-					_theme === 'dark'
-						? '#171717'
-						: _theme === 'oled-dark'
-							? '#000000'
-							: _theme === 'her'
-								? '#983724'
-								: '#ffffff'
+					_theme.includes('dark') || _theme.includes('oled') || _theme.includes('gem')
+						? '#171717' // Dark themes
+						: _theme === 'her'
+							? '#983724' // Her theme
+							: '#ffffff' // Light themes
 				);
 			}
 		}
@@ -214,12 +248,13 @@
 			window.applyTheme();
 		}
 
-		if (_theme.includes('oled')) {
+		// Specific styles for oled-dark (now handled by 'oled' class)
+		if (_theme.includes('oled-dark')) {
 			document.documentElement.style.setProperty('--color-gray-800', '#101010');
 			document.documentElement.style.setProperty('--color-gray-850', '#050505');
 			document.documentElement.style.setProperty('--color-gray-900', '#000000');
 			document.documentElement.style.setProperty('--color-gray-950', '#000000');
-			document.documentElement.classList.add('dark');
+			// document.documentElement.classList.add('dark'); // 'dark' class is already added by themeToApply
 		}
 
 		console.log(_theme);
@@ -251,8 +286,12 @@
 						<option value="oled-dark">🌃 {$i18n.t('OLED Dark')}</option>
 						<option value="light">☀️ {$i18n.t('Light')}</option>
 						<option value="her">🌷 Her</option>
-						<!-- <option value="rose-pine dark">🪻 {$i18n.t('Rosé Pine')}</option>
-						<option value="rose-pine-dawn light">🌷 {$i18n.t('Rosé Pine Dawn')}</option> -->
+						<option value="rosepine">🪻 {$i18n.t('Rosé Pine')}</option>
+						<option value="rosepine-dawn">🌷 {$i18n.t('Rosé Pine Dawn')}</option>
+						<option value="pink">🌸 {$i18n.t('Pink')}</option>
+						<option value="green">🌳 {$i18n.t('Green')}</option>
+						<option value="blue">💧 {$i18n.t('Blue')}</option>
+						<option value="gem">💎 {$i18n.t('Gem')}</option>
 					</select>
 				</div>
 			</div>
@@ -307,6 +346,58 @@
 				</div>
 			</div>
 		</div>
+
+		<hr class="border-gray-50 dark:border-gray-850 my-3" />
+
+		<div class="">
+			<div class=" mb-1 text-sm font-medium">{$i18n.t('Opacity Settings')}</div>
+
+			<div class="flex w-full justify-between items-center">
+				<div class=" self-center text-xs font-medium">{$i18n.t('Sidebar Opacity')}</div>
+				<div class="flex items-center relative w-24">
+					<input
+						type="range"
+						min="0"
+						max="100"
+						bind:value={sidebarOpacity}
+						class="w-full"
+						on:input={() => saveSettings({ sidebarOpacity })}
+					/>
+					<span class="ml-2 text-xs">{sidebarOpacity}%</span>
+				</div>
+			</div>
+
+			<div class="flex w-full justify-between items-center">
+				<div class=" self-center text-xs font-medium">{$i18n.t('Message Bubble Opacity')}</div>
+				<div class="flex items-center relative w-24">
+					<input
+						type="range"
+						min="0"
+						max="100"
+						bind:value={bubbleOpacity}
+						class="w-full"
+						on:input={() => saveSettings({ bubbleOpacity })}
+					/>
+					<span class="ml-2 text-xs">{bubbleOpacity}%</span>
+				</div>
+			</div>
+
+			<div class="flex w-full justify-between items-center">
+				<div class=" self-center text-xs font-medium">{$i18n.t('Background Opacity')}</div>
+				<div class="flex items-center relative w-24">
+					<input
+						type="range"
+						min="0"
+						max="100"
+						bind:value={backgroundOpacity}
+						class="w-full"
+						on:input={() => saveSettings({ backgroundOpacity })}
+					/>
+					<span class="ml-2 text-xs">{backgroundOpacity}%</span>
+				</div>
+			</div>
+		</div>
+
 
 		{#if $user?.role === 'admin' || $user?.permissions.chat?.controls}
 			<hr class="border-gray-50 dark:border-gray-850 my-3" />

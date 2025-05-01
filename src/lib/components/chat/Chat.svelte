@@ -12,8 +12,9 @@
 
 	import { get, type Unsubscriber, type Writable } from 'svelte/store';
 	import type { i18n as i18nType } from 'i18next';
-	import { WEBUI_BASE_URL } from '$lib/constants';
-
+	import { WEBUI_BASE_URL, WEBUI_API_BASE_URL } from '$lib/constants';
+	import { uploadFile } from '$lib/apis/files';
+	
 	import {
 		chatId,
 		chats,
@@ -142,7 +143,6 @@
 	$: if (chatIdProp) {
 		(async () => {
 			loading = true;
-			console.log(chatIdProp);
 
 			prompt = '';
 			files = [];
@@ -184,7 +184,6 @@
 			return;
 		}
 		sessionStorage.selectedModels = JSON.stringify(selectedModels);
-		console.log('saveSessionSelectedModels', selectedModels, sessionStorage.selectedModels);
 	};
 
 	$: if (selectedModels) {
@@ -246,7 +245,6 @@
 	};
 
 	const chatEventHandler = async (event, cb) => {
-		console.log(event);
 
 		if (event.chat_id === $chatId) {
 			await tick();
@@ -349,7 +347,6 @@
 					eventConfirmationInputPlaceholder = data.placeholder;
 					eventConfirmationInputValue = data?.value ?? '';
 				} else {
-					console.log('Unknown message type', data);
 				}
 
 				history.messages[event.message_id] = message;
@@ -367,7 +364,6 @@
 
 		// Replace with your iframe's origin
 		if (event.data.type === 'input:prompt') {
-			console.debug(event.data.text);
 
 			const inputElement = document.getElementById('chat-input');
 
@@ -378,7 +374,6 @@
 		}
 
 		if (event.data.type === 'action:submit') {
-			console.debug(event.data.text);
 
 			if (prompt !== '') {
 				await tick();
@@ -387,7 +382,6 @@
 		}
 
 		if (event.data.type === 'input:prompt:submit') {
-			console.debug(event.data.text);
 
 			if (event.data.text !== '') {
 				await tick();
@@ -397,7 +391,6 @@
 	};
 
 	onMount(async () => {
-		console.log('mounted');
 		window.addEventListener('message', onMessageHandler);
 		$socket?.on('chat-events', chatEventHandler);
 
@@ -466,14 +459,6 @@
 	// File upload functions
 
 	const uploadGoogleDriveFile = async (fileData) => {
-		console.log('Starting uploadGoogleDriveFile with:', {
-			id: fileData.id,
-			name: fileData.name,
-			url: fileData.url,
-			headers: {
-				Authorization: `Bearer ${token}`
-			}
-		});
 
 		// Validate input
 		if (!fileData?.id || !fileData?.name || !fileData?.url || !fileData?.headers?.Authorization) {
@@ -496,7 +481,6 @@
 
 		try {
 			files = [...files, fileItem];
-			console.log('Processing web file with URL:', fileData.url);
 
 			// Configure fetch options with proper headers
 			const fetchOptions = {
@@ -508,7 +492,6 @@
 			};
 
 			// Attempt to fetch the file
-			console.log('Fetching file content from Google Drive...');
 			const fileResponse = await fetch(fileData.url, fetchOptions);
 
 			if (!fileResponse.ok) {
@@ -518,45 +501,32 @@
 
 			// Get content type from response
 			const contentType = fileResponse.headers.get('content-type') || 'application/octet-stream';
-			console.log('Response received with content-type:', contentType);
 
 			// Convert response to blob
-			console.log('Converting response to blob...');
 			const fileBlob = await fileResponse.blob();
 
 			if (fileBlob.size === 0) {
 				throw new Error('Retrieved file is empty');
 			}
 
-			console.log('Blob created:', {
-				size: fileBlob.size,
-				type: fileBlob.type || contentType
-			});
 
 			// Create File object with proper MIME type
 			const file = new File([fileBlob], fileData.name, {
 				type: fileBlob.type || contentType
 			});
 
-			console.log('File object created:', {
-				name: file.name,
-				size: file.size,
-				type: file.type
-			});
 
 			if (file.size === 0) {
 				throw new Error('Created file is empty');
 			}
 
 			// Upload file to server
-			console.log('Uploading file to server...');
 			const uploadedFile = await uploadFile(localStorage.token, file);
 
 			if (!uploadedFile) {
 				throw new Error('Server returned null response for file upload');
 			}
 
-			console.log('File uploaded successfully:', uploadedFile);
 
 			// Update file item with upload results
 			fileItem.status = 'uploaded';
@@ -580,7 +550,6 @@
 	};
 
 	const uploadWeb = async (url) => {
-		console.log(url);
 
 		const fileItem = {
 			type: 'doc',
@@ -613,7 +582,6 @@
 	};
 
 	const uploadYoutubeTranscription = async (url) => {
-		console.log(url);
 
 		const fileItem = {
 			type: 'doc',
@@ -684,7 +652,6 @@
 				if ($settings?.models) {
 					selectedModels = $settings?.models;
 				} else if ($config?.default_models) {
-					console.log($config?.default_models.split(',') ?? '');
 					selectedModels = $config?.default_models.split(',');
 				}
 			}
@@ -793,7 +760,6 @@
 			const chatContent = chat.chat;
 
 			if (chatContent) {
-				console.log(chatContent);
 
 				selectedModels =
 					(chatContent?.models ?? undefined) !== undefined
@@ -1114,9 +1080,7 @@
 			} else {
 				// Stream response
 				let value = choices[0]?.delta?.content ?? '';
-				if (message.content == '' && value == '\n') {
-					console.log('Empty response');
-				} else {
+				if (!(message.content == '' && value == '\n')) {
 					message.content += value;
 
 					if (navigator.vibrate && ($settings?.hapticFeedback ?? false)) {
@@ -1234,7 +1198,6 @@
 			);
 		}
 
-		console.log(data);
 		if (autoScroll) {
 			scrollToBottom();
 		}
@@ -1245,7 +1208,6 @@
 	//////////////////////////
 
 	const submitPrompt = async (userPrompt, { _raw = false } = {}) => {
-		console.log('submitPrompt', userPrompt, $chatId);
 
 		const messages = createMessagesList(history, history.currentId);
 		const _selectedModels = selectedModels.map((modelId) =>
@@ -1419,7 +1381,6 @@
 
 		await Promise.all(
 			selectedModelIds.map(async (modelId, _modelIdx) => {
-				console.log('modelId', modelId);
 				const model = $models.filter((m) => m.id === modelId).at(0);
 
 				if (model) {
@@ -1821,7 +1782,6 @@
 	};
 
 	const mergeResponses = async (messageId, responses, _chatId) => {
-		console.log('mergeResponses', messageId, responses);
 		const message = history.messages[messageId];
 		const mergedResponse = {
 			status: true,
@@ -1947,9 +1907,10 @@
 
 <div
 	class="h-screen max-h-[100dvh] transition-width duration-200 ease-in-out {$showSidebar
-		? '  md:max-w-[calc(100%-260px)]'
-		: ' '} w-full max-w-full flex flex-col"
+	? '  md:max-w-[calc(100%-260px)]'
+	: ' '} w-full max-w-full flex flex-col"
 	id="chat-container"
+	style="opacity: {$settings?.backgroundOpacity !== undefined ? $settings.backgroundOpacity / 100 : 1};"
 >
 	{#if !loading}
 		{#if $settings?.backgroundImageUrl ?? null}

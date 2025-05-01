@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { io } from 'socket.io-client';
 	import { spring } from 'svelte/motion';
 	import PyodideWorker from '$lib/workers/pyodide.worker?worker';
@@ -26,7 +26,8 @@
 		isLastActiveTab,
 		isApp,
 		appInfo,
-		toolServers
+		toolServers,
+		appData
 	} from '$lib/stores';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
@@ -56,8 +57,8 @@
 
 	const BREAKPOINT = 768;
 
-	const setupSocket = async (enableWebsocket) => {
-		const _socket = io(`${WEBUI_BASE_URL}` || undefined, {
+	const setupSocket = async (enableWebsocket: boolean) => {
+		const _socket = io(WEBUI_BASE_URL, {
 			reconnection: true,
 			reconnectionDelay: 1000,
 			reconnectionDelayMax: 5000,
@@ -70,43 +71,37 @@
 		await socket.set(_socket);
 
 		_socket.on('connect_error', (err) => {
-			console.log('connect_error', err);
 		});
 
 		_socket.on('connect', () => {
-			console.log('connected', _socket.id);
 		});
 
 		_socket.on('reconnect_attempt', (attempt) => {
-			console.log('reconnect_attempt', attempt);
 		});
 
 		_socket.on('reconnect_failed', () => {
-			console.log('reconnect_failed');
 		});
 
 		_socket.on('disconnect', (reason, details) => {
-			console.log(`Socket ${_socket.id} disconnected due to ${reason}`);
+			// console.log(`Socket ${_socket.id} disconnected due to ${reason}`);
 			if (details) {
-				console.log('Additional details:', details);
+				
 			}
 		});
 
 		_socket.on('user-list', (data) => {
-			console.log('user-list', data);
 			activeUserIds.set(data.user_ids);
 		});
 
 		_socket.on('usage', (data) => {
-			console.log('usage', data);
 			USAGE_POOL.set(data['models']);
 		});
 	};
 
-	const executePythonAsWorker = async (id, code, cb) => {
-		let result = null;
-		let stdout = null;
-		let stderr = null;
+	const executePythonAsWorker = async (id: string, code: string, cb: (data: any) => void) => {
+		let result: any = null;
+		let stdout: string | null = null;
+		let stderr: string | null = null;
 
 		let executing = true;
 		let packages = [
@@ -156,10 +151,9 @@
 		}, 60000);
 
 		pyodideWorker.onmessage = (event) => {
-			console.log('pyodideWorker.onmessage', event);
 			const { id, ...data } = event.data;
 
-			console.log(id, data);
+			
 
 			data['stdout'] && (stdout = data['stdout']);
 			data['stderr'] && (stderr = data['stderr']);
@@ -184,7 +178,6 @@
 		};
 
 		pyodideWorker.onerror = (event) => {
-			console.log('pyodideWorker.onerror', event);
 
 			if (cb) {
 				cb(
@@ -204,14 +197,11 @@
 		};
 	};
 
-	const executeTool = async (data, cb) => {
-		const toolServer = $settings?.toolServers?.find((server) => server.url === data.server?.url);
-		const toolServerData = $toolServers?.find((server) => server.url === data.server?.url);
+	const executeTool = async (data: any, cb: (data: any) => void) => {
+		const toolServer = $settings?.toolServers?.find((server: any) => server.url === data.server?.url);
+		const toolServerData = $toolServers?.find((server: any) => server.url === data.server?.url);
 
-		console.log('executeTool', data, toolServer);
-
-		if (toolServer) {
-			console.log(toolServer);
+		if (toolServer && toolServerData) {
 			const res = await executeToolServer(
 				(toolServer?.auth_type ?? 'bearer') === 'bearer' ? toolServer?.key : localStorage.token,
 				toolServer.url,
@@ -220,7 +210,6 @@
 				toolServerData
 			);
 
-			console.log('executeToolServer', res);
 			if (cb) {
 				cb(JSON.parse(JSON.stringify(res)));
 			}
@@ -237,7 +226,7 @@
 		}
 	};
 
-	const chatEventHandler = async (event, cb) => {
+	const chatEventHandler = async (event: any, cb: (data: any) => void) => {
 		const chat = $page.url.pathname.includes(`/c/${event.chat_id}`);
 
 		let isFocused = document.visibilityState !== 'visible';
@@ -286,15 +275,12 @@
 			} else if (type === 'chat:tags') {
 				tags.set(await getAllTags(localStorage.token));
 			}
-		} else if (data?.session_id === $socket.id) {
+		} else if (data?.session_id === $socket?.id) {
 			if (type === 'execute:python') {
-				console.log('execute:python', data);
 				executePythonAsWorker(data.id, data.code, cb);
 			} else if (type === 'execute:tool') {
-				console.log('execute:tool', data);
 				executeTool(data, cb);
 			} else if (type === 'request:chat:completion') {
-				console.log(data, $socket.id);
 				const { session_id, channel, form_data, model } = data;
 
 				try {
@@ -329,10 +315,12 @@
 									cb({
 										status: true
 									});
-									console.log({ status: true });
 
 									// res will either be SSE or JSON
-									const reader = res.body.getReader();
+									const reader = res.body?.getReader();
+									if (!reader) {
+										throw new Error('Failed to get reader from response body');
+									}
 									const decoder = new TextDecoder();
 
 									const processStream = async () => {
@@ -350,7 +338,6 @@
 											const lines = chunk.split('\n').filter((line) => line.trim() !== '');
 
 											for (const line of lines) {
-												console.log(line);
 												$socket?.emit(channel, line);
 											}
 										}
@@ -374,17 +361,16 @@
 					console.error('chatCompletion', error);
 					cb(error);
 				} finally {
-					$socket.emit(channel, {
+					$socket?.emit(channel, {
 						done: true
 					});
 				}
 			} else {
-				console.log('chatEventHandler', event);
 			}
 		}
 	};
 
-	const channelEventHandler = async (event) => {
+	const channelEventHandler = async (event: any) => {
 		if (event.data?.type === 'typing') {
 			return;
 		}
@@ -432,7 +418,7 @@
 		}
 	};
 
-	onMount(async () => {
+	onMount(async (): Promise<() => void> => {
 		if (typeof window !== 'undefined' && window.applyTheme) {
 			window.applyTheme();
 		}
@@ -506,7 +492,6 @@
 		let backendConfig = null;
 		try {
 			backendConfig = await getBackendConfig();
-			console.log('Backend config:', backendConfig);
 		} catch (error) {
 			console.error('Error loading backend config:', error);
 		}
@@ -518,7 +503,7 @@
 			const languages = await getLanguages();
 			const browserLanguages = navigator.languages
 				? navigator.languages
-				: [navigator.language || navigator.userLanguage];
+				: [navigator.language];
 			const lang = backendConfig.default_locale
 				? backendConfig.default_locale
 				: bestMatchingLanguage(languages, browserLanguages, 'en-US');
@@ -545,7 +530,7 @@
 
 					if (sessionUser) {
 						// Save Session User to Store
-						$socket.emit('user-join', { auth: { token: sessionUser.token } });
+						$socket?.emit('user-join', { auth: { token: sessionUser.token } });
 
 						await user.set(sessionUser);
 						await config.set(await getBackendConfig());
@@ -613,6 +598,10 @@
 	<!-- feel free to make a PR to fix if anyone wants to see it return -->
 	<!-- <link rel="stylesheet" type="text/css" href="/themes/rosepine.css" />
 	<link rel="stylesheet" type="text/css" href="/themes/rosepine-dawn.css" /> -->
+
+	{#if $theme}
+		<link rel="stylesheet" type="text/css" href="/themes/{$theme}.css" />
+	{/if}
 </svelte:head>
 
 {#if loaded}

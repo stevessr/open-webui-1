@@ -206,7 +206,7 @@
 		background: #000;
 	}
 
-	html.her #splash-screen {
+	:root[data-theme="her"] #splash-screen {
 		background: #983724;
 	}
 
@@ -222,29 +222,29 @@
 		display: none;
 	}
 
-	html.her #logo {
+	:root[data-theme="her"] #logo {
 		display: none;
 	}
 
-	html.her #logo-her {
+	:root[data-theme="her"] #logo-her {
 		display: block;
 		filter: invert(1);
 	}
 
-	html.her #progress-background {
+	:root[data-theme="her"] #progress-background {
 		display: block;
 	}
 
-	html.her #progress-bar {
+	:root[data-theme="her"] #progress-bar {
 		display: block;
 	}
 
 	@media (max-width: 24rem) {
-		html.her #progress-background {
+		:root[data-theme="her"] #progress-background {
 			display: none;
 		}
 
-		html.her #progress-bar {
+		:root[data-theme="her"] #progress-bar {
 			display: none;
 		}
 	}

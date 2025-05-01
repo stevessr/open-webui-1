@@ -67,7 +67,6 @@
 
 		// Get the messageId at the specified index
 		let messageId = groupedMessageIds[modelIdx].messageIds[groupedMessageIdsIdx[modelIdx]];
-		console.log(messageId);
 
 		// Traverse the branch to find the deepest child message
 		let messageChildrenIds = history.messages[messageId].childrenIds;
@@ -91,7 +90,6 @@
 		groupedMessageIdsIdx[modelIdx] = Math.max(0, groupedMessageIdsIdx[modelIdx] - 1);
 
 		let messageId = groupedMessageIds[modelIdx].messageIds[groupedMessageIdsIdx[modelIdx]];
-		console.log(messageId);
 
 		let messageChildrenIds = history.messages[messageId].childrenIds;
 
@@ -114,7 +112,6 @@
 		);
 
 		let messageId = groupedMessageIds[modelIdx].messageIds[groupedMessageIdsIdx[modelIdx]];
-		console.log(messageId);
 
 		let messageChildrenIds = history.messages[messageId].childrenIds;
 
@@ -131,7 +128,6 @@
 	};
 
 	const initHandler = async () => {
-		console.log('multiresponse:initHandler');
 		await tick();
 
 		currentMessageId = messageId;
@@ -181,7 +177,6 @@
 			}
 		}, {});
 
-		console.log(groupedMessageIds, groupedMessageIdsIdx);
 
 		await tick();
 	};

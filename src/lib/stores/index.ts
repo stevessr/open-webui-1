@@ -156,6 +156,12 @@ type Settings = {
 	num_batch?: string;
 	num_keep?: string;
 	options?: ModelOptions;
+
+	// Opacity settings
+	sidebarOpacity?: number;
+	bubbleOpacity?: number;
+	backgroundOpacity?: number;
+	widescreenMode?: boolean;
 };
 
 type ModelOptions = {

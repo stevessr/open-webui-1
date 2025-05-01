@@ -177,7 +177,7 @@ class Tools:
 			await tick();
 
 			if (res) {
-				console.log('Code formatted successfully');
+				// console.log('Code formatted successfully');
 
 				saveHandler();
 			}

@@ -72,7 +72,6 @@
 					}
 				}
 
-				console.log(DB);
 			} catch (error) {
 				// IndexedDB Not Found
 			}
@@ -115,21 +114,21 @@
 				// Check if Ctrl + Shift + O is pressed
 				if (isCtrlPressed && isShiftPressed && event.key.toLowerCase() === 'o') {
 					event.preventDefault();
-					console.log('newChat');
+					// console.log('newChat');
 					document.getElementById('sidebar-new-chat-button')?.click();
 				}
 
 				// Check if Shift + Esc is pressed
 				if (isShiftPressed && event.key === 'Escape') {
 					event.preventDefault();
-					console.log('focusInput');
+					// console.log('focusInput');
 					document.getElementById('chat-input')?.focus();
 				}
 
 				// Check if Ctrl + Shift + ; is pressed
 				if (isCtrlPressed && isShiftPressed && event.key === ';') {
 					event.preventDefault();
-					console.log('copyLastCodeBlock');
+					// console.log('copyLastCodeBlock');
 					const button = [...document.getElementsByClassName('copy-code-button')]?.at(-1);
 					button?.click();
 				}
@@ -137,16 +136,16 @@
 				// Check if Ctrl + Shift + C is pressed
 				if (isCtrlPressed && isShiftPressed && event.key.toLowerCase() === 'c') {
 					event.preventDefault();
-					console.log('copyLastResponse');
+					// console.log('copyLastResponse');
 					const button = [...document.getElementsByClassName('copy-response-button')]?.at(-1);
-					console.log(button);
+					// console.log(button);
 					button?.click();
 				}
 
 				// Check if Ctrl + Shift + S is pressed
 				if (isCtrlPressed && isShiftPressed && event.key.toLowerCase() === 's') {
 					event.preventDefault();
-					console.log('toggleSidebar');
+					// console.log('toggleSidebar');
 					document.getElementById('sidebar-toggle-button')?.click();
 				}
 
@@ -157,21 +156,21 @@
 					(event.key === 'Backspace' || event.key === 'Delete')
 				) {
 					event.preventDefault();
-					console.log('deleteChat');
+					// console.log('deleteChat');
 					document.getElementById('delete-chat-button')?.click();
 				}
 
 				// Check if Ctrl + . is pressed
 				if (isCtrlPressed && event.key === '.') {
 					event.preventDefault();
-					console.log('openSettings');
+					// console.log('openSettings');
 					showSettings.set(!$showSettings);
 				}
 
 				// Check if Ctrl + / is pressed
 				if (isCtrlPressed && event.key === '/') {
 					event.preventDefault();
-					console.log('showShortcuts');
+					// console.log('showShortcuts');
 					document.getElementById('show-shortcuts-button')?.click();
 				}
 
@@ -182,7 +181,7 @@
 					(event.key.toLowerCase() === `'` || event.key.toLowerCase() === `"`)
 				) {
 					event.preventDefault();
-					console.log('temporaryChat');
+					// console.log('temporaryChat');
 					temporaryChatEnabled.set(!$temporaryChatEnabled);
 					await goto('/');
 					const newChatButton = document.getElementById('new-chat-button');
