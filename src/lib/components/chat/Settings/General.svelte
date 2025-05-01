@@ -1,12 +1,14 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
 	import { createEventDispatcher, onMount, getContext } from 'svelte';
+	import type { Writable } from 'svelte/store'; // Import Writable
 	import { getLanguages, changeLanguage } from '$lib/i18n';
 	const dispatch = createEventDispatcher();
 
 	import { models, settings, theme, user } from '$lib/stores';
+	import type { TFunction, i18n as i18nType } from 'i18next'; // Import TFunction and i18nType
 
-	const i18n = getContext('i18n');
+	const i18n: Writable<i18nType> = getContext('i18n'); // Get i18n store from context
 
 	import AdvancedParams from './Advanced/AdvancedParams.svelte';
 	import Textarea from '$lib/components/common/Textarea.svelte';
@@ -15,11 +17,21 @@
 	export let getModels: Function;
 
 	// General
-	let themes = ['dark', 'light', 'rosepine', 'rosepine-dawn', 'oled-dark', 'pink', 'green', 'blue', 'gem'];
+	let themes = [
+		'dark',
+		'light',
+		'rosepine',
+		'rosepine-dawn',
+		'oled-dark',
+		'pink',
+		'green',
+		'blue',
+		'gem'
+	];
 	let selectedTheme = 'system';
 
 	let languages: Awaited<ReturnType<typeof getLanguages>> = [];
-	let lang = $i18n.language;
+	let lang = $i18n.language; // Use i18n.language directly
 	let notificationEnabled = false;
 	let system = '';
 
@@ -30,7 +42,6 @@
 	let bubbleOpacity = 100; // Default to 100%
 	let backgroundOpacity = 100; // Default to 100%
 
-
 	const toggleNotification = async () => {
 		const permission = await Notification.requestPermission();
 
@@ -40,6 +51,7 @@
 		} else {
 			toast.error(
 				$i18n.t(
+					// Use i18n.t
 					'Response notifications cannot be activated as the website permissions have been denied. Please visit your browser settings to grant the necessary access.'
 				)
 			);
@@ -47,13 +59,42 @@
 	};
 
 	// Advanced
-	let requestFormat = null;
-	let keepAlive: string | null = null;
+	let requestFormat: string | object | null = null;
+	let requestFormatString: string = ''; // New variable for textarea binding
+	let keepAlive: string | number | null = null;
 
-	let params = {
+	let params: {
+		stream_response: boolean | null;
+		function_calling: string | boolean | null; // Allow boolean based on $settings.params
+		seed: number | null;
+		stop: string | string[] | null;
+		temperature: string | number | null;
+		reasoning_effort: string | number | null | undefined; // Allow undefined
+		logit_bias: string | object | null;
+		frequency_penalty: string | number | null;
+		presence_penalty: string | number | null;
+		repeat_penalty: string | number | null;
+		repeat_last_n: string | number | null;
+		mirostat: string | number | null;
+		mirostat_eta: string | number | null;
+		mirostat_tau: string | number | null;
+		top_k: string | number | null;
+		top_p: string | number | null;
+		min_p: string | number | null;
+		tfs_z: string | number | null;
+		num_ctx: string | number | null;
+		num_batch: string | number | null;
+		num_keep: string | number | null;
+		max_tokens: string | number | null;
+		num_gpu: string | number | null;
+		use_mmap: boolean | null | undefined; // Allow undefined
+		use_mlock: boolean | null | undefined; // Allow undefined
+		num_thread: string | number | null;
+		template: string | null;
+	} = {
 		// Advanced
 		stream_response: null,
-		function_calling: null,
+		function_calling: null, // Initialize with null
 		seed: null,
 		temperature: null,
 		reasoning_effort: null,
@@ -74,10 +115,14 @@
 		num_batch: null,
 		num_keep: null,
 		max_tokens: null,
-		num_gpu: null
+		num_gpu: null,
+		use_mmap: null,
+		use_mlock: null,
+		num_thread: null,
+		template: null
 	};
 
-	const validateJSON = (json) => {
+	const validateJSON = (json: string): boolean => {
 		try {
 			const obj = JSON.parse(json);
 
@@ -91,22 +136,51 @@
 	const toggleRequestFormat = async () => {
 		if (requestFormat === null) {
 			requestFormat = 'json';
+			requestFormatString = 'json'; // Update string representation
 		} else {
 			requestFormat = null;
+			requestFormatString = ''; // Update string representation
 		}
 
-		saveSettings({ requestFormat: requestFormat !== null ? requestFormat : undefined });
+		// No need to save here immediately, let the main save button handle it
+		// saveSettings({ requestFormat: requestFormat !== null ? requestFormat : undefined });
 	};
 
 	const saveHandler = async () => {
-		if (requestFormat !== null && requestFormat !== 'json') {
-			if (validateJSON(requestFormat) === false) {
-				toast.error($i18n.t('Invalid JSON schema'));
-				return;
+		let finalRequestFormat: string | object | undefined = undefined;
+
+		// Determine the final requestFormat based on requestFormatString
+		if (requestFormatString === 'json') {
+			finalRequestFormat = 'json';
+		} else if (requestFormatString && requestFormatString.trim() !== '') {
+			if (validateJSON(requestFormatString)) {
+				try {
+					finalRequestFormat = JSON.parse(requestFormatString);
+				} catch (e) {
+					console.error('Invalid JSON schema during save:', requestFormatString, e);
+					toast.error($i18n.t('Invalid JSON schema'));
+					return; // Stop saving if JSON is invalid
+				}
 			} else {
-				requestFormat = JSON.parse(requestFormat);
+				console.error('Invalid JSON schema during save:', requestFormatString);
+				toast.error($i18n.t('Invalid JSON schema'));
+				return; // Stop saving if JSON is invalid
 			}
+		} else {
+			// If requestFormatString is empty or null, set finalRequestFormat to undefined
+			finalRequestFormat = undefined;
 		}
+
+
+		// Update the internal requestFormat state to match the final value being saved
+		if (finalRequestFormat === 'json') {
+			requestFormat = 'json';
+		} else if (typeof finalRequestFormat === 'object') {
+			requestFormat = finalRequestFormat; // Keep it as an object internally for potential future use
+		} else {
+			requestFormat = null; // Reset internal state if it's undefined/null
+		}
+
 
 		saveSettings({
 			system: system !== '' ? system : undefined,
@@ -114,48 +188,71 @@
 				stream_response: params.stream_response !== null ? params.stream_response : undefined,
 				function_calling: params.function_calling !== null ? params.function_calling : undefined,
 				seed: (params.seed !== null ? params.seed : undefined) ?? undefined,
-				stop: params.stop ? params.stop.split(',').filter((e) => e) : undefined,
-				temperature: params.temperature !== null ? params.temperature : undefined,
-				reasoning_effort: params.reasoning_effort !== null ? params.reasoning_effort : undefined,
-				logit_bias: params.logit_bias !== null ? params.logit_bias : undefined,
-				frequency_penalty: params.frequency_penalty !== null ? params.frequency_penalty : undefined,
-				presence_penalty: params.frequency_penalty !== null ? params.frequency_penalty : undefined,
-				repeat_penalty: params.frequency_penalty !== null ? params.frequency_penalty : undefined,
-				repeat_last_n: params.repeat_last_n !== null ? params.repeat_last_n : undefined,
-				mirostat: params.mirostat !== null ? params.mirostat : undefined,
-				mirostat_eta: params.mirostat_eta !== null ? params.mirostat_eta : undefined,
-				mirostat_tau: params.mirostat_tau !== null ? params.mirostat_tau : undefined,
-				top_k: params.top_k !== null ? params.top_k : undefined,
-				top_p: params.top_p !== null ? params.top_p : undefined,
-				min_p: params.min_p !== null ? params.min_p : undefined,
-				tfs_z: params.tfs_z !== null ? params.tfs_z : undefined,
-				num_ctx: params.num_ctx !== null ? params.num_ctx : undefined,
-				num_batch: params.num_batch !== null ? params.num_batch : undefined,
-				num_keep: params.num_keep !== null ? params.num_keep : undefined,
-				max_tokens: params.max_tokens !== null ? params.max_tokens : undefined,
-				use_mmap: params.use_mmap !== null ? params.use_mmap : undefined,
-				use_mlock: params.use_mlock !== null ? params.use_mlock : undefined,
-				num_thread: params.num_thread !== null ? params.num_thread : undefined,
-				num_gpu: params.num_gpu !== null ? params.num_gpu : undefined
+				stop:
+					typeof params.stop === 'string'
+						? params.stop.split(',').filter((e: string) => e.trim() !== '')
+						: undefined,
+				temperature: params.temperature !== null ? params.temperature : undefined, // Use null check
+				reasoning_effort: params.reasoning_effort !== null ? params.reasoning_effort : undefined, // Use null check
+				logit_bias: params.logit_bias !== null ? params.logit_bias : undefined, // Use null check
+				frequency_penalty: params.frequency_penalty !== null ? params.frequency_penalty : undefined, // Use null check
+				presence_penalty: params.presence_penalty !== null ? params.presence_penalty : undefined, // Use null check
+				repeat_penalty: params.repeat_penalty !== null ? params.repeat_penalty : undefined, // Use null check
+				repeat_last_n: params.repeat_last_n !== null ? params.repeat_last_n : undefined, // Use null check
+				mirostat: params.mirostat !== null ? params.mirostat : undefined, // Use null check
+				mirostat_eta: params.mirostat_eta !== null ? params.mirostat_eta : undefined, // Use null check
+				mirostat_tau: params.mirostat_tau !== null ? params.mirostat_tau : undefined, // Use null check
+				top_k: params.top_k !== null ? params.top_k : undefined, // Use null check
+				top_p: params.top_p !== null ? params.top_p : undefined, // Use null check
+				min_p: params.min_p !== null ? params.min_p : undefined, // Use null check
+				tfs_z: params.tfs_z !== null ? params.tfs_z : undefined, // Use null check
+				num_ctx: params.num_ctx !== null ? params.num_ctx : undefined, // Use null check
+				num_batch: params.num_batch !== null ? params.num_batch : undefined, // Use null check
+				num_keep: params.num_keep !== null ? params.num_keep : undefined, // Use null check
+				max_tokens: params.max_tokens !== null ? params.max_tokens : undefined, // Use null check
+				use_mmap: params.use_mmap !== null ? params.use_mmap : undefined, // Use null check
+				use_mlock: params.use_mlock !== null ? params.use_mlock : undefined, // Use null check
+				num_thread: params.num_thread !== null ? params.num_thread : undefined, // Use null check
+				num_gpu: params.num_gpu !== null ? params.num_gpu : undefined // Use null check
 			},
-			keepAlive: keepAlive ? (isNaN(keepAlive) ? keepAlive : parseInt(keepAlive)) : undefined,
-			requestFormat: requestFormat !== null ? requestFormat : undefined,
+			keepAlive: keepAlive
+				? typeof keepAlive === 'number'
+					? keepAlive
+					: parseInt(keepAlive as string)
+				: undefined,
+			requestFormat: finalRequestFormat, // Save the determined format
 
 			// Save opacity settings
 			sidebarOpacity: sidebarOpacity !== 100 ? sidebarOpacity : undefined,
 			bubbleOpacity: bubbleOpacity !== 100 ? bubbleOpacity : undefined,
-			backgroundOpacity: backgroundOpacity !== 100 ? backgroundOpacity : undefined
+			backgroundOpacity: backgroundOpacity !== 100 ? backgroundOpacity : undefined,
+			theme: selectedTheme // Add theme to settings
 		});
 		dispatch('save');
 
-		requestFormat =
-			typeof requestFormat === 'object' ? JSON.stringify(requestFormat, null, 2) : requestFormat;
+		// Ensure requestFormatString is correctly formatted after saving (especially for objects)
+		if (typeof finalRequestFormat === 'object') {
+			try {
+				requestFormatString = JSON.stringify(finalRequestFormat, null, 2);
+			} catch (e) {
+				// This should ideally not happen if validation passed, but handle just in case
+				console.error('Error stringifying finalRequestFormat after save:', e);
+				requestFormatString = '';
+			}
+		} else {
+			requestFormatString = finalRequestFormat === 'json' ? 'json' : '';
+		}
 	};
 
 	onMount(async () => {
 		selectedTheme = localStorage.theme ?? 'system';
 
 		languages = await getLanguages();
+
+		// Load theme preference from settings, fallback to localStorage or system
+		selectedTheme = $settings?.theme ?? localStorage.theme ?? 'system';
+		theme.set(selectedTheme); // Ensure theme store is updated on load
+		applyTheme(selectedTheme); // Apply the loaded theme
 
 		// Load opacity settings
 		sidebarOpacity = $settings?.sidebarOpacity ?? 100;
@@ -166,15 +263,34 @@
 		system = $settings.system ?? '';
 
 		requestFormat = $settings.requestFormat ?? null;
-		if (requestFormat !== null && requestFormat !== 'json') {
-			requestFormat =
-				typeof requestFormat === 'object' ? JSON.stringify(requestFormat, null, 2) : requestFormat;
+
+		// Initialize requestFormatString based on loaded requestFormat
+		if (requestFormat === 'json') {
+			requestFormatString = 'json';
+		} else if (typeof requestFormat === 'object' && requestFormat !== null) {
+			try {
+				requestFormatString = JSON.stringify(requestFormat, null, 2);
+			} catch (e) {
+				console.error('Error stringifying requestFormat on mount:', e);
+				requestFormatString = ''; // Fallback to empty string on error
+				requestFormat = null; // Reset requestFormat if it's invalid
+			}
+		} else {
+			requestFormatString = ''; // Default to empty if null or not 'json'/object
+			requestFormat = null; // Ensure requestFormat is null if not 'json' or valid object
 		}
+
 
 		keepAlive = $settings.keepAlive ?? null;
 
-		params = { ...params, ...$settings.params };
-		params.stop = $settings?.params?.stop ? ($settings?.params?.stop ?? []).join(',') : null;
+		// Initialize params, converting null to undefined for use_mmap and use_mlock
+		params = {
+			...params,
+			...$settings.params,
+			use_mmap: $settings.params?.use_mmap ?? undefined,
+			use_mlock: $settings.params?.use_mlock ?? undefined
+		};
+		params.stop = Array.isArray($settings?.params?.stop) ? $settings?.params?.stop.join(',') : null; // Ensure null is used
 	});
 
 	const applyTheme = (_theme: string) => {
@@ -197,7 +313,6 @@
 		} else if (_theme === 'gem') {
 			themeToApply = 'dark gem'; // Assuming gem is a dark theme
 		}
-
 
 		// Remove all existing theme classes first
 		themes.forEach((e) => {
@@ -233,6 +348,7 @@
 				metaThemeColor.setAttribute('content', systemTheme === 'light' ? '#ffffff' : '#171717');
 			} else {
 				console.log('Setting meta theme color: ' + _theme);
+				localStorage.theme = _theme; // Save the theme to localStorage
 				metaThemeColor.setAttribute(
 					'content',
 					_theme.includes('dark') || _theme.includes('oled') || _theme.includes('gem')
@@ -399,7 +515,7 @@
 		</div>
 
 
-		{#if $user?.role === 'admin' || $user?.permissions.chat?.controls}
+		{#if $user && ($user.role === 'admin' || $user.permissions?.chat?.controls)}
 			<hr class="border-gray-50 dark:border-gray-850 my-3" />
 
 			<div>
@@ -407,7 +523,7 @@
 				<Textarea
 					bind:value={system}
 					className="w-full text-sm bg-white dark:text-gray-300 dark:bg-gray-900 outline-hidden resize-none"
-					rows="4"
+					rows={4}
 					placeholder={$i18n.t('Enter system prompt here')}
 				/>
 			</div>
@@ -472,16 +588,6 @@
 								{#if requestFormat === null}
 									<span class="ml-2 self-center"> {$i18n.t('Default')} </span>
 								{:else}
-									<!-- <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                            class="w-4 h-4 self-center"
-                        >
-                            <path
-                                d="M10 2a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 2zM10 15a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 15zM10 7a3 3 0 100 6 3 3 0 000-6zM15.657 5.404a.75.75 0 10-1.06-1.06l-1.061 1.06a.75.75 0 001.06 1.06l1.06-1.06zM6.464 14.596a.75.75 0 10-1.06-1.06l-1.06 1.06a.75.75 0 001.06 1.06l1.06-1.06zM18 10a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0118 10zM5 10a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 015 10zM14.596 15.657a.75.75 0 001.06-1.06l-1.06-1.061a.75.75 0 10-1.06 1.06l1.06 1.06zM5.404 6.464a.75.75 0 001.06-1.06l-1.06-1.06a.75.75 0 10-1.061 1.06l1.06 1.06z"
-                            />
-                        </svg> -->
 									<span class="ml-2 self-center"> {$i18n.t('JSON')} </span>
 								{/if}
 							</button>
@@ -492,7 +598,7 @@
 								<Textarea
 									className="w-full  text-sm dark:text-gray-300 dark:bg-gray-900 outline-hidden"
 									placeholder={$i18n.t('e.g. "json" or a JSON schema')}
-									bind:value={requestFormat}
+									bind:value={requestFormatString}
 								/>
 							</div>
 						{/if}

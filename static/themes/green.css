@@ -4,7 +4,7 @@
 	--bg-app: #f0fff0; /* Honeydew */
 	--bg-nav: #90ee90; /* Light Green */
 	--bg-content: #8fbc8f; /* Dark Sea Green */
-	--bg-input: #66cdaa; /* Medium Aquamarine */
+	--bg-input: #90ee90; /* Light Green */
 	--bg-input-container: #8fbc8f; /* Dark Sea Green */
 	--bg-button: #556b2f; /* Dark Olive Green */
 	--bg-button-hover: #6b8e23; /* Olive Drab */
@@ -61,7 +61,7 @@
 }
 
 .green .bg-gradient-to-t.from-white.dark\:from-gray-800.from-40\%.pb-2 { /* Keep this for Tailwind light mode */
-	background: var(--bg-input-container) !important;
+	background: var(--bg-input) !important;
 	padding-top: 0.6rem;
 }
 

@@ -8,14 +8,15 @@
 	import { updateUserInfo } from '$lib/apis/users';
 	import { getUserPosition } from '$lib/utils';
 	const dispatch = createEventDispatcher();
+	import type { Writable } from 'svelte/store';
+	import type { i18n as i18nType } from 'i18next';
 
-	const i18n = getContext('i18n');
+	const i18n: Writable<i18nType> = getContext('i18n');
 
 	export let saveSettings: Function;
-
-	let backgroundImageUrl = null;
-	let inputFiles = null;
-	let filesInputElement;
+	let backgroundImageUrl: string | null = null;
+	let inputFiles: FileList | null = null;
+	let filesInputElement: HTMLInputElement;
 
 	// Addons
 	let titleAutoGenerate = true;
@@ -62,7 +63,7 @@
 	let voiceInterruption = false;
 	let hapticFeedback = false;
 
-	let webSearch = null;
+	let webSearch: string | null = null;
 
 	let iframeSandboxAllowSameOrigin = false;
 	let iframeSandboxAllowForms = false;
@@ -328,20 +329,27 @@
 		on:change={() => {
 			let reader = new FileReader();
 			reader.onload = (event) => {
-				let originalImageUrl = `${event.target.result}`;
+				if (event.target && event.target.result) {
+					let originalImageUrl = `${event.target.result}`;
 
-				backgroundImageUrl = originalImageUrl;
-				saveSettings({ backgroundImageUrl });
+					backgroundImageUrl = originalImageUrl;
+					saveSettings({ backgroundImageUrl });
+				}
 			};
 
 			if (
 				inputFiles &&
 				inputFiles.length > 0 &&
+				inputFiles[0] && // Add check for inputFiles[0]
 				['image/gif', 'image/webp', 'image/jpeg', 'image/png'].includes(inputFiles[0]['type'])
 			) {
 				reader.readAsDataURL(inputFiles[0]);
-			} else {
+			} else if (inputFiles && inputFiles.length > 0 && inputFiles[0]) { // Add check for inputFiles[0]
 				console.log(`Unsupported File Type '${inputFiles[0]['type']}'.`);
+				inputFiles = null;
+			} else {
+				// Handle case where inputFiles is null or empty
+				console.log('No file selected or file input is null.');
 				inputFiles = null;
 			}
 		}}
@@ -739,6 +747,8 @@
 				</div>
 			</div>
 
+			<div class=" my-1.5 text-sm font-medium">{$i18n.t('Background')}</div>
+
 			<div>
 				<div class=" py-0.5 flex w-full justify-between">
 					<div class=" self-center text-xs">
@@ -765,6 +775,7 @@
 					</button>
 				</div>
 			</div>
+
 
 			<div>
 				<div class=" py-0.5 flex w-full justify-between">

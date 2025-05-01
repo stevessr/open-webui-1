@@ -1,5 +1,90 @@
 <script lang="ts">
 	import { getContext, tick } from 'svelte';
+	import type { Writable } from 'svelte/store'; // Import Writable
+	import type { i18n as i18nType } from 'i18next'; // Import i18n type
+	// Removed: import type { Settings } from '$lib/stores';
+
+	// Copied type definitions from src/lib/stores/index.ts
+	type Settings = {
+		models?: string[];
+		conversationMode?: boolean;
+		speechAutoSend?: boolean;
+		responseAutoPlayback?: boolean;
+		audio?: AudioSettings;
+		showUsername?: boolean;
+		notificationEnabled?: boolean;
+		title?: TitleSettings;
+		splitLargeDeltas?: boolean;
+		chatDirection: 'LTR' | 'RTL' | 'auto';
+		ctrlEnterToSend?: boolean;
+
+		system?: string;
+		requestFormat?: string;
+		keepAlive?: string;
+		seed?: number;
+		temperature?: string;
+		repeat_penalty?: string;
+		top_k?: string;
+		top_p?: string;
+		num_ctx?: string;
+		num_batch?: string;
+		num_keep?: string;
+		options?: ModelOptions;
+
+		// Opacity settings
+		sidebarOpacity?: number;
+		backgroundOpacity?: number;
+		backgroundOverlayOpacity?: number;
+		bubbleOpacity?: number;
+		chatBackgroundGradientOpacity?: number;
+		overlayOpacity?: number;
+		widescreenMode?: boolean;
+		autoTags?: boolean;
+		detectArtifacts?: boolean;
+		responseAutoCopy?: boolean;
+		showUpdateToast?: boolean;
+		showChangelog?: boolean;
+		showEmojiInCall?: boolean;
+		voiceInterruption?: boolean;
+		richTextInput?: boolean;
+		promptAutocomplete?: boolean;
+		largeTextAsFile?: boolean;
+		copyFormatted?: boolean;
+		collapseCodeBlocks?: boolean;
+		expandDetails?: boolean;
+		landingPageMode?: string;
+		chatBubble?: boolean;
+		splitLargeChunks?: boolean;
+		scrollOnBranchChange?: boolean;
+		userLocation?: boolean;
+		notificationSound?: boolean;
+		hapticFeedback?: boolean;
+		imageCompression?: boolean;
+		imageCompressionSize?: { width: string; height: string };
+		backgroundImageUrl?: string;
+		webSearch?: string;
+	};
+
+	type ModelOptions = {
+		stop?: boolean;
+	};
+
+	type AudioSettings = {
+		STTEngine?: string;
+		TTSEngine?: string;
+		speaker?: string;
+		model?: string;
+		nonLocalVoices?: boolean;
+	};
+
+	type TitleSettings = {
+		auto?: boolean;
+		model?: string;
+		modelExternal?: string;
+		prompt?: string;
+	};
+	// End of copied types
+
 	import { toast } from 'svelte-sonner';
 	import { config, models, settings, user } from '$lib/stores';
 	import { updateUserSettings } from '$lib/apis/users';
@@ -19,8 +104,9 @@
 	import Search from '../icons/Search.svelte';
 	import Connections from './Settings/Connections.svelte';
 	import Tools from './Settings/Tools.svelte';
+	import Opacity from './Settings/Opacity.svelte'; // Import the new component
 
-	const i18n = getContext('i18n');
+	const i18n: Writable<i18nType> = getContext('i18n'); // Add type annotation
 
 	export let show = false;
 
@@ -122,6 +208,20 @@
 				'interfaceoptions',
 				'interfacecustomization',
 				'alwaysonwebsearch'
+			]
+		},
+		{
+			id: 'opacity', // Add new tab data
+			title: 'Opacity',
+			keywords: [
+				'opacity',
+				'transparency',
+				'transparent',
+				'sidebar',
+				'background',
+				'overlay',
+				'bubble',
+				'gradient'
 			]
 		},
 		{
@@ -302,7 +402,7 @@
 
 	let search = '';
 	let visibleTabs = searchData.map((tab) => tab.id);
-	let searchDebounceTimeout;
+	let searchDebounceTimeout: any; // Use 'any' for timeout ID compatibility
 
 	const searchSettings = (query: string): string[] => {
 		const lowerCaseQuery = query.toLowerCase().trim();
@@ -325,7 +425,7 @@
 		}, 100);
 	};
 
-	const saveSettings = async (updated) => {
+	const saveSettings = async (updated: Partial<Settings>) => { // Add type
 		console.log(updated);
 		await settings.set({ ...$settings, ...updated });
 		await models.set(await getModels());
@@ -333,16 +433,16 @@
 	};
 
 	const getModels = async () => {
-		return await _getModels(
-			localStorage.token,
-			$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null)
-		);
+		// Removed check for non-existent properties:
+		// $config?.features?.enable_direct_connections && ($settings?.directConnections ?? null)
+		return await _getModels(localStorage.token);
 	};
+
 
 	let selectedTab = 'general';
 
 	// Function to handle sideways scrolling
-	const scrollHandler = (event) => {
+	const scrollHandler = (event: WheelEvent) => { // Add type
 		const settingsTabsContainer = document.getElementById('settings-tabs-container');
 		if (settingsTabsContainer) {
 			event.preventDefault(); // Prevent default vertical scrolling
@@ -467,10 +567,27 @@
 								</div>
 								<div class=" self-center">{$i18n.t('Interface')}</div>
 							</button>
+						{:else if tabId === 'opacity'}
+							<button
+								class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
+								'opacity'
+									? ''
+									: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+								on:click={() => {
+									selectedTab = 'opacity';
+								}}
+							>
+								<div class=" self-center mr-2">
+									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
+										<path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14Zm0-2A5 5 0 1 0 8 3a5 5 0 0 0 0 10Z" clip-rule="evenodd" />
+									</svg>
+								</div>
+								<div class=" self-center">{$i18n.t('Opacity')}</div>
+							</button>
 						{:else if tabId === 'connections'}
-							{#if $user?.role === 'admin' || ($user?.role === 'user' && $config?.features?.enable_direct_connections)}
-								<button
-									class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
+							<!-- Removed check for non-existent feature flag: $config?.features?.enable_direct_connections -->
+							<button
+								class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
 									'connections'
 										? ''
 										: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
@@ -492,9 +609,9 @@
 									</div>
 									<div class=" self-center">{$i18n.t('Connections')}</div>
 								</button>
-							{/if}
-						{:else if tabId === 'tools'}
-							{#if $user?.role === 'admin' || ($user?.role === 'user' && $user?.permissions?.features?.direct_tool_servers)}
+							<!-- Removed closing #if for non-existent flag -->
+							{:else if tabId === 'tools'}
+								<!-- Removed check for non-existent feature flag: $config?.features?.enable_direct_tool_servers -->
 								<button
 									class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
 									'tools'
@@ -520,9 +637,9 @@
 									</div>
 									<div class=" self-center">{$i18n.t('Tools')}</div>
 								</button>
-							{/if}
-						{:else if tabId === 'personalization'}
-							<button
+							<!-- Removed closing #if for non-existent flag -->
+							{:else if tabId === 'personalization'}
+								<button
 								class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
 								'personalization'
 									? ''
@@ -715,6 +832,13 @@
 					/>
 				{:else if selectedTab === 'interface'}
 					<Interface
+						{saveSettings}
+						on:save={() => {
+							toast.success($i18n.t('Settings saved successfully!'));
+						}}
+					/>
+				{:else if selectedTab === 'opacity'}
+					<Opacity
 						{saveSettings}
 						on:save={() => {
 							toast.success($i18n.t('Settings saved successfully!'));

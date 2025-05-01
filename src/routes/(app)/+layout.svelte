@@ -36,7 +36,8 @@
 		showSettings,
 		showChangelog,
 		temporaryChatEnabled,
-		toolServers
+		toolServers,
+		theme // Add theme here
 	} from '$lib/stores';
 
 	import Sidebar from '$lib/components/layout/Sidebar.svelte';
@@ -83,6 +84,9 @@
 
 			if (userSettings) {
 				settings.set(userSettings.ui);
+				if (userSettings.theme) { // Add this check
+					theme.set(userSettings.theme); // Update theme store
+				}
 			} else {
 				let localStorageSettings = {} as Parameters<(typeof settings)['set']>[0];
 
@@ -260,6 +264,7 @@
 			<div class="fixed w-full h-full flex z-50">
 				<div
 					class="absolute w-full h-full backdrop-blur-md bg-white/20 dark:bg-gray-900/50 flex justify-center"
+					style="opacity: {$settings.backgroundOverlayOpacity / 100};"
 				>
 					<div class="m-auto pb-44 flex flex-col justify-center">
 						<div class="max-w-md">

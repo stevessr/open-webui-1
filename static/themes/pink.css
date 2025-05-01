@@ -4,7 +4,7 @@
 	--bg-app: #ffe4e1; /* Misty Rose */
 	--bg-nav: #ffc0cb; /* Pink */
 	--bg-content: #f08080; /* Light Coral */
-	--bg-input: #dda0dd; /* Plum */
+	--bg-input: #ffc0cb; /* Pink */
 	--bg-input-container: #f08080; /* Light Coral */
 	--bg-button: #ff6347; /* Tomato */
 	--bg-button-hover: #db7093; /* Pale Violet Red */
@@ -61,7 +61,7 @@
 }
 
 .pink .bg-gradient-to-t.from-white.dark\:from-gray-800.from-40\%.pb-2 { /* Keep this for Tailwind light mode */
-	background: var(--bg-input-container) !important;
+	background: var(--bg-input) !important;
 	padding-top: 0.6rem;
 }
 
@@ -182,4 +182,8 @@
 .pink .svelte-11kvm4p { /* Progress Bar? */
 	--primary: var(--primary-progress) !important;
 	--secondary: var(--secondary-progress) !important;
+}
+
+.pink .flex-1.flex.flex-col {
+    background-color: var(--her-surface) !important;
 }
