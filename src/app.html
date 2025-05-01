@@ -40,152 +40,171 @@
 		<script>
 			// On page load or when changing themes, best to add inline in `head` to avoid FOUC
 			(() => {
-			    const htmlElement = document.documentElement;
-			    const metaThemeColorTag = document.querySelector('meta[name="theme-color"]');
-			    const prefersDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+				const htmlElement = document.documentElement;
+				const metaThemeColorTag = document.querySelector('meta[name="theme-color"]');
+				const prefersDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-			    if (!localStorage?.theme) {
-			        localStorage.theme = 'system';
-			    }
+				if (!localStorage?.theme) {
+					localStorage.theme = 'system';
+				}
 
-			    let currentThemeName = localStorage.theme;
-			    let classesToApply = '';
-			    let metaThemeColor = '#171717'; // Default dark color
+				let currentThemeName = localStorage.theme;
+				let classesToApply = '';
+				let metaThemeColor = '#171717'; // Default dark color
 
-			    // Determine classes and meta color based on stored theme
-			    if (currentThemeName === 'system') {
-			        classesToApply = prefersDarkTheme ? 'dark' : 'light';
-			        metaThemeColor = prefersDarkTheme ? '#171717' : '#ffffff';
-			    } else if (currentThemeName === 'light') {
-			        classesToApply = 'light';
-			        metaThemeColor = '#ffffff';
-			    } else if (currentThemeName === 'oled-dark') {
-			        classesToApply = 'dark oled'; // Apply dark and oled classes
-			        metaThemeColor = '#000000'; // OLED Dark
-			        // Apply specific CSS variable overrides for oled-dark
-			        htmlElement.style.setProperty('--color-gray-800', '#101010');
-			        htmlElement.style.setProperty('--color-gray-850', '#050505');
-			        htmlElement.style.setProperty('--color-gray-900', '#000000');
-			        htmlElement.style.setProperty('--color-gray-950', '#000000');
-			    } else if (currentThemeName === 'her') {
-			        classesToApply = 'dark her'; // Assuming her is dark and has its own class
-			        metaThemeColor = '#983724'; // Her
-			    } else if (currentThemeName === 'blue') {
-			        classesToApply = 'light blue'; // Assuming blue is light
-			        metaThemeColor = '#ffffff'; // Blue (Light)
-			    } else if (currentThemeName === 'blue-dark') {
-			        classesToApply = 'dark blue-dark'; // Assuming blue-dark is dark
-			        metaThemeColor = '#171717'; // Blue Dark
-			    } else if (currentThemeName === 'green') {
-			        classesToApply = 'light green'; // Assuming green is light
-			        metaThemeColor = '#ffffff'; // Green (Light)
-			    } else if (currentThemeName === 'green-dark') {
-			        classesToApply = 'dark green-dark'; // Assuming green-dark is dark
-			        metaThemeColor = '#171717'; // Green Dark
-			    } else if (currentThemeName === 'pink') {
-			        classesToApply = 'light pink'; // Assuming pink is light
-			        metaThemeColor = '#ffffff'; // Pink (Light)
-			    } else if (currentThemeName === 'pink-dark') {
-			        classesToApply = 'dark pink-dark'; // Assuming pink-dark is dark
-			        metaThemeColor = '#171717'; // Pink Dark
-			    } else if (currentThemeName === 'gem') {
-			        classesToApply = 'dark gem'; // Assuming gem is dark
-			        metaThemeColor = '#171717'; // Gem (Dark) - Note: General.svelte says light, but gem looks dark in themes folder. Let's stick to dark for meta color.
-			    } else if (currentThemeName === 'rosepine') {
-			        classesToApply = 'dark rosepine'; // Apply dark and rosepine classes
-			        metaThemeColor = '#191724'; // Rosé Pine
-			    } else if (currentThemeName === 'rosepine-dawn') {
-			        classesToApply = 'light rosepine-dawn'; // Apply light and rosepine-dawn classes
-			        metaThemeColor = '#faf4ed'; // Rosé Pine Dawn
-			    } else {
-			        // Default to dark if theme is unknown or 'dark'
-			        classesToApply = 'dark';
-			        metaThemeColor = '#171717';
-			    }
+				// Determine classes and meta color based on stored theme
+				if (currentThemeName === 'system') {
+					classesToApply = prefersDarkTheme ? 'dark' : 'light';
+					metaThemeColor = prefersDarkTheme ? '#171717' : '#ffffff';
+				} else if (currentThemeName === 'light') {
+					classesToApply = 'light';
+					metaThemeColor = '#ffffff';
+				} else if (currentThemeName === 'oled-dark') {
+					classesToApply = 'dark oled'; // Apply dark and oled classes
+					metaThemeColor = '#000000'; // OLED Dark
+					// Apply specific CSS variable overrides for oled-dark
+					htmlElement.style.setProperty('--color-gray-800', '#101010');
+					htmlElement.style.setProperty('--color-gray-850', '#050505');
+					htmlElement.style.setProperty('--color-gray-900', '#000000');
+					htmlElement.style.setProperty('--color-gray-950', '#000000');
+				} else if (currentThemeName === 'her') {
+					classesToApply = 'dark her'; // Assuming her is dark and has its own class
+					metaThemeColor = '#983724'; // Her
+				} else if (currentThemeName === 'blue') {
+					classesToApply = 'light blue'; // Assuming blue is light
+					metaThemeColor = '#ffffff'; // Blue (Light)
+				} else if (currentThemeName === 'blue-dark') {
+					classesToApply = 'dark blue-dark'; // Assuming blue-dark is dark
+					metaThemeColor = '#171717'; // Blue Dark
+				} else if (currentThemeName === 'green') {
+					classesToApply = 'light green'; // Assuming green is light
+					metaThemeColor = '#ffffff'; // Green (Light)
+				} else if (currentThemeName === 'green-dark') {
+					classesToApply = 'dark green-dark'; // Assuming green-dark is dark
+					metaThemeColor = '#171717'; // Green Dark
+				} else if (currentThemeName === 'pink') {
+					classesToApply = 'light pink'; // Assuming pink is light
+					metaThemeColor = '#ffffff'; // Pink (Light)
+				} else if (currentThemeName === 'pink-dark') {
+					classesToApply = 'dark pink-dark'; // Assuming pink-dark is dark
+					metaThemeColor = '#171717'; // Pink Dark
+				} else if (currentThemeName === 'gem') {
+					classesToApply = 'dark gem'; // Assuming gem is dark
+					metaThemeColor = '#171717'; // Gem (Dark) - Note: General.svelte says light, but gem looks dark in themes folder. Let's stick to dark for meta color.
+				} else if (currentThemeName === 'rosepine') {
+					classesToApply = 'dark rosepine'; // Apply dark and rosepine classes
+					metaThemeColor = '#191724'; // Rosé Pine
+				} else if (currentThemeName === 'rosepine-dawn') {
+					classesToApply = 'light rosepine-dawn'; // Apply light and rosepine-dawn classes
+					metaThemeColor = '#faf4ed'; // Rosé Pine Dawn
+				} else {
+					// Default to dark if theme is unknown or 'dark'
+					classesToApply = 'dark';
+					metaThemeColor = '#171717';
+				}
 
-			    // Remove all potential theme classes first
-			    const allThemeClasses = ['dark', 'light', 'rosepine', 'rosepine-dawn', 'oled', 'her', 'blue', 'blue-dark', 'green', 'green-dark', 'pink', 'pink-dark', 'gem']; // List all possible classes
-			    allThemeClasses.forEach(cls => {
-			        htmlElement.classList.remove(cls);
-			    });
-			    // Also remove specific oled-dark style properties if not applying oled-dark
-			    if (currentThemeName !== 'oled-dark') {
-			        htmlElement.style.setProperty('--color-gray-800', '');
-			        htmlElement.style.setProperty('--color-gray-850', '');
-			        htmlElement.style.setProperty('--color-gray-900', '');
-			        htmlElement.style.setProperty('--color-gray-950', '');
-			    }
+				// Remove all potential theme classes first
+				const allThemeClasses = [
+					'dark',
+					'light',
+					'rosepine',
+					'rosepine-dawn',
+					'oled',
+					'her',
+					'blue',
+					'blue-dark',
+					'green',
+					'green-dark',
+					'pink',
+					'pink-dark',
+					'gem'
+				]; // List all possible classes
+				allThemeClasses.forEach((cls) => {
+					htmlElement.classList.remove(cls);
+				});
+				// Also remove specific oled-dark style properties if not applying oled-dark
+				if (currentThemeName !== 'oled-dark') {
+					htmlElement.style.setProperty('--color-gray-800', '');
+					htmlElement.style.setProperty('--color-gray-850', '');
+					htmlElement.style.setProperty('--color-gray-900', '');
+					htmlElement.style.setProperty('--color-gray-950', '');
+				}
 
+				// Add the new theme classes
+				classesToApply.split(' ').forEach((cls) => {
+					if (cls) htmlElement.classList.add(cls);
+				});
 
-			    // Add the new theme classes
-			    classesToApply.split(' ').forEach(cls => {
-			        if (cls) htmlElement.classList.add(cls);
-			    });
+				// Set meta theme color
+				if (metaThemeColorTag) {
+					metaThemeColorTag.setAttribute('content', metaThemeColor);
+				}
 
-			    // Set meta theme color
-			    if (metaThemeColorTag) {
-			        metaThemeColorTag.setAttribute('content', metaThemeColor);
-			    }
+				// Update listener for system theme preference changes
+				window.matchMedia('(prefers-color-scheme: dark)').addListener((e) => {
+					if (localStorage.theme === 'system') {
+						const newClassesToApply = e.matches ? 'dark' : 'light';
+						// Remove existing system theme classes before adding new ones
+						htmlElement.classList.remove('dark', 'light');
+						newClassesToApply.split(' ').forEach((cls) => {
+							if (cls) htmlElement.classList.add(cls);
+						});
+						if (metaThemeColorTag) {
+							metaThemeColorTag.setAttribute('content', e.matches ? '#171717' : '#ffffff');
+						}
+						// setSplashImage(); // Re-run splash image logic on system theme change
+					}
+				});
 
-			    // Update listener for system theme preference changes
-			    window.matchMedia('(prefers-color-scheme: dark)').addListener((e) => {
-			        if (localStorage.theme === 'system') {
-			            const newClassesToApply = e.matches ? 'dark' : 'light';
-			            // Remove existing system theme classes before adding new ones
-			            htmlElement.classList.remove('dark', 'light');
-			            newClassesToApply.split(' ').forEach(cls => {
-			                 if (cls) htmlElement.classList.add(cls);
-			            });
-			            if (metaThemeColorTag) {
-			                metaThemeColorTag.setAttribute('content', e.matches ? '#171717' : '#ffffff');
-			            }
-			            // setSplashImage(); // Re-run splash image logic on system theme change
-			        }
-			    });
+				function setSplashImage() {
+					const logo = document.getElementById('logo');
+					const logoHer = document.getElementById('logo-her'); // Assuming logo-her exists
+					// Check for 'dark' class or specific dark theme classes
+					const isDarkMode =
+						htmlElement.classList.contains('dark') ||
+						htmlElement.classList.contains('oled') ||
+						htmlElement.classList.contains('blue-dark') ||
+						htmlElement.classList.contains('green-dark') ||
+						htmlElement.classList.contains('pink-dark') ||
+						htmlElement.classList.contains('rosepine');
 
-			    function setSplashImage() {
-			        const logo = document.getElementById('logo');
-			        const logoHer = document.getElementById('logo-her'); // Assuming logo-her exists
-			        // Check for 'dark' class or specific dark theme classes
-			        const isDarkMode = htmlElement.classList.contains('dark') || htmlElement.classList.contains('oled') || htmlElement.classList.contains('blue-dark') || htmlElement.classList.contains('green-dark') || htmlElement.classList.contains('pink-dark') || htmlElement.classList.contains('rosepine');
+					if (logo) {
+						if (isDarkMode) {
+							const darkImage = new Image();
+							darkImage.src = '/static/splash-dark.png';
 
-			        if (logo) {
-			             if (isDarkMode) {
-			                const darkImage = new Image();
-			                darkImage.src = '/static/splash-dark.png';
+							darkImage.onload = () => {
+								logo.src = '/static/splash-dark.png';
+								logo.style.filter = ''; // Ensure no inversion is applied if splash-dark.png exists
+							};
 
-			                darkImage.onload = () => {
-			                    logo.src = '/static/splash-dark.png';
-			                    logo.style.filter = ''; // Ensure no inversion is applied if splash-dark.png exists
-			                };
+							darkImage.onerror = () => {
+								// Fallback: Use default splash and invert if dark splash is missing
+								logo.src = '/static/splash.png';
+								logo.style.filter = 'invert(1)';
+							};
+						} else {
+							// For light themes, use the default splash.png
+							logo.src = '/static/splash.png';
+							logo.style.filter = '';
+						}
+					}
 
-			                darkImage.onerror = () => {
-			                    // Fallback: Use default splash and invert if dark splash is missing
-			                    logo.src = '/static/splash.png';
-			                    logo.style.filter = 'invert(1)';
-			                };
-			            } else {
-			                 // For light themes, use the default splash.png
-			                 logo.src = '/static/splash.png';
-			                 logo.style.filter = '';
-			            }
-			        }
+					// Handle logo-her visibility based on theme class
+					if (logoHer) {
+						if (htmlElement.classList.contains('her')) {
+							logoHer.style.display = 'block';
+							logoHer.style.filter = 'invert(1)'; // Keep inversion for her logo
+							if (logo) logo.style.display = 'none'; // Hide default logo if her logo is shown
+						} else {
+							logoHer.style.display = 'none';
+							if (logo) logo.style.display = 'block'; // Show default logo if her logo is hidden
+						}
+					}
+				}
 
-			        // Handle logo-her visibility based on theme class
-			        if (logoHer) {
-			             if (htmlElement.classList.contains('her')) {
-			                 logoHer.style.display = 'block';
-			                 logoHer.style.filter = 'invert(1)'; // Keep inversion for her logo
-			                 if (logo) logo.style.display = 'none'; // Hide default logo if her logo is shown
-			             } else {
-			                 logoHer.style.display = 'none';
-			                  if (logo) logo.style.display = 'block'; // Show default logo if her logo is hidden
-			             }
-			        }
-			    }
-
-			    // Runs after classes are assigned
-			    window.onload = setSplashImage; // Ensure this runs after the DOM is fully loaded
+				// Runs after classes are assigned
+				window.onload = setSplashImage; // Ensure this runs after the DOM is fully loaded
 			})();
 		</script>
 
@@ -310,29 +329,29 @@
 		display: none;
 	}
 
-	:root[data-theme="her"] #logo {
+	:root[data-theme='her'] #logo {
 		display: none;
 	}
 
-	:root[data-theme="her"] #logo-her {
+	:root[data-theme='her'] #logo-her {
 		display: block;
 		filter: invert(1);
 	}
 
-	:root[data-theme="her"] #progress-background {
+	:root[data-theme='her'] #progress-background {
 		display: block;
 	}
 
-	:root[data-theme="her"] #progress-bar {
+	:root[data-theme='her'] #progress-bar {
 		display: block;
 	}
 
 	@media (max-width: 24rem) {
-		:root[data-theme="her"] #progress-background {
+		:root[data-theme='her'] #progress-background {
 			display: none;
 		}
 
-		:root[data-theme="her"] #progress-bar {
+		:root[data-theme='her'] #progress-bar {
 			display: none;
 		}
 	}
@@ -345,5 +364,22 @@
 
 	.animate-pulse-fast {
 		animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+	}
+
+	.flex-1 {
+		background: rgb(255, 255, 255, 0%);
+	}
+
+	button ,
+	button.flex,
+	button[data-menu-trigger],
+	button#custom-markdown-edit-btn,
+	button#voice-input-button,
+	button#call-input-button,
+	button#model-button {
+		background: rgb(255, 255, 255, 0%);
+	}
+	#chat-search{
+		background: rgb(255, 255, 255, 0%);
 	}
 </style>

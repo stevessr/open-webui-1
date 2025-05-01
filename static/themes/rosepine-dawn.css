@@ -1,3 +1,7 @@
+.rose-pine-dawn{
+	
+}
+
 .rose-pine-dawn * {
 	color: #575279 !important;
 	stroke: #d7827e !important;
@@ -24,7 +28,7 @@
 }
 
 .rose-pine-dawn #chat-input {
-	background: #cecacd;
+	background: rgb(255, 255, 255, 0%);
 	margin: 0.3rem;
 	padding: 0.5rem;
 }
@@ -117,7 +121,7 @@
 }
 
 .rose-pine-dawn #chat-search > * {
-	background-color: #dfdad9 !important;
+	background-color: rgb(255, 255, 255, 0%) !important;
 }
 
 .rose-pine-dawn .svelte-1ee93ns {

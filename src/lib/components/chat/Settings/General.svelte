@@ -37,11 +37,6 @@
 
 	let showAdvanced = false;
 
-	// Opacity settings
-	let sidebarOpacity = 100; // Default to 100%
-	let bubbleOpacity = 100; // Default to 100%
-	let backgroundOpacity = 100; // Default to 100%
-
 	const toggleNotification = async () => {
 		const permission = await Notification.requestPermission();
 
@@ -222,10 +217,6 @@
 				: undefined,
 			requestFormat: finalRequestFormat, // Save the determined format
 
-			// Save opacity settings
-			sidebarOpacity: sidebarOpacity !== 100 ? sidebarOpacity : undefined,
-			bubbleOpacity: bubbleOpacity !== 100 ? bubbleOpacity : undefined,
-			backgroundOpacity: backgroundOpacity !== 100 ? backgroundOpacity : undefined,
 			theme: selectedTheme // Add theme to settings
 		});
 		dispatch('save');
@@ -253,11 +244,6 @@
 		selectedTheme = $settings?.theme ?? localStorage.theme ?? 'system';
 		theme.set(selectedTheme); // Ensure theme store is updated on load
 		applyTheme(selectedTheme); // Apply the loaded theme
-
-		// Load opacity settings
-		sidebarOpacity = $settings?.sidebarOpacity ?? 100;
-		bubbleOpacity = $settings?.bubbleOpacity ?? 100;
-		backgroundOpacity = $settings?.backgroundOpacity ?? 100;
 
 		notificationEnabled = $settings.notificationEnabled ?? false;
 		system = $settings.system ?? '';
@@ -463,56 +449,6 @@
 			</div>
 		</div>
 
-		<hr class="border-gray-50 dark:border-gray-850 my-3" />
-
-		<div class="">
-			<div class=" mb-1 text-sm font-medium">{$i18n.t('Opacity Settings')}</div>
-
-			<div class="flex w-full justify-between items-center">
-				<div class=" self-center text-xs font-medium">{$i18n.t('Sidebar Opacity')}</div>
-				<div class="flex items-center relative w-24">
-					<input
-						type="range"
-						min="0"
-						max="100"
-						bind:value={sidebarOpacity}
-						class="w-full"
-						on:input={() => saveSettings({ sidebarOpacity })}
-					/>
-					<span class="ml-2 text-xs">{sidebarOpacity}%</span>
-				</div>
-			</div>
-
-			<div class="flex w-full justify-between items-center">
-				<div class=" self-center text-xs font-medium">{$i18n.t('Message Bubble Opacity')}</div>
-				<div class="flex items-center relative w-24">
-					<input
-						type="range"
-						min="0"
-						max="100"
-						bind:value={bubbleOpacity}
-						class="w-full"
-						on:input={() => saveSettings({ bubbleOpacity })}
-					/>
-					<span class="ml-2 text-xs">{bubbleOpacity}%</span>
-				</div>
-			</div>
-
-			<div class="flex w-full justify-between items-center">
-				<div class=" self-center text-xs font-medium">{$i18n.t('Background Opacity')}</div>
-				<div class="flex items-center relative w-24">
-					<input
-						type="range"
-						min="0"
-						max="100"
-						bind:value={backgroundOpacity}
-						class="w-full"
-						on:input={() => saveSettings({ backgroundOpacity })}
-					/>
-					<span class="ml-2 text-xs">{backgroundOpacity}%</span>
-				</div>
-			</div>
-		</div>
 
 
 		{#if $user && ($user.role === 'admin' || $user.permissions?.chat?.controls)}
