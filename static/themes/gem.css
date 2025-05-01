@@ -172,18 +172,13 @@
 	background-color: var(--gem-stroke-color);
 }
 
-.gem #chat-search>* {
-	background-color: var(--gem-surface-color);
-	/* Changed to surface color for consistency */
-}
-
 /* Input, textarea, select styles */
 .gem input,
 .gem textarea,
 .gem select {
 	background-color: var(--gem-surface-color);
 	color: var(--gem-text-color);
-	border: 1px solid var(--gem-border-color);
+	border: 0px solid var(--gem-border-color);
 }
 
 .gem .flex.items-center.relative select {

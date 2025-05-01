@@ -120,10 +120,6 @@
 	background-color: #56949f;
 }
 
-.rose-pine-dawn #chat-search > * {
-	background-color: rgb(255, 255, 255, 0%) !important;
-}
-
 .rose-pine-dawn .svelte-1ee93ns {
 	--primary: #b4637a !important;
 	--secondary: #fffaf3 !important;

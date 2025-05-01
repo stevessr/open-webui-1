@@ -8,6 +8,7 @@
 		<link rel="shortcut icon" href="/static/favicon.ico" />
 		<link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png" />
 		<meta name="apple-mobile-web-app-title" content="Open WebUI" />
+		<style url="/static/assets/css/_fonts.css"></style>
 
 		<link rel="manifest" href="/manifest.json" crossorigin="use-credentials" />
 		<meta
@@ -316,6 +317,18 @@
 	html.her #splash-screen {
 		background: #983724;
 	}
+	html.blue #splash-screen {
+		background: #ADD8E6; /* Sky blue light background */
+	}
+	html.green #splash-screen {
+		background: #8BC34A; /* Grass green background */
+	}
+	html.pink #splash-screen {
+		background: #FADADD; /* Light pink background */
+	}
+	html.gem #splash-screen {
+		background: #171717; /* Gem dark background */
+	}
 
 	#logo-her {
 		display: none;
@@ -366,20 +379,21 @@
 		animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 	}
 
-	.flex-1 {
-		background: rgb(255, 255, 255, 0%);
-	}
-
-	button ,
+	button,
 	button.flex,
+	.flex-1,
 	button[data-menu-trigger],
 	button#custom-markdown-edit-btn,
 	button#voice-input-button,
 	button#call-input-button,
-	button#model-button {
+	button#model-button,
+	button#set-as-default-button,
+	button#add-model-button {
 		background: rgb(255, 255, 255, 0%);
 	}
-	#chat-search{
+	input.w-full,
+	#chat-search,
+	.bg-linear-to-b {
 		background: rgb(255, 255, 255, 0%);
 	}
 </style>

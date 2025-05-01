@@ -183,12 +183,6 @@
 	/* Reusing input background */
 }
 
-/* Search */
-.pink #chat-search>* {
-	background-color: rgb(255, 255, 255, 0%) !important;
-}
-
-
 /* Fill Colors */
 .pink .w-4.h-4 {
 	fill: var(--fill-color);

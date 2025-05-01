@@ -49,7 +49,7 @@
 .dark input,
 .dark textarea,
 .dark select {
-  background-color: var(--surface-color) !important;
+  background: rgb(255, 255, 255, 0%) !important;
   /* Darker inputs */
   color: var(--text-color) !important;
 
@@ -57,13 +57,12 @@
 
 .dark button {
   color: var(--text-color) !important;
-  background-color: var(--surface-color) !important;
-
+  background: rgb(255, 255, 255, 0%) !important;
 }
 
 .dark button:hover {
   background-color: var(--highlight-color) !important;
-  border-color: var(--primary-color) !important;
+  background: rgb(255, 255, 255, 0%) !important;
 }
 
 /* Dark theme checkbox styles */

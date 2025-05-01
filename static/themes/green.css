@@ -181,12 +181,6 @@
 	/* Reusing input background */
 }
 
-/* Search */
-.green #chat-search>* {
-	background-color: var(--bg-search) !important;
-}
-
-
 /* Fill Colors */
 .green .w-4.h-4 {
 	fill: var(--fill-color);
