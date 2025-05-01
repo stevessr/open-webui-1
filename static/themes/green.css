@@ -1,7 +1,7 @@
 /* Green Theme */
 .green {
 	/* Light Mode Variables */
-	--bg-app: #f0fff0;
+	--bg-app: #008000;
 	/* Honeydew */
 	--bg-nav: #90ee90;
 	/* Light Green */
@@ -59,8 +59,9 @@
 	/* Dark Sea Green */
 	--secondary-progress: #f0fff0;
 	/* Honeydew */
-
-	
+	--sidebar-color: #006a4e;
+	/* Light Green */
+	--menu-color: #005F4E;
 }
 
 
@@ -213,4 +214,13 @@
 	/* Progress Bar? */
 	--primary: var(--primary-progress) !important;
 	--secondary: var(--secondary-progress) !important;
+}
+
+.green div#sidebar {
+	background-color: var(--sidebar-color) !important;
+}
+
+.green div[role="menu"][data-melt-dropdown-menu][data-menu-content] {
+	background-color: var(--menu-color) !important;
+	/* Menu color */
 }

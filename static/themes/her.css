@@ -240,14 +240,6 @@
   background-color: var(--her-highlight);
 }
 
-/* Scrollbar maybe? */
-.her ::-webkit-scrollbar-thumb {
-  background-color: var(--her-subtle);
-}
-
-.her ::-webkit-scrollbar-track {
-  background: var(--her-surface);
-}
 
 /* Ensure primary color is used for sliders/toggles if applicable */
 .her input[type='range'] {

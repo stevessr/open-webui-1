@@ -510,25 +510,6 @@
 	color: var(--gem-surface-color);
 }
 
-/* Scrollbar Styles (using gem theme variables) */
-.gem ::-webkit-scrollbar {
-	width: 8px;
-	height: 8px;
-}
-
-.gem ::-webkit-scrollbar-track {
-	background: var(--gem-bg-color);
-}
-
-.gem ::-webkit-scrollbar-thumb {
-	background: var(--gem-muted-color);
-	border-radius: 4px;
-}
-
-.gem ::-webkit-scrollbar-thumb:hover {
-	background: var(--gem-primary-color);
-}
-
 .flex.flex-col {
 	background: rgb(255, 255, 255, 0%);
 }
