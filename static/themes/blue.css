@@ -61,6 +61,10 @@
 	/* Azure */
 
 	
+	--sidebar-color: #5f9ea0;
+	/* Cadet Blue */
+	--menu-color: #508c90;
+	/* Slightly darker Cadet Blue */
 }
 
 
@@ -213,4 +217,24 @@
 	/* Progress Bar? */
 	--primary: var(--primary-progress) !important;
 	--secondary: var(--secondary-progress) !important;
+}
+.blue div#sidebar {
+	background-color: var(--sidebar-color) !important;
+}
+
+.blue div[role="menu"][data-melt-dropdown-menu][data-menu-content],
+.component-menu {
+	background-color: var(--menu-color) !important;
+	/* Menu color */
+}
+
+.blue textarea,
+select,
+option,
+option.bg-gray-100,
+input {
+	background-color: var(--sidebar-color) !important;
+}
+.blue button.save-bottom {
+	background-color: var(--bg-button-primary) !important;
 }

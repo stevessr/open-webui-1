@@ -233,3 +233,8 @@ option.bg-gray-100,
 input {
 	background-color: var(--sidebar-color) !important;
 }
+
+.green button.save-bottom{
+	background-color: var(--bg-button-primary) !important;
+	/* Save button color */
+}

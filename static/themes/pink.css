@@ -15,7 +15,7 @@
 	/* Tomato */
 	--bg-button-hover: #db7093;
 	/* Pale Violet Red */
-	--bg-button-primary: #ff69b4;
+	--bg-button-primary: #e6e6fa;
 	/* Hot Pink */
 	--bg-button-primary-hover: #ff1493;
 	/* Deep Pink */
@@ -61,6 +61,10 @@
 	/* Misty Rose */
 
 	
+	--sidebar-color: #f08080;
+	/* Light Steel Blue */
+	--menu-color: #ff69b4;
+	/* Slightly darker Light Steel Blue */
 }
 
 
@@ -219,4 +223,24 @@
 
 .pink .flex-1.flex.flex-col {
 	background-color: var(--her-surface) !important;
+}
+.pink div#sidebar {
+	background-color: var(--sidebar-color) !important;
+}
+
+.pink div[role="menu"][data-melt-dropdown-menu][data-menu-content],
+.component-menu {
+	background-color: var(--menu-color) !important;
+	/* Menu color */
+}
+
+.pink textarea,
+select,
+option,
+option.bg-gray-100,
+input {
+	background-color: var(--sidebar-color) !important;
+}
+.pink button.save-bottom {
+	background-color: var(--bg-button-primary) !important;
 }
