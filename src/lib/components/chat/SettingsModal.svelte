@@ -439,6 +439,16 @@
 	};
 
 
+	const handleConnectionsSave = async (updated: Partial<Settings>) => {
+		await saveSettings(updated);
+		toast.success($i18n.t('Settings saved successfully!'));
+	};
+
+	const handleToolsSave = async (updated: Partial<Settings>) => {
+		await saveSettings(updated);
+		toast.success($i18n.t('Settings saved successfully!'));
+	};
+
 	let selectedTab = 'general';
 
 	// Function to handle sideways scrolling
@@ -474,7 +484,7 @@
 </script>
 
 <Modal size="xl" bind:show>
-	<div class="text-gray-700 dark:text-gray-100">
+	<div class="text-gray-700 dark:text-gray-100 component-menu">
 		<div class=" flex justify-between dark:text-gray-300 px-5 pt-4 pb-1">
 			<div class=" text-lg font-medium self-center">{$i18n.t('Settings')}</div>
 			<button
@@ -846,17 +856,11 @@
 					/>
 				{:else if selectedTab === 'connections'}
 					<Connections
-						saveSettings={async (updated) => {
-							await saveSettings(updated);
-							toast.success($i18n.t('Settings saved successfully!'));
-						}}
+						saveSettings={handleConnectionsSave}
 					/>
 				{:else if selectedTab === 'tools'}
 					<Tools
-						saveSettings={async (updated) => {
-							await saveSettings(updated);
-							toast.success($i18n.t('Settings saved successfully!'));
-						}}
+						saveSettings={handleToolsSave}
 					/>
 				{:else if selectedTab === 'personalization'}
 					<Personalization

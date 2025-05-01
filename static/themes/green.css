@@ -220,7 +220,16 @@
 	background-color: var(--sidebar-color) !important;
 }
 
-.green div[role="menu"][data-melt-dropdown-menu][data-menu-content] {
+.green div[role="menu"][data-melt-dropdown-menu][data-menu-content],
+.component-menu {
 	background-color: var(--menu-color) !important;
 	/* Menu color */
+}
+
+.green textarea,
+select,
+option,
+option.bg-gray-100,
+input {
+	background-color: var(--sidebar-color) !important;
 }
