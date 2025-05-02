@@ -9,21 +9,21 @@
 	export let containerClassName = 'p-3';
 	export let className = 'bg-white dark:bg-gray-900 rounded-2xl';
 
-	let modalElement = null;
+	let modalElement: HTMLDivElement | null = null;
 	let mounted = false;
 
-	const sizeToWidth = (size) => {
+	const sizeToWidth = (size: string) => {
 		if (size === 'full') {
 			return 'w-full';
 		}
 		if (size === 'xs') {
-			return 'w-[16rem]';
+			return 'w-full sm:w-[16rem]';
 		} else if (size === 'sm') {
-			return 'w-[30rem]';
+			return 'w-full sm:w-[30rem]';
 		} else if (size === 'md') {
-			return 'w-[42rem]';
+			return 'w-full sm:w-[42rem]';
 		} else {
-			return 'w-[56rem]';
+			return 'w-full sm:w-[56rem]';
 		}
 	};
 

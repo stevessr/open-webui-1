@@ -42,7 +42,7 @@
 .light select {
   background-color: var(--bg-color) !important;
   color: var(--text-color) !important;
-
+  border-radius: 0.5rem; /* Apply medium border radius */
 }
 
 .light button {

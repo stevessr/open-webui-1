@@ -486,7 +486,7 @@
 
 <Modal size="xl" bind:show>
 	<div
-		class="text-gray-700 dark:text-gray-100 component-menu"
+		class="text-gray-700 dark:text-gray-100 component-menu rounded-md"
 		id="settings-modal"
 		style="opacity: {$settings?.settingsModalOpacity !== undefined
 			? $settings.settingsModalOpacity / 100
@@ -523,7 +523,7 @@
 						<Search className="size-3.5" />
 					</div>
 					<input
-						class="w-full py-1.5 text-sm bg-transparent dark:text-gray-300 outline-hidden"
+						class="w-full py-1.5 text-sm bg-transparent dark:text-gray-300 outline-hidden rounded-md"
 						bind:value={search}
 						on:input={searchDebounceHandler}
 						placeholder={$i18n.t('Search')}
@@ -930,6 +930,7 @@
 
 	:global(.settings-modal) {
 		opacity: var(--settings-modal-opacity, 1);
+		border-radius: 0.5rem; /* Apply medium border radius */
 	}
 
 	input[type='number'] {

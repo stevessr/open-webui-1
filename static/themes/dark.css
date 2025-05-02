@@ -52,7 +52,7 @@
   background: rgb(255, 255, 255, 0%) !important;
   /* Darker inputs */
   color: var(--text-color) !important;
-
+  border-radius: 0.5rem; /* Apply medium border radius */
 }
 
 .dark button {
