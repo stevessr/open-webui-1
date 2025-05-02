@@ -19,7 +19,7 @@
 
 {#await onMount(async () => {
 	settings.update((s) => {
-		return { ...s, sidebarOpacity: s.sidebarOpacity ?? 100, backgroundOpacity: s.backgroundOpacity ?? 100, backgroundOverlayOpacity: s.backgroundOverlayOpacity ?? 100, bubbleOpacity: s.bubbleOpacity ?? 100, chatBackgroundGradientOpacity: s.chatBackgroundGradientOpacity ?? 100, overlayOpacity: s.overlayOpacity ?? 40 }; // Default to 40 if not set
+		return { ...s, sidebarOpacity: s.sidebarOpacity ?? 100, menuOpacity: s.menuOpacity ?? 100, backgroundOpacity: s.backgroundOpacity ?? 100, backgroundOverlayOpacity: s.backgroundOverlayOpacity ?? 100, bubbleOpacity: s.bubbleOpacity ?? 100, chatBackgroundGradientOpacity: s.chatBackgroundGradientOpacity ?? 100, overlayOpacity: s.overlayOpacity ?? 40, settingsModalOpacity: s.settingsModalOpacity ?? 100 }; // Add default for settingsModalOpacity
 	});
 })}
 	<!-- Loading state or placeholder if needed -->
@@ -40,6 +40,21 @@
 						max="100"
 					/>
 					<span class="text-xs w-8 text-right">{$settings.sidebarOpacity}%</span>
+				</div>
+			</div>
+
+			<!-- Menu Opacity -->
+			<div class=" py-3 flex w-full justify-between text-xs">
+				<div class=" self-center text-xs">{$i18n.t('menuOpacity')}</div>
+				<div class="flex items-center space-x-2">
+					<input
+						bind:value={$settings.menuOpacity}
+						type="range"
+						class="w-32 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 range-thumb-lg"
+						min="0"
+						max="100"
+					/>
+					<span class="text-xs w-8 text-right">{$settings.menuOpacity}%</span>
 				</div>
 			</div>
 
@@ -115,6 +130,21 @@
 						max="100"
 					/>
 					<span class="text-xs w-8 text-right">{$settings.overlayOpacity}%</span>
+				</div>
+			</div>
+
+			<!-- Settings Modal Opacity -->
+			<div class=" py-3 flex w-full justify-between text-xs">
+				<div class=" self-center text-xs">{$i18n.t('settingsModalOpacity')}</div>
+				<div class="flex items-center space-x-2">
+					<input
+						bind:value={$settings.settingsModalOpacity}
+						type="range"
+						class="w-32 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 range-thumb-lg"
+						min="0"
+						max="100"
+					/>
+					<span class="text-xs w-8 text-right">{$settings.settingsModalOpacity}%</span>
 				</div>
 			</div>
 		</div>

@@ -65,6 +65,7 @@ export const banners: Writable<Banner[]> = writable([]);
 export const settings: Writable<Settings> = writable({
 	chatDirection: 'auto',
 	sidebarOpacity: 100,
+	menuOpacity: 100, // Add default value for menu opacity
 	backgroundOpacity: 100,
 	backgroundOverlayOpacity: 100,
 	bubbleOpacity: 100,
@@ -199,11 +200,13 @@ type Settings = {
 
 	// Opacity settings
 	sidebarOpacity?: number;
+	menuOpacity?: number; // Add this line for menu opacity
 	backgroundOpacity?: number; // Add this line for chat container opacity
 	backgroundOverlayOpacity?: number; // Add this line for background overlay opacity
 	bubbleOpacity?: number;
 	chatBackgroundGradientOpacity?: number; // Add this line for chat background gradient opacity
 	overlayOpacity?: number; // Add this line for overlay opacity
+	settingsModalOpacity?: number; // Add this line for settings modal opacity
 	widescreenMode?: boolean;
 	autoTags?: boolean;
 	detectArtifacts?: boolean;
