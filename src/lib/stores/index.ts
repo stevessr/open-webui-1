@@ -71,6 +71,7 @@ export const settings: Writable<Settings> = writable({
 	bubbleOpacity: 100,
 	chatBackgroundGradientOpacity: 100,
 	overlayOpacity: 40, // Changed default value to 40
+	settingsModalOpacity: 100, // Add default value for settings modal opacity
 	widescreenMode: false
 });
 
