@@ -12,7 +12,7 @@ export class KokoroWorker {
 	}> = [];
 	private processing = false; // To track if a request is being processed
 
-	constructor(dtype: string = 'fp32') {
+	constructor({ dtype = 'fp32' }: { dtype?: string } = {}) {
 		this.dtype = dtype;
 	}
 

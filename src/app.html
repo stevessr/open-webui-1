@@ -8,6 +8,7 @@
 		<link rel="shortcut icon" href="/static/favicon.ico" />
 		<link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png" />
 		<meta name="apple-mobile-web-app-title" content="Open WebUI" />
+		<style url="/static/assets/css/_fonts.css"></style>
 
 		<link rel="manifest" href="/manifest.json" crossorigin="use-credentials" />
 		<meta
@@ -40,6 +41,7 @@
 		<script>
 			// On page load or when changing themes, best to add inline in `head` to avoid FOUC
 			(() => {
+				const htmlElement = document.documentElement;
 				const metaThemeColorTag = document.querySelector('meta[name="theme-color"]');
 				const prefersDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
@@ -47,63 +49,163 @@
 					localStorage.theme = 'system';
 				}
 
-				if (localStorage.theme === 'system') {
-					document.documentElement.classList.add(prefersDarkTheme ? 'dark' : 'light');
-					metaThemeColorTag.setAttribute('content', prefersDarkTheme ? '#171717' : '#ffffff');
-				} else if (localStorage.theme === 'oled-dark') {
-					document.documentElement.style.setProperty('--color-gray-800', '#101010');
-					document.documentElement.style.setProperty('--color-gray-850', '#050505');
-					document.documentElement.style.setProperty('--color-gray-900', '#000000');
-					document.documentElement.style.setProperty('--color-gray-950', '#000000');
-					document.documentElement.classList.add('dark');
-					metaThemeColorTag.setAttribute('content', '#000000');
-				} else if (localStorage.theme === 'light') {
-					document.documentElement.classList.add('light');
-					metaThemeColorTag.setAttribute('content', '#ffffff');
-				} else if (localStorage.theme === 'her') {
-					document.documentElement.classList.add('dark');
-					document.documentElement.classList.add('her');
-					metaThemeColorTag.setAttribute('content', '#983724');
+				let currentThemeName = localStorage.theme;
+				let classesToApply = '';
+				let metaThemeColor = '#171717'; // Default dark color
+
+				// Determine classes and meta color based on stored theme
+				if (currentThemeName === 'system') {
+					classesToApply = prefersDarkTheme ? 'dark' : 'light';
+					metaThemeColor = prefersDarkTheme ? '#171717' : '#ffffff';
+				} else if (currentThemeName === 'light') {
+					classesToApply = 'light';
+					metaThemeColor = '#ffffff';
+				} else if (currentThemeName === 'oled-dark') {
+					classesToApply = 'dark oled'; // Apply dark and oled classes
+					metaThemeColor = '#000000'; // OLED Dark
+					// Apply specific CSS variable overrides for oled-dark
+					htmlElement.style.setProperty('--color-gray-800', '#101010');
+					htmlElement.style.setProperty('--color-gray-850', '#050505');
+					htmlElement.style.setProperty('--color-gray-900', '#000000');
+					htmlElement.style.setProperty('--color-gray-950', '#000000');
+				} else if (currentThemeName === 'her') {
+					classesToApply = 'her'; // Assuming her is dark and has its own class
+					metaThemeColor = '#983724'; // Her
+				} else if (currentThemeName === 'blue') {
+					classesToApply = 'light blue'; // Assuming blue is light
+					metaThemeColor = '#ffffff'; // Blue (Light)
+				} else if (currentThemeName === 'blue-dark') {
+					classesToApply = 'dark blue-dark'; // Assuming blue-dark is dark
+					metaThemeColor = '#171717'; // Blue Dark
+				} else if (currentThemeName === 'green') {
+					classesToApply = 'light green'; // Assuming green is light
+					metaThemeColor = '#ffffff'; // Green (Light)
+				} else if (currentThemeName === 'green-dark') {
+					classesToApply = 'dark green-dark'; // Assuming green-dark is dark
+					metaThemeColor = '#171717'; // Green Dark
+				} else if (currentThemeName === 'pink') {
+					classesToApply = 'light pink'; // Assuming pink is light
+					metaThemeColor = '#ffffff'; // Pink (Light)
+				} else if (currentThemeName === 'pink-dark') {
+					classesToApply = 'dark pink-dark'; // Assuming pink-dark is dark
+					metaThemeColor = '#171717'; // Pink Dark
+				} else if (currentThemeName === 'gem') {
+					classesToApply = 'dark gem'; // Assuming gem is dark
+					metaThemeColor = '#171717'; // Gem (Dark) - Note: General.svelte says light, but gem looks dark in themes folder. Let's stick to dark for meta color.
+				} else if (currentThemeName === 'rosepine') {
+					classesToApply = 'dark rosepine'; // Apply dark and rosepine classes
+					metaThemeColor = '#191724'; // Rosé Pine
+				} else if (currentThemeName === 'rosepine-dawn') {
+					classesToApply = 'light rosepine-dawn'; // Apply light and rosepine-dawn classes
+					metaThemeColor = '#faf4ed'; // Rosé Pine Dawn
 				} else {
-					document.documentElement.classList.add('dark');
-					metaThemeColorTag.setAttribute('content', '#171717');
+					// Default to dark if theme is unknown or 'dark'
+					classesToApply = 'dark';
+					metaThemeColor = '#171717';
 				}
 
+				// Remove all potential theme classes first
+				const allThemeClasses = [
+					'dark',
+					'light',
+					'rosepine',
+					'rosepine-dawn',
+					'oled',
+					'her',
+					'blue',
+					'blue-dark',
+					'green',
+					'green-dark',
+					'pink',
+					'pink-dark',
+					'gem'
+				]; // List all possible classes
+				allThemeClasses.forEach((cls) => {
+					htmlElement.classList.remove(cls);
+				});
+				// Also remove specific oled-dark style properties if not applying oled-dark
+				if (currentThemeName !== 'oled-dark') {
+					htmlElement.style.setProperty('--color-gray-800', '');
+					htmlElement.style.setProperty('--color-gray-850', '');
+					htmlElement.style.setProperty('--color-gray-900', '');
+					htmlElement.style.setProperty('--color-gray-950', '');
+				}
+
+				// Add the new theme classes
+				classesToApply.split(' ').forEach((cls) => {
+					if (cls) htmlElement.classList.add(cls);
+				});
+
+				// Set meta theme color
+				if (metaThemeColorTag) {
+					metaThemeColorTag.setAttribute('content', metaThemeColor);
+				}
+
+				// Update listener for system theme preference changes
 				window.matchMedia('(prefers-color-scheme: dark)').addListener((e) => {
 					if (localStorage.theme === 'system') {
-						if (e.matches) {
-							document.documentElement.classList.add('dark');
-							document.documentElement.classList.remove('light');
-							metaThemeColorTag.setAttribute('content', '#171717');
-						} else {
-							document.documentElement.classList.add('light');
-							document.documentElement.classList.remove('dark');
-							metaThemeColorTag.setAttribute('content', '#ffffff');
+						const newClassesToApply = e.matches ? 'dark' : 'light';
+						// Remove existing system theme classes before adding new ones
+						htmlElement.classList.remove('dark', 'light');
+						newClassesToApply.split(' ').forEach((cls) => {
+							if (cls) htmlElement.classList.add(cls);
+						});
+						if (metaThemeColorTag) {
+							metaThemeColorTag.setAttribute('content', e.matches ? '#171717' : '#ffffff');
 						}
+						// setSplashImage(); // Re-run splash image logic on system theme change
 					}
 				});
 
 				function setSplashImage() {
 					const logo = document.getElementById('logo');
-					const isDarkMode = document.documentElement.classList.contains('dark');
+					const logoHer = document.getElementById('logo-her'); // Assuming logo-her exists
+					// Check for 'dark' class or specific dark theme classes
+					const isDarkMode =
+						htmlElement.classList.contains('dark') ||
+						htmlElement.classList.contains('oled') ||
+						htmlElement.classList.contains('blue-dark') ||
+						htmlElement.classList.contains('green-dark') ||
+						htmlElement.classList.contains('pink-dark') ||
+						htmlElement.classList.contains('rosepine');
 
-					if (isDarkMode) {
-						const darkImage = new Image();
-						darkImage.src = '/static/splash-dark.png';
+					if (logo) {
+						if (isDarkMode) {
+							const darkImage = new Image();
+							darkImage.src = '/static/splash-dark.png';
 
-						darkImage.onload = () => {
-							logo.src = '/static/splash-dark.png';
-							logo.style.filter = ''; // Ensure no inversion is applied if splash-dark.png exists
-						};
+							darkImage.onload = () => {
+								logo.src = '/static/splash-dark.png';
+								logo.style.filter = ''; // Ensure no inversion is applied if splash-dark.png exists
+							};
 
-						darkImage.onerror = () => {
-							logo.style.filter = 'invert(1)'; // Invert image if splash-dark.png is missing
-						};
+							darkImage.onerror = () => {
+								// Fallback: Use default splash and invert if dark splash is missing
+								logo.src = '/static/splash.png';
+								logo.style.filter = 'invert(1)';
+							};
+						} else {
+							// For light themes, use the default splash.png
+							logo.src = '/static/splash.png';
+							logo.style.filter = '';
+						}
+					}
+
+					// Handle logo-her visibility based on theme class
+					if (logoHer) {
+						if (htmlElement.classList.contains('her')) {
+							logoHer.style.display = 'block';
+							logoHer.style.filter = 'invert(1)'; // Keep inversion for her logo
+							if (logo) logo.style.display = 'none'; // Hide default logo if her logo is shown
+						} else {
+							logoHer.style.display = 'none';
+							if (logo) logo.style.display = 'block'; // Show default logo if her logo is hidden
+						}
 					}
 				}
 
 				// Runs after classes are assigned
-				window.onload = setSplashImage;
+				window.onload = setSplashImage; // Ensure this runs after the DOM is fully loaded
 			})();
 		</script>
 
@@ -202,12 +304,30 @@
 		background: #fff;
 	}
 
-	html.dark #splash-screen {
-		background: #000;
+	/* Set dark background based on theme classes */
+	html.dark #splash-screen,
+	html.oled #splash-screen,
+	html.blue-dark #splash-screen,
+	html.green-dark #splash-screen,
+	html.pink-dark #splash-screen,
+	html.rosepine #splash-screen {
+		background: #000; /* Default dark background */
 	}
 
 	html.her #splash-screen {
 		background: #983724;
+	}
+	html.blue #splash-screen {
+		background: #add8e6; /* Sky blue light background */
+	}
+	html.green #splash-screen {
+		background: #8bc34a; /* Grass green background */
+	}
+	html.pink #splash-screen {
+		background: #fadadd; /* Light pink background */
+	}
+	html.gem #splash-screen {
+		background: #171717; /* Gem dark background */
 	}
 
 	#logo-her {
@@ -222,29 +342,29 @@
 		display: none;
 	}
 
-	html.her #logo {
+	:root[data-theme='her'] #logo {
 		display: none;
 	}
 
-	html.her #logo-her {
+	:root[data-theme='her'] #logo-her {
 		display: block;
 		filter: invert(1);
 	}
 
-	html.her #progress-background {
+	:root[data-theme='her'] #progress-background {
 		display: block;
 	}
 
-	html.her #progress-bar {
+	:root[data-theme='her'] #progress-bar {
 		display: block;
 	}
 
 	@media (max-width: 24rem) {
-		html.her #progress-background {
+		:root[data-theme='her'] #progress-background {
 			display: none;
 		}
 
-		html.her #progress-bar {
+		:root[data-theme='her'] #progress-bar {
 			display: none;
 		}
 	}
@@ -257,5 +377,22 @@
 
 	.animate-pulse-fast {
 		animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+	}
+
+	button.flex,
+	.flex-1,
+	button[data-menu-trigger],
+	button#custom-markdown-edit-btn,
+	button#voice-input-button,
+	button#call-input-button,
+	button#model-button,
+	button#set-as-default-button,
+	button#add-model-button {
+		background: rgb(255, 255, 255, 0%);
+	}
+	input.w-full,
+	#chat-search,
+	.bg-linear-to-b {
+		background: rgb(255, 255, 255, 0%);
 	}
 </style>

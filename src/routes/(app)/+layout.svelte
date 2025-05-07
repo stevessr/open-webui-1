@@ -36,7 +36,8 @@
 		showSettings,
 		showChangelog,
 		temporaryChatEnabled,
-		toolServers
+		toolServers,
+		theme // Add theme here
 	} from '$lib/stores';
 
 	import Sidebar from '$lib/components/layout/Sidebar.svelte';
@@ -72,7 +73,6 @@
 					}
 				}
 
-				console.log(DB);
 			} catch (error) {
 				// IndexedDB Not Found
 			}
@@ -84,6 +84,9 @@
 
 			if (userSettings) {
 				settings.set(userSettings.ui);
+				if (userSettings.theme) { // Add this check
+					theme.set(userSettings.theme); // Update theme store
+				}
 			} else {
 				let localStorageSettings = {} as Parameters<(typeof settings)['set']>[0];
 
@@ -115,21 +118,21 @@
 				// Check if Ctrl + Shift + O is pressed
 				if (isCtrlPressed && isShiftPressed && event.key.toLowerCase() === 'o') {
 					event.preventDefault();
-					console.log('newChat');
+					// console.log('newChat');
 					document.getElementById('sidebar-new-chat-button')?.click();
 				}
 
 				// Check if Shift + Esc is pressed
 				if (isShiftPressed && event.key === 'Escape') {
 					event.preventDefault();
-					console.log('focusInput');
+					// console.log('focusInput');
 					document.getElementById('chat-input')?.focus();
 				}
 
 				// Check if Ctrl + Shift + ; is pressed
 				if (isCtrlPressed && isShiftPressed && event.key === ';') {
 					event.preventDefault();
-					console.log('copyLastCodeBlock');
+					// console.log('copyLastCodeBlock');
 					const button = [...document.getElementsByClassName('copy-code-button')]?.at(-1);
 					button?.click();
 				}
@@ -137,16 +140,16 @@
 				// Check if Ctrl + Shift + C is pressed
 				if (isCtrlPressed && isShiftPressed && event.key.toLowerCase() === 'c') {
 					event.preventDefault();
-					console.log('copyLastResponse');
+					// console.log('copyLastResponse');
 					const button = [...document.getElementsByClassName('copy-response-button')]?.at(-1);
-					console.log(button);
+					// console.log(button);
 					button?.click();
 				}
 
 				// Check if Ctrl + Shift + S is pressed
 				if (isCtrlPressed && isShiftPressed && event.key.toLowerCase() === 's') {
 					event.preventDefault();
-					console.log('toggleSidebar');
+					// console.log('toggleSidebar');
 					document.getElementById('sidebar-toggle-button')?.click();
 				}
 
@@ -157,21 +160,21 @@
 					(event.key === 'Backspace' || event.key === 'Delete')
 				) {
 					event.preventDefault();
-					console.log('deleteChat');
+					// console.log('deleteChat');
 					document.getElementById('delete-chat-button')?.click();
 				}
 
 				// Check if Ctrl + . is pressed
 				if (isCtrlPressed && event.key === '.') {
 					event.preventDefault();
-					console.log('openSettings');
+					// console.log('openSettings');
 					showSettings.set(!$showSettings);
 				}
 
 				// Check if Ctrl + / is pressed
 				if (isCtrlPressed && event.key === '/') {
 					event.preventDefault();
-					console.log('showShortcuts');
+					// console.log('showShortcuts');
 					document.getElementById('show-shortcuts-button')?.click();
 				}
 
@@ -182,7 +185,7 @@
 					(event.key.toLowerCase() === `'` || event.key.toLowerCase() === `"`)
 				) {
 					event.preventDefault();
-					console.log('temporaryChat');
+					// console.log('temporaryChat');
 					temporaryChatEnabled.set(!$temporaryChatEnabled);
 					await goto('/');
 					const newChatButton = document.getElementById('new-chat-button');
@@ -251,6 +254,7 @@
 	</div>
 {/if}
 
+<<<<<<< HEAD
 {#if $user}
 	<div class="app relative">
 		<div
@@ -268,6 +272,25 @@
 								<div class="text-center dark:text-white text-2xl font-medium z-50">
 									Important Update<br /> Action Required for Chat Log Storage
 								</div>
+=======
+<div class="app relative">
+	<div
+		class=" text-gray-700 dark:text-gray-100 bg-white dark:bg-gray-900 h-screen max-h-[100dvh] overflow-auto flex flex-row justify-end"
+	>
+		{#if !['user', 'admin'].includes($user?.role)}
+			<AccountPending />
+		{:else if localDBChats.length > 0}
+			<div class="fixed w-full h-full flex z-50">
+				<div
+					class="absolute w-full h-full backdrop-blur-md bg-white/20 dark:bg-gray-900/50 flex justify-center"
+					style="opacity: {$settings.backgroundOverlayOpacity / 100};"
+				>
+					<div class="m-auto pb-44 flex flex-col justify-center">
+						<div class="max-w-md">
+							<div class="text-center dark:text-white text-2xl font-medium z-50">
+								Important Update<br /> Action Required for Chat Log Storage
+							</div>
+>>>>>>> origin/main
 
 								<div class=" mt-4 text-center text-sm dark:text-gray-200 w-full">
 									{$i18n.t(

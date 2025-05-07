@@ -1,11 +1,35 @@
 <script lang="ts">
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import Plus from '$lib/components/icons/Plus.svelte';
+	import { theme } from '$lib/stores';
 
 	let selected = '';
+
+	const themes = [
+		'system',
+		'light',
+		'dark',
+		'oled-dark',
+		'pink',
+		'pink-dark',
+		'green',
+		'green-dark',
+		'blue',
+		'blue-dark',
+		'gem',
+		'her',
+		'rosepine',
+		'rosepine-dawn'
+	];
+
+	function handleThemeChange(event: Event) {
+		const selectElement = event.target as HTMLSelectElement;
+		$theme = selectElement.value;
+		localStorage.theme = $theme;
+	}
 </script>
 
-<div class="min-w-[4.5rem] bg-gray-50 dark:bg-gray-950 flex gap-2.5 flex-col pt-8">
+<div class="min-w-[4.5rem] bg-gray-50 dark:bg-gray-950 flex gap-2.5 flex-col pt-8 pb-4">
 	<div class="flex justify-center relative">
 		{#if selected === 'home'}
 			<div class="absolute top-0 left-0 flex h-full">
@@ -62,4 +86,16 @@
 			<Plus className="size-4" strokeWidth="2" />
 		</button>
 	</div> -->
+
+	<div class="flex justify-center mt-auto">
+		<select
+			class="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-800 text-center text-xs cursor-pointer outline-none"
+			bind:value={$theme}
+			on:change={handleThemeChange}
+		>
+			{#each themes as t}
+				<option value={t}>{t.charAt(0).toUpperCase()}</option>
+			{/each}
+		</select>
+	</div>
 </div>

@@ -40,6 +40,7 @@ class User(Base):
 
 class UserSettings(BaseModel):
     ui: Optional[dict] = {}
+    theme: Optional[str] = None
     model_config = ConfigDict(extra="allow")
     pass
 
