@@ -308,4 +308,5 @@ cypress/videos
 cypress/screenshots
 .vscode/settings.json
 backend/open_webui/static/
+backend/open_webui/static/*
 docs/*.md
