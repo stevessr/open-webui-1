@@ -251,8 +251,10 @@ async def update_user_settings_by_session_user(
 
     user = Users.update_user_settings_by_id(user.id, updated_user_settings)
     if user:
+        log.debug(f"User settings updated successfully for user_id: {user.id}")
         return user.settings
     else:
+        log.debug(f"Failed to update user settings for user_id: {user.id}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=ERROR_MESSAGES.USER_NOT_FOUND,

@@ -231,12 +231,12 @@
 					accept=".json"
 					hidden
 					on:change={() => {
-						console.log(importFiles);
+						// console.log(importFiles);
 
 						const reader = new FileReader();
 						reader.onload = async (event) => {
 							const savedPrompts = JSON.parse(event.target.result);
-							console.log(savedPrompts);
+							// console.log(savedPrompts);
 
 							for (const prompt of savedPrompts) {
 								await createNewPrompt(localStorage.token, {
