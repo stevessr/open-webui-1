@@ -34,19 +34,19 @@ jobs:
           node-version: '22'
 
       - name: Install Dependencies
-        run: npm install
+        run: npm i -g pnpm && pnpm update && pnpm install
 
       - name: Format Frontend
-        run: npm run format
+        run: pnpm format
 
       - name: Run i18next
-        run: npm run i18n:parse
+        run: pnpm i18n:parse
 
       - name: Check for Changes After Format
         run: git diff --exit-code
 
       - name: Build Frontend
-        run: npm run build
+        run: pnpm build
 
   test-frontend:
     name: 'Frontend Unit Tests'
@@ -61,7 +61,7 @@ jobs:
           node-version: '22'
 
       - name: Install Dependencies
-        run: npm i -g pnpm && pnpm i
+        run: npm i -g pnpm && pnpm update && pnpm i
 
       - name: Run vitest
-        run: pnpm run test:frontend
+        run: pnpm test:frontend
