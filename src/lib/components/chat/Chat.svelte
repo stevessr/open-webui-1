@@ -14,7 +14,7 @@
 	import type { i18n as i18nType } from 'i18next';
 	import { WEBUI_BASE_URL, WEBUI_API_BASE_URL } from '$lib/constants';
 	import { uploadFile } from '$lib/apis/files';
-	
+
 	import {
 		chatId,
 		chats,
@@ -249,7 +249,6 @@
 	};
 
 	const chatEventHandler = async (event, cb) => {
-
 		if (event.chat_id === $chatId) {
 			await tick();
 			let message = history.messages[event.message_id];
@@ -368,7 +367,6 @@
 
 		// Replace with your iframe's origin
 		if (event.data.type === 'input:prompt') {
-
 			const inputElement = document.getElementById('chat-input');
 
 			if (inputElement) {
@@ -378,7 +376,6 @@
 		}
 
 		if (event.data.type === 'action:submit') {
-
 			if (prompt !== '') {
 				await tick();
 				submitPrompt(prompt);
@@ -386,7 +383,6 @@
 		}
 
 		if (event.data.type === 'input:prompt:submit') {
-
 			if (event.data.text !== '') {
 				await tick();
 				submitPrompt(event.data.text);
@@ -473,7 +469,6 @@
 	// File upload functions
 
 	const uploadGoogleDriveFile = async (fileData) => {
-
 		// Validate input
 		if (!fileData?.id || !fileData?.name || !fileData?.url || !fileData?.headers?.Authorization) {
 			throw new Error('Invalid file data provided');
@@ -523,12 +518,10 @@
 				throw new Error('Retrieved file is empty');
 			}
 
-
 			// Create File object with proper MIME type
 			const file = new File([fileBlob], fileData.name, {
 				type: fileBlob.type || contentType
 			});
-
 
 			if (file.size === 0) {
 				throw new Error('Created file is empty');
@@ -540,7 +533,6 @@
 			if (!uploadedFile) {
 				throw new Error('Server returned null response for file upload');
 			}
-
 
 			// Update file item with upload results
 			fileItem.status = 'uploaded';
@@ -564,7 +556,6 @@
 	};
 
 	const uploadWeb = async (url) => {
-
 		const fileItem = {
 			type: 'doc',
 			name: url,
@@ -596,7 +587,6 @@
 	};
 
 	const uploadYoutubeTranscription = async (url) => {
-
 		const fileItem = {
 			type: 'doc',
 			name: url,
@@ -774,7 +764,6 @@
 			const chatContent = chat.chat;
 
 			if (chatContent) {
-
 				selectedModels =
 					(chatContent?.models ?? undefined) !== undefined
 						? chatContent.models
@@ -1222,7 +1211,6 @@
 	//////////////////////////
 
 	const submitPrompt = async (userPrompt, { _raw = false } = {}) => {
-
 		const messages = createMessagesList(history, history.currentId);
 		const _selectedModels = selectedModels.map((modelId) =>
 			$models.map((m) => m.id).includes(modelId) ? modelId : ''
@@ -1921,10 +1909,12 @@
 
 <div
 	class="h-screen max-h-[100dvh] transition-width duration-200 ease-in-out {$showSidebar
-	? '  md:max-w-[calc(100%-260px)]'
-	: ' '} w-full max-w-full flex flex-col"
+		? '  md:max-w-[calc(100%-260px)]'
+		: ' '} w-full max-w-full flex flex-col"
 	id="chat-container"
-	style="opacity: {$settings?.backgroundOpacity !== undefined ? $settings.backgroundOpacity / 100 : 1};"
+	style="opacity: {$settings?.backgroundOpacity !== undefined
+		? $settings.backgroundOpacity / 100
+		: 1};"
 >
 	{#if !loading}
 		{#if $settings?.backgroundImageUrl ?? null}
@@ -1937,7 +1927,9 @@
 
 			<div
 				class="absolute top-0 left-0 w-full h-full bg-linear-to-t from-white to-white/85 dark:from-gray-900 dark:to-gray-900/90 z-0"
-				style="opacity: {$settings?.overlayOpacity !== undefined ? $settings.overlayOpacity / 100 : 1};"
+				style="opacity: {$settings?.overlayOpacity !== undefined
+					? $settings.overlayOpacity / 100
+					: 1};"
 			/>
 		{/if}
 

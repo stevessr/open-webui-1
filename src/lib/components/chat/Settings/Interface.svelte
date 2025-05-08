@@ -350,7 +350,8 @@
 				['image/gif', 'image/webp', 'image/jpeg', 'image/png'].includes(inputFiles[0]['type'])
 			) {
 				reader.readAsDataURL(inputFiles[0]);
-			} else if (inputFiles && inputFiles.length > 0 && inputFiles[0]) { // Add check for inputFiles[0]
+			} else if (inputFiles && inputFiles.length > 0 && inputFiles[0]) {
+				// Add check for inputFiles[0]
 				console.log(`Unsupported File Type '${inputFiles[0]['type']}'.`);
 				inputFiles = null;
 			} else {
@@ -805,7 +806,6 @@
 					</button>
 				</div>
 			</div>
-
 
 			<div>
 				<div class=" py-0.5 flex w-full justify-between">

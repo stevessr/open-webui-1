@@ -44,7 +44,10 @@
 	const updateInterfaceHandler = async () => {
 		taskConfig = await updateTaskConfig(localStorage.token, taskConfig);
 
-		promptSuggestions = await setDefaultPromptSuggestions(localStorage.token, JSON.stringify(promptSuggestions)); // JSON stringify promptSuggestions
+		promptSuggestions = await setDefaultPromptSuggestions(
+			localStorage.token,
+			JSON.stringify(promptSuggestions)
+		); // JSON stringify promptSuggestions
 		await updateBanners();
 
 		await config.set(await getBackendConfig());
@@ -296,7 +299,8 @@
 							type="button"
 							on:click={() => {
 								const lastBanner = banners.at(-1); // Assign to local variable
-								if (banners.length === 0 || (lastBanner && lastBanner.content !== '')) { // Check local variable
+								if (banners.length === 0 || (lastBanner && lastBanner.content !== '')) {
+									// Check local variable
 									banners = [
 										...banners,
 										{
@@ -395,7 +399,11 @@
 								type="button"
 								on:click={() => {
 									const lastPromptSuggestion = promptSuggestions.at(-1); // Assign to local variable
-									if (promptSuggestions.length === 0 || (lastPromptSuggestion && lastPromptSuggestion.content !== '')) { // Check local variable
+									if (
+										promptSuggestions.length === 0 ||
+										(lastPromptSuggestion && lastPromptSuggestion.content !== '')
+									) {
+										// Check local variable
 										promptSuggestions = [...promptSuggestions, { content: '', title: ['', ''] }];
 									}
 								}}
@@ -497,7 +505,9 @@
 			</div>
 
 			<div class="mb-3.5">
-				<div class=" mb-2.5 text-base font-medium">{$i18n.t('Chat Background Gradient Opacity')}</div>
+				<div class=" mb-2.5 text-base font-medium">
+					{$i18n.t('Chat Background Gradient Opacity')}
+				</div>
 
 				<hr class=" border-gray-100 dark:border-gray-850 my-2" />
 

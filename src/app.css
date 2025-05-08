@@ -221,11 +221,11 @@ input[type='number'] {
 	background-color: transparent !important;
 }
 
-.svelte-flow__edge>path {
+.svelte-flow__edge > path {
 	stroke-width: 0.5;
 }
 
-.svelte-flow__edge.animated>path {
+.svelte-flow__edge.animated > path {
 	stroke-width: 2;
 	@apply stroke-gray-600 dark:stroke-gray-500;
 }
@@ -258,7 +258,7 @@ input[type='number'] {
 	pointer-events: none;
 }
 
-.tiptap>pre>code {
+.tiptap > pre > code {
 	border-radius: 0.4rem;
 	font-size: 0.85rem;
 	padding: 0.25em 0.3em;
@@ -266,7 +266,7 @@ input[type='number'] {
 	@apply dark:bg-gray-800 bg-gray-100;
 }
 
-.tiptap>pre {
+.tiptap > pre {
 	border-radius: 0.5rem;
 	font-family: 'JetBrainsMono', monospace;
 	margin: 1.5rem 0;

@@ -1217,7 +1217,12 @@
 						{params.use_mmap ? 'Enabled' : 'Disabled'}
 					</div>
 					<div class=" pr-2">
-						<Switch state={useMmapState} on:change={(e) => { params.use_mmap = e.detail.state ?? null; }} />
+						<Switch
+							state={useMmapState}
+							on:change={(e) => {
+								params.use_mmap = e.detail.state ?? null;
+							}}
+						/>
 					</div>
 				</div>
 			{/if}
@@ -1259,7 +1264,12 @@
 					</div>
 
 					<div class=" pr-2">
-						<Switch state={useMlockState} on:change={(e) => { params.use_mlock = e.detail.state ?? null; }} />
+						<Switch
+							state={useMlockState}
+							on:change={(e) => {
+								params.use_mlock = e.detail.state ?? null;
+							}}
+						/>
 					</div>
 				</div>
 			{/if}

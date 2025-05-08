@@ -60,7 +60,6 @@
 
 	const BREAKPOINT = 768;
 
-
 	const executePythonAsWorker = async (id: string, code: string, cb: (data: any) => void) => {
 		let result: any = null;
 		let stdout: string | null = null;

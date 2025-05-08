@@ -9,7 +9,7 @@
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"lint": "pnpm lint:frontend ; pnpm lint:types ; pnpm lint:backend",
+		"lint": "pnpm lint:frontend && pnpm lint:types && pnpm lint:backend",
 		"lint:frontend": "eslint . --fix",
 		"lint:types": "pnpm check",
 		"lint:backend": "pylint backend/",

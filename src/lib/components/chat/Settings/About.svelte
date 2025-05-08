@@ -108,15 +108,15 @@
 		{/if}
 
 		<hr class=" border-gray-100 dark:border-gray-850" />
-		
-			<div class="flex space-x-1">
-				<a href="https://github.com/stevessr/open-webui" target="_blank">
-					<img
-						alt="Github Repo"
-						src="https://img.shields.io/github/stars/stevessr/open-webui?style=social&label=Star us on Github"
-					/>
-				</a>
-			</div>
+
+		<div class="flex space-x-1">
+			<a href="https://github.com/stevessr/open-webui" target="_blank">
+				<img
+					alt="Github Repo"
+					src="https://img.shields.io/github/stars/stevessr/open-webui?style=social&label=Star us on Github"
+				/>
+			</a>
+		</div>
 
 		<div class="mt-2 text-xs text-gray-400 dark:text-gray-500">
 			Emoji graphics provided by

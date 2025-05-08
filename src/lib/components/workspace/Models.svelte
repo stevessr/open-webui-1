@@ -123,7 +123,6 @@
 			hidden: !(info?.meta?.hidden ?? false)
 		};
 
-
 		const res = await updateModelById(localStorage.token, info.id, info);
 
 		if (res) {

@@ -4,10 +4,10 @@
 	import { onMount, getContext, createEventDispatcher } from 'svelte';
 	import { settings, WEBUI_NAME } from '$lib/stores';
 	import { WEBUI_VERSION } from '$lib/constants';
-import type { Writable } from 'svelte/store';
+	import type { Writable } from 'svelte/store';
 	import type { TFunction, i18n as i18nType } from 'i18next';
 
-const i18n: Writable<i18nType> = getContext('i18n');
+	const i18n: Writable<i18nType> = getContext('i18n');
 	const dispatch = createEventDispatcher();
 
 	// Define type for suggestion prompts

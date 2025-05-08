@@ -28,17 +28,20 @@ export const USAGE_POOL: Writable<null | string[]> = writable(null);
 export const theme = writable('system');
 
 export const shortCodesToEmojis = writable(
-	Object.entries(emojiShortCodes).reduce((acc: Record<string, string>, [key, value]) => {
-		if (typeof value === 'string') {
-			acc[value] = key;
-		} else {
-			for (const v of value) {
-				acc[v] = key;
+	Object.entries(emojiShortCodes).reduce(
+		(acc: Record<string, string>, [key, value]) => {
+			if (typeof value === 'string') {
+				acc[value] = key;
+			} else {
+				for (const v of value) {
+					acc[v] = key;
+				}
 			}
-		}
 
-		return acc;
-	}, {} as Record<string, string>)
+			return acc;
+		},
+		{} as Record<string, string>
+	)
 );
 
 export const TTSWorker = writable(null);
