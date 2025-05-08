@@ -61,7 +61,7 @@ jobs:
           node-version: '22'
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm i -g pnpm && pnpm i
 
       - name: Run vitest
-        run: npm run test:frontend
+        run: pnpm run test:frontend
