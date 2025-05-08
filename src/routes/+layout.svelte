@@ -60,12 +60,6 @@
 
 	const BREAKPOINT = 768;
 
-<<<<<<< HEAD
-	const executePythonAsWorker = async (id, code, cb) => {
-		let result = null;
-		let stdout = null;
-		let stderr = null;
-=======
 	const setupSocket = async (enableWebsocket: boolean) => {
 		const _socket = io(WEBUI_BASE_URL, {
 			reconnection: true,
@@ -79,22 +73,17 @@
 
 		await socket.set(_socket);
 
-		_socket.on('connect_error', (err) => {
-		});
+		_socket.on('connect_error', (err) => {});
 
-		_socket.on('connect', () => {
-		});
+		_socket.on('connect', () => {});
 
-		_socket.on('reconnect_attempt', (attempt) => {
-		});
+		_socket.on('reconnect_attempt', (attempt) => {});
 
-		_socket.on('reconnect_failed', () => {
-		});
+		_socket.on('reconnect_failed', () => {});
 
 		_socket.on('disconnect', (reason, details) => {
 			// console.log(`Socket ${_socket.id} disconnected due to ${reason}`);
 			if (details) {
-				
 			}
 		});
 
@@ -111,8 +100,6 @@
 		let result: any = null;
 		let stdout: string | null = null;
 		let stderr: string | null = null;
->>>>>>> origin/main
-
 		let executing = true;
 		let packages = [
 			code.includes('requests') ? 'requests' : null,
@@ -163,8 +150,6 @@
 		pyodideWorker.onmessage = (event) => {
 			const { id, ...data } = event.data;
 
-			
-
 			data['stdout'] && (stdout = data['stdout']);
 			data['stderr'] && (stderr = data['stderr']);
 			data['result'] && (result = data['result']);
@@ -188,7 +173,6 @@
 		};
 
 		pyodideWorker.onerror = (event) => {
-
 			if (cb) {
 				cb(
 					JSON.parse(
@@ -208,7 +192,9 @@
 	};
 
 	const executeTool = async (data: any, cb: (data: any) => void) => {
-		const toolServer = $settings?.toolServers?.find((server: any) => server.url === data.server?.url);
+		const toolServer = $settings?.toolServers?.find(
+			(server: any) => server.url === data.server?.url
+		);
 		const toolServerData = $toolServers?.find((server: any) => server.url === data.server?.url);
 
 		if (toolServer && toolServerData) {
@@ -437,8 +423,6 @@
 			}
 		}
 	};
-
-<<<<<<< HEAD
 	const checkTokenExpiry = async () => {
 		const exp = $user?.expires_at; // token expiry time in unix timestamp
 		const now = Math.floor(Date.now() / 1000); // current time in unix timestamp
@@ -457,10 +441,7 @@
 		}
 	};
 
-	onMount(async () => {
-=======
 	onMount(async (): Promise<() => void> => {
->>>>>>> origin/main
 		if (typeof window !== 'undefined' && window.applyTheme) {
 			window.applyTheme();
 		}
@@ -543,9 +524,7 @@
 		initI18n(localStorage?.locale);
 		if (!localStorage.locale) {
 			const languages = await getLanguages();
-			const browserLanguages = navigator.languages
-				? navigator.languages
-				: [navigator.language];
+			const browserLanguages = navigator.languages ? navigator.languages : [navigator.language];
 			const lang = backendConfig.default_locale
 				? backendConfig.default_locale
 				: bestMatchingLanguage(languages, browserLanguages, 'en-US');
