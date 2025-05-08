@@ -27,11 +27,8 @@
 		isApp,
 		appInfo,
 		toolServers,
-<<<<<<< HEAD
-		playingNotificationSound
-=======
+		playingNotificationSound,
 		appData
->>>>>>> origin/main
 	} from '$lib/stores';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
