@@ -60,41 +60,6 @@
 
 	const BREAKPOINT = 768;
 
-	const setupSocket = async (enableWebsocket: boolean) => {
-		const _socket = io(WEBUI_BASE_URL, {
-			reconnection: true,
-			reconnectionDelay: 1000,
-			reconnectionDelayMax: 5000,
-			randomizationFactor: 0.5,
-			path: '/ws/socket.io',
-			transports: enableWebsocket ? ['websocket'] : ['polling', 'websocket'],
-			auth: { token: localStorage.token }
-		});
-
-		await socket.set(_socket);
-
-		_socket.on('connect_error', (err) => {});
-
-		_socket.on('connect', () => {});
-
-		_socket.on('reconnect_attempt', (attempt) => {});
-
-		_socket.on('reconnect_failed', () => {});
-
-		_socket.on('disconnect', (reason, details) => {
-			// console.log(`Socket ${_socket.id} disconnected due to ${reason}`);
-			if (details) {
-			}
-		});
-
-		_socket.on('user-list', (data) => {
-			activeUserIds.set(data.user_ids);
-		});
-
-		_socket.on('usage', (data) => {
-			USAGE_POOL.set(data['models']);
-		});
-	};
 
 	const executePythonAsWorker = async (id: string, code: string, cb: (data: any) => void) => {
 		let result: any = null;
