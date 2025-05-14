@@ -123,8 +123,6 @@
 			hidden: !(info?.meta?.hidden ?? false)
 		};
 
-		console.log(info);
-
 		const res = await updateModelById(localStorage.token, info.id, info);
 
 		if (res) {
@@ -407,12 +405,12 @@
 					accept=".json"
 					hidden
 					on:change={() => {
-						console.log(importFiles);
+						// console.log(importFiles);
 
 						let reader = new FileReader();
 						reader.onload = async (event) => {
 							let savedModels = JSON.parse(event.target.result);
-							console.log(savedModels);
+							// console.log(savedModels);
 
 							for (const model of savedModels) {
 								if (model?.info ?? false) {

@@ -36,7 +36,8 @@
 		showSettings,
 		showChangelog,
 		temporaryChatEnabled,
-		toolServers
+		toolServers,
+		theme // Add theme here
 	} from '$lib/stores';
 
 	import Sidebar from '$lib/components/layout/Sidebar.svelte';
@@ -71,8 +72,6 @@
 						await deleteDB('Chats');
 					}
 				}
-
-				console.log(DB);
 			} catch (error) {
 				// IndexedDB Not Found
 			}
@@ -84,6 +83,10 @@
 
 			if (userSettings) {
 				settings.set(userSettings.ui);
+				if (userSettings.theme) {
+					// Add this check
+					theme.set(userSettings.theme); // Update theme store
+				}
 			} else {
 				let localStorageSettings = {} as Parameters<(typeof settings)['set']>[0];
 
@@ -115,21 +118,21 @@
 				// Check if Ctrl + Shift + O is pressed
 				if (isCtrlPressed && isShiftPressed && event.key.toLowerCase() === 'o') {
 					event.preventDefault();
-					console.log('newChat');
+					// console.log('newChat');
 					document.getElementById('sidebar-new-chat-button')?.click();
 				}
 
 				// Check if Shift + Esc is pressed
 				if (isShiftPressed && event.key === 'Escape') {
 					event.preventDefault();
-					console.log('focusInput');
+					// console.log('focusInput');
 					document.getElementById('chat-input')?.focus();
 				}
 
 				// Check if Ctrl + Shift + ; is pressed
 				if (isCtrlPressed && isShiftPressed && event.key === ';') {
 					event.preventDefault();
-					console.log('copyLastCodeBlock');
+					// console.log('copyLastCodeBlock');
 					const button = [...document.getElementsByClassName('copy-code-button')]?.at(-1);
 					button?.click();
 				}
@@ -137,16 +140,16 @@
 				// Check if Ctrl + Shift + C is pressed
 				if (isCtrlPressed && isShiftPressed && event.key.toLowerCase() === 'c') {
 					event.preventDefault();
-					console.log('copyLastResponse');
+					// console.log('copyLastResponse');
 					const button = [...document.getElementsByClassName('copy-response-button')]?.at(-1);
-					console.log(button);
+					// console.log(button);
 					button?.click();
 				}
 
 				// Check if Ctrl + Shift + S is pressed
 				if (isCtrlPressed && isShiftPressed && event.key.toLowerCase() === 's') {
 					event.preventDefault();
-					console.log('toggleSidebar');
+					// console.log('toggleSidebar');
 					document.getElementById('sidebar-toggle-button')?.click();
 				}
 
@@ -157,21 +160,21 @@
 					(event.key === 'Backspace' || event.key === 'Delete')
 				) {
 					event.preventDefault();
-					console.log('deleteChat');
+					// console.log('deleteChat');
 					document.getElementById('delete-chat-button')?.click();
 				}
 
 				// Check if Ctrl + . is pressed
 				if (isCtrlPressed && event.key === '.') {
 					event.preventDefault();
-					console.log('openSettings');
+					// console.log('openSettings');
 					showSettings.set(!$showSettings);
 				}
 
 				// Check if Ctrl + / is pressed
 				if (isCtrlPressed && event.key === '/') {
 					event.preventDefault();
-					console.log('showShortcuts');
+					// console.log('showShortcuts');
 					document.getElementById('show-shortcuts-button')?.click();
 				}
 
@@ -182,7 +185,7 @@
 					(event.key.toLowerCase() === `'` || event.key.toLowerCase() === `"`)
 				) {
 					event.preventDefault();
-					console.log('temporaryChat');
+					// console.log('temporaryChat');
 					temporaryChatEnabled.set(!$temporaryChatEnabled);
 					await goto('/');
 					const newChatButton = document.getElementById('new-chat-button');
@@ -251,79 +254,78 @@
 	</div>
 {/if}
 
-{#if $user}
-	<div class="app relative">
-		<div
-			class=" text-gray-700 dark:text-gray-100 bg-white dark:bg-gray-900 h-screen max-h-[100dvh] overflow-auto flex flex-row justify-end"
-		>
-			{#if !['user', 'admin'].includes($user?.role)}
-				<AccountPending />
-			{:else if localDBChats.length > 0}
-				<div class="fixed w-full h-full flex z-50">
-					<div
-						class="absolute w-full h-full backdrop-blur-md bg-white/20 dark:bg-gray-900/50 flex justify-center"
-					>
-						<div class="m-auto pb-44 flex flex-col justify-center">
-							<div class="max-w-md">
-								<div class="text-center dark:text-white text-2xl font-medium z-50">
-									Important Update<br /> Action Required for Chat Log Storage
-								</div>
+<div class="app relative">
+	<div
+		class=" text-gray-700 dark:text-gray-100 bg-white dark:bg-gray-900 h-screen max-h-[100dvh] overflow-auto flex flex-row justify-end"
+	>
+		{#if !['user', 'admin'].includes($user?.role)}
+			<AccountPending />
+		{:else if localDBChats.length > 0}
+			<div class="fixed w-full h-full flex z-50">
+				<div
+					class="absolute w-full h-full backdrop-blur-md bg-white/20 dark:bg-gray-900/50 flex justify-center"
+					style="opacity: {$settings.backgroundOverlayOpacity / 100};"
+				>
+					<div class="m-auto pb-44 flex flex-col justify-center">
+						<div class="max-w-md">
+							<div class="text-center dark:text-white text-2xl font-medium z-50">
+								Important Update<br /> Action Required for Chat Log Storage
+							</div>
 
-								<div class=" mt-4 text-center text-sm dark:text-gray-200 w-full">
-									{$i18n.t(
-										"Saving chat logs directly to your browser's storage is no longer supported. Please take a moment to download and delete your chat logs by clicking the button below. Don't worry, you can easily re-import your chat logs to the backend through"
-									)}
-									<span class="font-semibold dark:text-white"
-										>{$i18n.t('Settings')} > {$i18n.t('Chats')} > {$i18n.t('Import Chats')}</span
-									>. {$i18n.t(
-										'This ensures that your valuable conversations are securely saved to your backend database. Thank you!'
-									)}
-								</div>
+							<div class=" mt-4 text-center text-sm dark:text-gray-200 w-full">
+								{$i18n.t(
+									"Saving chat logs directly to your browser's storage is no longer supported. Please take a moment to download and delete your chat logs by clicking the button below. Don't worry, you can easily re-import your chat logs to the backend through"
+								)}
+								<span class="font-semibold dark:text-white"
+									>{$i18n.t('Settings')} > {$i18n.t('Chats')} > {$i18n.t('Import Chats')}</span
+								>. {$i18n.t(
+									'This ensures that your valuable conversations are securely saved to your backend database. Thank you!'
+								)}
+							</div>
 
-								<div class=" mt-6 mx-auto relative group w-fit">
-									<button
-										class="relative z-20 flex px-5 py-2 rounded-full bg-white border border-gray-100 dark:border-none hover:bg-gray-100 transition font-medium text-sm"
-										on:click={async () => {
-											let blob = new Blob([JSON.stringify(localDBChats)], {
-												type: 'application/json'
-											});
-											saveAs(blob, `chat-export-${Date.now()}.json`);
+							<div class=" mt-6 mx-auto relative group w-fit">
+								<button
+									class="relative z-20 flex px-5 py-2 rounded-full bg-white border border-gray-100 dark:border-none hover:bg-gray-100 transition font-medium text-sm"
+									on:click={async () => {
+										let blob = new Blob([JSON.stringify(localDBChats)], {
+											type: 'application/json'
+										});
+										saveAs(blob, `chat-export-${Date.now()}.json`);
 
-											const tx = DB.transaction('chats', 'readwrite');
-											await Promise.all([tx.store.clear(), tx.done]);
-											await deleteDB('Chats');
+										const tx = DB.transaction('chats', 'readwrite');
+										await Promise.all([tx.store.clear(), tx.done]);
+										await deleteDB('Chats');
 
-											localDBChats = [];
-										}}
-									>
-										Download & Delete
-									</button>
+										localDBChats = [];
+									}}
+								>
+									Download & Delete
+								</button>
 
-									<button
-										class="text-xs text-center w-full mt-2 text-gray-400 underline"
-										on:click={async () => {
-											localDBChats = [];
-										}}>{$i18n.t('Close')}</button
-									>
-								</div>
+								<button
+									class="text-xs text-center w-full mt-2 text-gray-400 underline"
+									on:click={async () => {
+										localDBChats = [];
+									}}>{$i18n.t('Close')}</button
+								>
 							</div>
 						</div>
 					</div>
 				</div>
-			{/if}
+			</div>
+		{/if}
 
-			<Sidebar />
+		<Sidebar />
 
-			{#if loaded}
-				<slot />
-			{:else}
-				<div class="w-full flex-1 h-full flex items-center justify-center">
-					<Spinner />
-				</div>
-			{/if}
-		</div>
+		{#if loaded}
+			<slot />
+		{:else}
+			<div class="w-full flex-1 h-full flex items-center justify-center">
+				<Spinner />
+			</div>
+		{/if}
 	</div>
-{/if}
+</div>
 
 <style>
 	.loading {

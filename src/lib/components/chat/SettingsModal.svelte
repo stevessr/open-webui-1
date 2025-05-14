@@ -1,5 +1,90 @@
 <script lang="ts">
-	import { getContext, tick } from 'svelte';
+	import { getContext, tick, onMount } from 'svelte';
+	import type { Writable } from 'svelte/store'; // Import Writable
+	import type { i18n as i18nType } from 'i18next'; // Import i18n type
+	// Removed: import type { Settings } from '$lib/stores';
+
+	// Copied type definitions from src/lib/stores/index.ts
+	type Settings = {
+		models?: string[];
+		conversationMode?: boolean;
+		speechAutoSend?: boolean;
+		responseAutoPlayback?: boolean;
+		audio?: AudioSettings;
+		showUsername?: boolean;
+		notificationEnabled?: boolean;
+		title?: TitleSettings;
+		splitLargeDeltas?: boolean;
+		chatDirection: 'LTR' | 'RTL' | 'auto';
+		ctrlEnterToSend?: boolean;
+
+		system?: string;
+		requestFormat?: string;
+		keepAlive?: string;
+		seed?: number;
+		temperature?: string;
+		repeat_penalty?: string;
+		top_k?: string;
+		top_p?: string;
+		num_ctx?: string;
+		num_batch?: string;
+		num_keep?: string;
+		options?: ModelOptions;
+
+		// Opacity settings
+		sidebarOpacity?: number;
+		backgroundOpacity?: number;
+		backgroundOverlayOpacity?: number;
+		bubbleOpacity?: number;
+		chatBackgroundGradientOpacity?: number;
+		overlayOpacity?: number;
+		widescreenMode?: boolean;
+		autoTags?: boolean;
+		detectArtifacts?: boolean;
+		responseAutoCopy?: boolean;
+		showUpdateToast?: boolean;
+		showChangelog?: boolean;
+		showEmojiInCall?: boolean;
+		voiceInterruption?: boolean;
+		richTextInput?: boolean;
+		promptAutocomplete?: boolean;
+		largeTextAsFile?: boolean;
+		copyFormatted?: boolean;
+		collapseCodeBlocks?: boolean;
+		expandDetails?: boolean;
+		landingPageMode?: string;
+		chatBubble?: boolean;
+		splitLargeChunks?: boolean;
+		scrollOnBranchChange?: boolean;
+		userLocation?: boolean;
+		notificationSound?: boolean;
+		hapticFeedback?: boolean;
+		imageCompression?: boolean;
+		imageCompressionSize?: { width: string; height: string };
+		backgroundImageUrl?: string;
+		webSearch?: string;
+	};
+
+	type ModelOptions = {
+		stop?: boolean;
+	};
+
+	type AudioSettings = {
+		STTEngine?: string;
+		TTSEngine?: string;
+		speaker?: string;
+		model?: string;
+		nonLocalVoices?: boolean;
+	};
+
+	type TitleSettings = {
+		auto?: boolean;
+		model?: string;
+		modelExternal?: string;
+		prompt?: string;
+	};
+	// End of copied types
+
 	import { toast } from 'svelte-sonner';
 	import { config, models, settings, user } from '$lib/stores';
 	import { updateUserSettings } from '$lib/apis/users';
@@ -19,8 +104,9 @@
 	import Search from '../icons/Search.svelte';
 	import Connections from './Settings/Connections.svelte';
 	import Tools from './Settings/Tools.svelte';
+	import Opacity from './Settings/Opacity.svelte'; // Import the new component
 
-	const i18n = getContext('i18n');
+	const i18n: Writable<i18nType> = getContext('i18n'); // Add type annotation
 
 	export let show = false;
 
@@ -145,7 +231,20 @@
 					}
 				]
 			: []),
-
+		{
+			id: 'opacity', // Add new tab data
+			title: 'Opacity',
+			keywords: [
+				'opacity',
+				'transparency',
+				'transparent',
+				'sidebar',
+				'background',
+				'overlay',
+				'bubble',
+				'gradient'
+			]
+		},
 		{
 			id: 'personalization',
 			title: 'Personalization',
@@ -314,7 +413,7 @@
 
 	let search = '';
 	let visibleTabs = searchData.map((tab) => tab.id);
-	let searchDebounceTimeout;
+	let searchDebounceTimeout: any; // Use 'any' for timeout ID compatibility
 
 	const searchSettings = (query: string): string[] => {
 		const lowerCaseQuery = query.toLowerCase().trim();
@@ -337,7 +436,8 @@
 		}, 100);
 	};
 
-	const saveSettings = async (updated) => {
+	const saveSettings = async (updated: Partial<Settings>) => {
+		// Add type
 		console.log(updated);
 		await settings.set({ ...$settings, ...updated });
 		await models.set(await getModels());
@@ -345,16 +445,26 @@
 	};
 
 	const getModels = async () => {
-		return await _getModels(
-			localStorage.token,
-			$config?.features?.enable_direct_connections && ($settings?.directConnections ?? null)
-		);
+		// Removed check for non-existent properties:
+		// $config?.features?.enable_direct_connections && ($settings?.directConnections ?? null)
+		return await _getModels(localStorage.token);
+	};
+
+	const handleConnectionsSave = async (updated: Partial<Settings>) => {
+		await saveSettings(updated);
+		toast.success($i18n.t('Settings saved successfully!'));
+	};
+
+	const handleToolsSave = async (updated: Partial<Settings>) => {
+		await saveSettings(updated);
+		toast.success($i18n.t('Settings saved successfully!'));
 	};
 
 	let selectedTab = 'general';
 
 	// Function to handle sideways scrolling
-	const scrollHandler = (event) => {
+	const scrollHandler = (event: WheelEvent) => {
+		// Add type
 		const settingsTabsContainer = document.getElementById('settings-tabs-container');
 		if (settingsTabsContainer) {
 			event.preventDefault(); // Prevent default vertical scrolling
@@ -386,7 +496,13 @@
 </script>
 
 <Modal size="xl" bind:show>
-	<div class="text-gray-700 dark:text-gray-100">
+	<div
+		class="text-gray-700 dark:text-gray-100 component-menu rounded-md"
+		id="settings-modal"
+		style="opacity: {$settings?.settingsModalOpacity !== undefined
+			? $settings.settingsModalOpacity / 100
+			: 1};"
+	>
 		<div class=" flex justify-between dark:text-gray-300 px-5 pt-4 pb-1">
 			<div class=" text-lg font-medium self-center">{$i18n.t('Settings')}</div>
 			<button
@@ -418,7 +534,7 @@
 						<Search className="size-3.5" />
 					</div>
 					<input
-						class="w-full py-1.5 text-sm bg-transparent dark:text-gray-300 outline-hidden"
+						class="w-full py-1.5 text-sm bg-transparent dark:text-gray-300 outline-hidden rounded-md"
 						bind:value={search}
 						on:input={searchDebounceHandler}
 						placeholder={$i18n.t('Search')}
@@ -479,60 +595,86 @@
 								</div>
 								<div class=" self-center">{$i18n.t('Interface')}</div>
 							</button>
+						{:else if tabId === 'opacity'}
+							<button
+								class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
+								'opacity'
+									? ''
+									: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+								on:click={() => {
+									selectedTab = 'opacity';
+								}}
+							>
+								<div class=" self-center mr-2">
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 16 16"
+										fill="currentColor"
+										class="w-4 h-4"
+									>
+										<path
+											fill-rule="evenodd"
+											d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14Zm0-2A5 5 0 1 0 8 3a5 5 0 0 0 0 10Z"
+											clip-rule="evenodd"
+										/>
+									</svg>
+								</div>
+								<div class=" self-center">{$i18n.t('Opacity')}</div>
+							</button>
 						{:else if tabId === 'connections'}
-							{#if $user?.role === 'admin' || ($user?.role === 'user' && $config?.features?.enable_direct_connections)}
-								<button
-									class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
-									'connections'
-										? ''
-										: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
-									on:click={() => {
-										selectedTab = 'connections';
-									}}
-								>
-									<div class=" self-center mr-2">
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											viewBox="0 0 16 16"
-											fill="currentColor"
-											class="w-4 h-4"
-										>
-											<path
-												d="M1 9.5A3.5 3.5 0 0 0 4.5 13H12a3 3 0 0 0 .917-5.857 2.503 2.503 0 0 0-3.198-3.019 3.5 3.5 0 0 0-6.628 2.171A3.5 3.5 0 0 0 1 9.5Z"
-											/>
-										</svg>
-									</div>
-									<div class=" self-center">{$i18n.t('Connections')}</div>
-								</button>
-							{/if}
+							<!-- Removed check for non-existent feature flag: $config?.features?.enable_direct_connections -->
+							<button
+								class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
+								'connections'
+									? ''
+									: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+								on:click={() => {
+									selectedTab = 'connections';
+								}}
+							>
+								<div class=" self-center mr-2">
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 16 16"
+										fill="currentColor"
+										class="w-4 h-4"
+									>
+										<path
+											d="M1 9.5A3.5 3.5 0 0 0 4.5 13H12a3 3 0 0 0 .917-5.857 2.503 2.503 0 0 0-3.198-3.019 3.5 3.5 0 0 0-6.628 2.171A3.5 3.5 0 0 0 1 9.5Z"
+										/>
+									</svg>
+								</div>
+								<div class=" self-center">{$i18n.t('Connections')}</div>
+							</button>
+							<!-- Removed closing #if for non-existent flag -->
 						{:else if tabId === 'tools'}
-							{#if $user?.role === 'admin' || ($user?.role === 'user' && $user?.permissions?.features?.direct_tool_servers)}
-								<button
-									class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
-									'tools'
-										? ''
-										: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
-									on:click={() => {
-										selectedTab = 'tools';
-									}}
-								>
-									<div class=" self-center mr-2">
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											viewBox="0 0 24 24"
-											fill="currentColor"
-											class="size-4"
-										>
-											<path
-												fill-rule="evenodd"
-												d="M12 6.75a5.25 5.25 0 0 1 6.775-5.025.75.75 0 0 1 .313 1.248l-3.32 3.319c.063.475.276.934.641 1.299.365.365.824.578 1.3.64l3.318-3.319a.75.75 0 0 1 1.248.313 5.25 5.25 0 0 1-5.472 6.756c-1.018-.086-1.87.1-2.309.634L7.344 21.3A3.298 3.298 0 1 1 2.7 16.657l8.684-7.151c.533-.44.72-1.291.634-2.309A5.342 5.342 0 0 1 12 6.75ZM4.117 19.125a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75h-.008a.75.75 0 0 1-.75-.75v-.008Z"
-												clip-rule="evenodd"
-											/>
-										</svg>
-									</div>
-									<div class=" self-center">{$i18n.t('Tools')}</div>
-								</button>
-							{/if}
+							<!-- Removed check for non-existent feature flag: $config?.features?.enable_direct_tool_servers -->
+							<button
+								class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
+								'tools'
+									? ''
+									: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+								on:click={() => {
+									selectedTab = 'tools';
+								}}
+							>
+								<div class=" self-center mr-2">
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 24 24"
+										fill="currentColor"
+										class="size-4"
+									>
+										<path
+											fill-rule="evenodd"
+											d="M12 6.75a5.25 5.25 0 0 1 6.775-5.025.75.75 0 0 1 .313 1.248l-3.32 3.319c.063.475.276.934.641 1.299.365.365.824.578 1.3.64l3.318-3.319a.75.75 0 0 1 1.248.313 5.25 5.25 0 0 1-5.472 6.756c-1.018-.086-1.87.1-2.309.634L7.344 21.3A3.298 3.298 0 1 1 2.7 16.657l8.684-7.151c.533-.44.72-1.291.634-2.309A5.342 5.342 0 0 1 12 6.75ZM4.117 19.125a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75h-.008a.75.75 0 0 1-.75-.75v-.008Z"
+											clip-rule="evenodd"
+										/>
+									</svg>
+								</div>
+								<div class=" self-center">{$i18n.t('Tools')}</div>
+							</button>
+							<!-- Removed closing #if for non-existent flag -->
 						{:else if tabId === 'personalization'}
 							<button
 								class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
@@ -732,20 +874,17 @@
 							toast.success($i18n.t('Settings saved successfully!'));
 						}}
 					/>
+				{:else if selectedTab === 'opacity'}
+					<Opacity
+						{saveSettings}
+						on:save={() => {
+							toast.success($i18n.t('Settings saved successfully!'));
+						}}
+					/>
 				{:else if selectedTab === 'connections'}
-					<Connections
-						saveSettings={async (updated) => {
-							await saveSettings(updated);
-							toast.success($i18n.t('Settings saved successfully!'));
-						}}
-					/>
+					<Connections saveSettings={handleConnectionsSave} />
 				{:else if selectedTab === 'tools'}
-					<Tools
-						saveSettings={async (updated) => {
-							await saveSettings(updated);
-							toast.success($i18n.t('Settings saved successfully!'));
-						}}
-					/>
+					<Tools saveSettings={handleToolsSave} />
 				{:else if selectedTab === 'personalization'}
 					<Personalization
 						{saveSettings}
@@ -794,6 +933,15 @@
 	.tabs {
 		-ms-overflow-style: none; /* IE and Edge */
 		scrollbar-width: none; /* Firefox */
+	}
+
+	input[type='number'] {
+		-moz-appearance: textfield; /* Firefox */
+	}
+
+	:global(.settings-modal) {
+		opacity: var(--settings-modal-opacity, 1);
+		border-radius: 0.5rem; /* Apply medium border radius */
 	}
 
 	input[type='number'] {

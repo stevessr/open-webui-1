@@ -6,9 +6,11 @@
 	import { setDefaultPromptSuggestions } from '$lib/apis/configs';
 	import { config, settings, user } from '$lib/stores';
 	import { createEventDispatcher, onMount, getContext } from 'svelte';
+	import { type Writable } from 'svelte/store'; // Import Writable from svelte/store
 
 	import { banners as _banners } from '$lib/stores';
 	import type { Banner } from '$lib/types';
+	import type { i18n as i18nType } from 'i18next'; // Import i18nType
 
 	import { getBanners, setBanners } from '$lib/apis/configs';
 
@@ -20,7 +22,7 @@
 
 	const dispatch = createEventDispatcher();
 
-	const i18n = getContext('i18n');
+	const i18n: Writable<i18nType> = getContext('i18n'); // Add type annotation
 
 	let taskConfig = {
 		TASK_MODEL: '',
@@ -38,13 +40,16 @@
 		TOOLS_FUNCTION_CALLING_PROMPT_TEMPLATE: ''
 	};
 
-	let promptSuggestions = [];
+	let promptSuggestions: Array<{ content: string; title: string[] }> = []; // Add type annotation
 	let banners: Banner[] = [];
 
 	const updateInterfaceHandler = async () => {
 		taskConfig = await updateTaskConfig(localStorage.token, taskConfig);
 
-		promptSuggestions = await setDefaultPromptSuggestions(localStorage.token, promptSuggestions);
+		promptSuggestions = await setDefaultPromptSuggestions(
+			localStorage.token,
+			JSON.stringify(promptSuggestions)
+		); // JSON stringify promptSuggestions
 		await updateBanners();
 
 		await config.set(await getBackendConfig());
@@ -363,7 +368,9 @@
 							class="p-1 px-3 text-xs flex rounded-sm transition"
 							type="button"
 							on:click={() => {
-								if (banners.length === 0 || banners.at(-1).content !== '') {
+								const lastBanner = banners.at(-1); // Assign to local variable
+								if (banners.length === 0 || (lastBanner && lastBanner.content !== '')) {
+									// Check local variable
 									banners = [
 										...banners,
 										{
@@ -461,7 +468,12 @@
 								class="p-1 px-3 text-xs flex rounded-sm transition"
 								type="button"
 								on:click={() => {
-									if (promptSuggestions.length === 0 || promptSuggestions.at(-1).content !== '') {
+									const lastPromptSuggestion = promptSuggestions.at(-1); // Assign to local variable
+									if (
+										promptSuggestions.length === 0 ||
+										(lastPromptSuggestion && lastPromptSuggestion.content !== '')
+									) {
+										// Check local variable
 										promptSuggestions = [...promptSuggestions, { content: '', title: ['', ''] }];
 									}
 								}}
@@ -539,11 +551,79 @@
 					</div>
 				{/if}
 			</div>
+
+			<div class="mb-3.5">
+				<div class=" mb-2.5 text-base font-medium">{$i18n.t('Chat Background Opacity')}</div>
+
+				<hr class=" border-gray-100 dark:border-gray-850 my-2" />
+
+				<div class="mb-2.5 flex w-full items-center justify-between">
+					<div class=" self-center text-xs font-medium">
+						{$i18n.t('Opacity')}
+					</div>
+
+					<input
+						type="range"
+						min="0"
+						max="100"
+						step="1"
+						bind:value={$settings.backgroundOpacity}
+						class="w-1/2"
+					/>
+					<div class="ml-2 text-xs">{$settings.backgroundOpacity}%</div>
+				</div>
+			</div>
+
+			<div class="mb-3.5">
+				<div class=" mb-2.5 text-base font-medium">
+					{$i18n.t('Chat Background Gradient Opacity')}
+				</div>
+
+				<hr class=" border-gray-100 dark:border-gray-850 my-2" />
+
+				<div class="mb-2.5 flex w-full items-center justify-between">
+					<div class=" self-center text-xs font-medium">
+						{$i18n.t('Opacity')}
+					</div>
+
+					<input
+						type="range"
+						min="0"
+						max="100"
+						step="1"
+						bind:value={$settings.chatBackgroundGradientOpacity}
+						class="w-1/2"
+					/>
+					<div class="ml-2 text-xs">{$settings.chatBackgroundGradientOpacity}%</div>
+				</div>
+			</div>
+
+			<div class="mb-3.5">
+				<div class=" mb-2.5 text-base font-medium">{$i18n.t('Background Overlay Opacity')}</div>
+
+				<hr class=" border-gray-100 dark:border-gray-850 my-2" />
+
+				<div class="mb-2.5 flex w-full items-center justify-between">
+					<div class=" self-center text-xs font-medium">
+						{$i18n.t('Opacity')}
+					</div>
+
+					<input
+						type="range"
+						min="0"
+						max="100"
+						step="1"
+						bind:value={$settings.backgroundOverlayOpacity}
+						class="w-1/2"
+					/>
+					<div class="ml-2 text-xs">{$settings.backgroundOverlayOpacity}%</div>
+				</div>
+			</div>
 		</div>
 
 		<div class="flex justify-end text-sm font-medium">
 			<button
-				class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
+				class="save-bottom px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
 				type="submit"
 			>
 				{$i18n.t('Save')}

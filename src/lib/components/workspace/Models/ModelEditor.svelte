@@ -200,7 +200,7 @@
 					.filter((m) => !m?.preset && !(m?.arena ?? false))
 					.find((m) => [model.base_model_id, `${model.base_model_id}:latest`].includes(m.id));
 
-				console.log('base_model', base_model);
+				// console.log('base_model', base_model);
 
 				if (base_model) {
 					model.base_model_id = base_model.id;
@@ -247,8 +247,8 @@
 				accessControl = {};
 			}
 
-			console.log(model?.access_control);
-			console.log(accessControl);
+			// console.log(model?.access_control);
+			// console.log(accessControl);
 
 			info = {
 				...info,
@@ -272,7 +272,7 @@
 				};
 			}
 
-			console.log(model);
+			// console.log(model);
 		}
 
 		loaded = true;
@@ -368,7 +368,7 @@
 				) {
 					reader.readAsDataURL(inputFiles[0]);
 				} else {
-					console.log(`Unsupported File Type '${inputFiles[0]['type']}'.`);
+					// console.log(`Unsupported File Type '${inputFiles[0]['type']}'.`);
 					inputFiles = null;
 				}
 			}}
