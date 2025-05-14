@@ -380,7 +380,7 @@
 
 	const editMessageConfirmHandler = async () => {
 		const messageContent = postprocessAfterEditing(editedContent ? editedContent : '');
-		editMessage(message.id, messageContent, false);
+		editMessage(message.id, { content: messageContent }, false);
 
 		edit = false;
 		editedContent = '';
@@ -391,7 +391,7 @@
 	const saveAsCopyHandler = async () => {
 		const messageContent = postprocessAfterEditing(editedContent ? editedContent : '');
 
-		editMessage(message.id, messageContent);
+		editMessage(message.id, { content: messageContent });
 
 		edit = false;
 		editedContent = '';
