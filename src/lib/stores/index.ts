@@ -28,17 +28,20 @@ export const USAGE_POOL: Writable<null | string[]> = writable(null);
 export const theme = writable('system');
 
 export const shortCodesToEmojis = writable(
-	Object.entries(emojiShortCodes).reduce((acc, [key, value]) => {
-		if (typeof value === 'string') {
-			acc[value] = key;
-		} else {
-			for (const v of value) {
-				acc[v] = key;
+	Object.entries(emojiShortCodes).reduce(
+		(acc: Record<string, string>, [key, value]) => {
+			if (typeof value === 'string') {
+				acc[value] = key;
+			} else {
+				for (const v of value) {
+					acc[v] = key;
+				}
 			}
-		}
 
-		return acc;
-	}, {})
+			return acc;
+		},
+		{} as Record<string, string>
+	)
 );
 
 export const TTSWorker = writable(null);
@@ -62,7 +65,18 @@ export const toolServers = writable([]);
 
 export const banners: Writable<Banner[]> = writable([]);
 
-export const settings: Writable<Settings> = writable({});
+export const settings: Writable<Settings> = writable({
+	chatDirection: 'auto',
+	sidebarOpacity: 100,
+	menuOpacity: 100, // Add default value for menu opacity
+	backgroundOpacity: 100,
+	backgroundOverlayOpacity: 100,
+	bubbleOpacity: 100,
+	chatBackgroundGradientOpacity: 100,
+	overlayOpacity: 40, // Changed default value to 40
+	settingsModalOpacity: 100, // Add default value for settings modal opacity
+	widescreenMode: false
+});
 
 export const showSidebar = writable(false);
 export const showSearch = writable(false);
@@ -148,17 +162,84 @@ type Settings = {
 	ctrlEnterToSend?: boolean;
 
 	system?: string;
-	requestFormat?: string;
-	keepAlive?: string;
-	seed?: number;
-	temperature?: string;
-	repeat_penalty?: string;
-	top_k?: string;
-	top_p?: string;
-	num_ctx?: string;
-	num_batch?: string;
-	num_keep?: string;
+	requestFormat?: string | object; // Allow string or object for requestFormat
+	keepAlive?: string | number; // Allow string or number for keepAlive
+	seed?: number | null; // Allow null for seed
+	temperature?: string | number | null; // Allow string, number or null
+	repeat_penalty?: string | number | null; // Allow string, number or null
+	top_k?: string | number | null; // Allow string, number or null
+	top_p?: string | number | null; // Allow string, number or null
+	num_ctx?: string | number | null; // Allow string, number or null
+	num_batch?: string | number | null; // Allow string, number or null
+	num_keep?: string | number | null; // Allow string, number or null
 	options?: ModelOptions;
+
+	// Add params property with detailed types
+	params?: {
+		stream_response?: boolean | null;
+		function_calling?: boolean | null;
+		seed?: number | null;
+		stop?: string | string[] | null; // Allow string, array of strings or null
+		temperature?: string | number | null;
+		reasoning_effort?: string | number | null;
+		logit_bias?: string | object | null; // Allow string, object or null
+		frequency_penalty?: string | number | null;
+		presence_penalty?: string | number | null;
+		repeat_penalty?: string | number | null;
+		repeat_last_n?: string | number | null;
+		mirostat?: string | number | null;
+		mirostat_eta?: string | number | null;
+		mirostat_tau?: string | number | null;
+		top_k?: string | number | null;
+		top_p?: string | number | null;
+		min_p?: string | number | null;
+		tfs_z?: string | number | null;
+		num_ctx?: string | number | null;
+		num_batch?: string | number | null;
+		num_keep?: string | number | null;
+		max_tokens?: string | number | null;
+		use_mmap?: boolean | null; // Add missing params
+		use_mlock?: boolean | null; // Add missing params
+		num_thread?: string | number | null; // Add missing params
+		num_gpu?: string | number | null; // Add missing params
+		template?: string | null; // Add missing params
+	};
+
+	// Opacity settings
+	sidebarOpacity?: number;
+	menuOpacity?: number; // Add this line for menu opacity
+	backgroundOpacity?: number; // Add this line for chat container opacity
+	backgroundOverlayOpacity?: number; // Add this line for background overlay opacity
+	bubbleOpacity?: number;
+	chatBackgroundGradientOpacity?: number; // Add this line for chat background gradient opacity
+	overlayOpacity?: number; // Add this line for overlay opacity
+	settingsModalOpacity?: number; // Add this line for settings modal opacity
+	widescreenMode?: boolean;
+	autoTags?: boolean;
+	detectArtifacts?: boolean;
+	responseAutoCopy?: boolean;
+	showUpdateToast?: boolean;
+	showChangelog?: boolean;
+	showEmojiInCall?: boolean;
+	voiceInterruption?: boolean;
+	richTextInput?: boolean;
+	promptAutocomplete?: boolean;
+	largeTextAsFile?: boolean;
+	copyFormatted?: boolean;
+	collapseCodeBlocks?: boolean;
+	expandDetails?: boolean;
+	landingPageMode?: string;
+	chatBubble?: boolean;
+	splitLargeChunks?: boolean;
+	scrollOnBranchChange?: boolean;
+	userLocation?: boolean;
+	notificationSound?: boolean;
+	hapticFeedback?: boolean;
+	imageCompression?: boolean;
+	imageCompressionSize?: { width: string; height: string };
+	backgroundImageUrl?: string;
+	webSearch?: string;
+	theme?: string;
 };
 
 type ModelOptions = {
@@ -242,4 +323,38 @@ type SessionUser = {
 	role: string;
 	profile_image_url: string;
 	credit: number;
+	// Add permissions property
+	permissions?: {
+		chat?: {
+			controls?: boolean;
+			file_upload?: boolean;
+			delete?: boolean;
+			edit?: boolean;
+			stt?: boolean;
+			tts?: boolean;
+			call?: boolean;
+			multiple_models?: boolean;
+			temporary?: boolean;
+			temporary_enforced?: boolean;
+		};
+		// Add other permission categories if needed based on usage
+		workspace?: {
+			models?: boolean;
+			knowledge?: boolean;
+			prompts?: boolean;
+			tools?: boolean;
+		};
+		sharing?: {
+			public_models?: boolean;
+			public_knowledge?: boolean;
+			public_prompts?: boolean;
+			public_tools?: boolean;
+		};
+		features?: {
+			direct_tool_servers?: boolean;
+			web_search?: boolean;
+			image_generation?: boolean;
+			code_interpreter?: boolean;
+		};
+	};
 };

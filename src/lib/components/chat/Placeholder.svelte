@@ -118,6 +118,7 @@
 								placement="top"
 							>
 								<button
+									id="model-button"
 									on:click={() => {
 										selectedModelIdx = modelIdx;
 									}}

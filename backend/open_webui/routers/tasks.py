@@ -89,6 +89,7 @@ class TaskConfigForm(BaseModel):
 async def update_task_config(
     request: Request, form_data: TaskConfigForm, user=Depends(get_admin_user)
 ):
+    log.debug(f"Updating task configuration for user_id: {user.id}")
     request.app.state.config.TASK_MODEL = form_data.TASK_MODEL
     request.app.state.config.TASK_MODEL_EXTERNAL = form_data.TASK_MODEL_EXTERNAL
     request.app.state.config.ENABLE_TITLE_GENERATION = form_data.ENABLE_TITLE_GENERATION
@@ -125,6 +126,7 @@ async def update_task_config(
         form_data.TOOLS_FUNCTION_CALLING_PROMPT_TEMPLATE
     )
 
+    log.debug(f"Task configuration updated successfully for user_id: {user.id}")
     return {
         "TASK_MODEL": request.app.state.config.TASK_MODEL,
         "TASK_MODEL_EXTERNAL": request.app.state.config.TASK_MODEL_EXTERNAL,

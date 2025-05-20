@@ -407,7 +407,7 @@
 		</button>
 	</div>
 
-	<div class="flex-1 mt-3 lg:mt-0 overflow-y-scroll pr-1 scrollbar-hidden">
+	<div class="flex-1 mt-3 lg:mt-0 overflow-y-scroll pr-1 scrollbar-none">
 		{#if selectedTab === 'general'}
 			<General
 				saveHandler={async () => {
@@ -428,7 +428,11 @@
 		{:else if selectedTab === 'evaluations'}
 			<Evaluations />
 		{:else if selectedTab === 'tools'}
-			<Tools />
+			<Tools
+				saveSettings={() => {
+					toast.success($i18n.t('Settings saved successfully!'));
+				}}
+			/>
 		{:else if selectedTab === 'documents'}
 			<Documents
 				on:save={async () => {

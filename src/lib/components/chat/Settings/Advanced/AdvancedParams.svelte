@@ -2,44 +2,55 @@
 	import Switch from '$lib/components/common/Switch.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import { getContext, createEventDispatcher } from 'svelte';
+	import type { Writable } from 'svelte/store'; // Import Writable
+	import type { i18n as i18nType } from 'i18next'; // Import i18nType
 
 	const dispatch = createEventDispatcher();
 
-	const i18n = getContext('i18n');
+	const i18n: Writable<i18nType> = getContext('i18n'); // Type i18n as Writable<i18nType>
 
 	export let admin = false;
 
-	export let params = {
-		// Advanced
-		stream_response: null, // Set stream responses for this model individually
-		function_calling: null,
-		seed: null,
-		stop: null,
-		temperature: null,
-		reasoning_effort: null,
-		logit_bias: null,
-		frequency_penalty: null,
-		repeat_last_n: null,
-		mirostat: null,
-		mirostat_eta: null,
-		mirostat_tau: null,
-		top_k: null,
-		top_p: null,
-		min_p: null,
-		tfs_z: null,
-		num_ctx: null,
-		num_batch: null,
-		num_keep: null,
-		max_tokens: null,
-		use_mmap: null,
-		use_mlock: null,
-		num_thread: null,
-		num_gpu: null,
-		template: null
+	export let params: {
+		stream_response?: boolean | null | undefined;
+		function_calling?: string | boolean | null | undefined; // Allow boolean based on General.svelte
+		seed?: number | null | undefined;
+		stop?: string | string[] | null | undefined;
+		temperature?: string | number | null | undefined;
+		reasoning_effort?: string | number | null | undefined; // Allow number based on $settings.params
+		logit_bias?: string | object | null | undefined;
+		frequency_penalty?: string | number | null | undefined;
+		presence_penalty?: string | number | null | undefined;
+		repeat_penalty?: string | number | null | undefined;
+		repeat_last_n?: string | number | null | undefined;
+		mirostat?: string | number | null | undefined;
+		mirostat_eta?: string | number | null | undefined;
+		mirostat_tau?: string | number | null | undefined;
+		top_k?: string | number | null | undefined;
+		top_p?: string | number | null | undefined;
+		min_p?: string | number | null | undefined;
+		tfs_z?: string | number | null | undefined;
+		num_ctx?: string | number | null | undefined;
+		num_batch?: string | number | null | undefined;
+		num_keep?: string | number | null | undefined;
+		max_tokens?: string | number | null | undefined;
+		num_gpu?: string | number | null | undefined;
+		use_mmap?: boolean | null | undefined;
+		use_mlock?: boolean | null | undefined;
+		num_thread?: string | number | null | undefined;
+		template?: string | null | undefined;
 	};
 
 	let customFieldName = '';
 	let customFieldValue = '';
+
+	// Local reactive variables for Switch component binding
+	let useMmapState: boolean | undefined;
+	let useMlockState: boolean | undefined;
+
+	// Update local variables when params change
+	$: useMmapState = params?.use_mmap ?? undefined;
+	$: useMlockState = params?.use_mlock ?? undefined;
 
 	$: if (params) {
 		dispatch('change', params);
@@ -1206,7 +1217,12 @@
 						{params.use_mmap ? 'Enabled' : 'Disabled'}
 					</div>
 					<div class=" pr-2">
-						<Switch bind:state={params.use_mmap} />
+						<Switch
+							state={useMmapState}
+							on:change={(e) => {
+								params.use_mmap = e.detail.state ?? null;
+							}}
+						/>
 					</div>
 				</div>
 			{/if}
@@ -1248,7 +1264,12 @@
 					</div>
 
 					<div class=" pr-2">
-						<Switch bind:state={params.use_mlock} />
+						<Switch
+							state={useMlockState}
+							on:change={(e) => {
+								params.use_mlock = e.detail.state ?? null;
+							}}
+						/>
 					</div>
 				</div>
 			{/if}
