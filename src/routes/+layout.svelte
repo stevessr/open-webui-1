@@ -50,6 +50,16 @@
 	import AppSidebar from '$lib/components/app/AppSidebar.svelte';
 	import { chatCompletion } from '$lib/apis/openai';
 
+	import { beforeNavigate } from '$app/navigation';
+	import { updated } from '$app/state';
+
+	// handle frontend updates (https://svelte.dev/docs/kit/configuration#version)
+	beforeNavigate(({ willUnload, to }) => {
+		if (updated.current && !willUnload && to?.url) {
+			location.href = to.url.href;
+		}
+	});
+
 	setContext('i18n', i18n);
 
 	const bc = new BroadcastChannel('active-tab-channel');
@@ -443,11 +453,11 @@
 		}
 
 		if (now >= exp) {
-			await userSignOut();
-			user.set(undefined);
-
+			const res = await userSignOut();
+			user.set(null);
 			localStorage.removeItem('token');
-			location.href = '/auth';
+
+			location.href = res?.redirect_url ?? '/auth';
 		}
 	};
 

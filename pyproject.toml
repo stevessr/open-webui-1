@@ -43,7 +43,8 @@ dependencies = [
 
     "openai",
     "anthropic",
-    "google-generativeai==0.8.4",
+    "google-genai==1.15.0",
+    "google-generativeai==0.8.5",
     "tiktoken",
 
     "langchain==0.3.24",
@@ -103,7 +104,7 @@ dependencies = [
 
     "extract_msg",
     "pydub",
-    "duckduckgo-search~=8.0.0",
+    "duckduckgo-search==8.0.2",
 
     "google-api-python-client",
     "google-auth-httplib2",

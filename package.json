@@ -1,8 +1,9 @@
 {
 	"name": "open-webui",
-	"version": "0.6.9.1",
+	"version": "0.6.10.1",
 	"private": true,
 	"scripts": {
+		"build:watch": "pnpm pyodide:fetch && vite build --watch",
 		"dev": "pnpm pyodide:fetch && vite dev --host",
 		"dev:5050": "pnpm pyodide:fetch && vite dev --port 5050",
 		"build": "pnpm pyodide:fetch && vite build",
@@ -87,6 +88,7 @@
 		"echarts": "^5.6.0",
 		"eventsource-parser": "^1.1.2",
 		"file-saver": "^2.0.5",
+		"flatpickr": "^4.6.13",
 		"focus-trap": "^7.6.4",
 		"fuse.js": "^7.1.0",
 		"highlight.js": "^11.11.1",

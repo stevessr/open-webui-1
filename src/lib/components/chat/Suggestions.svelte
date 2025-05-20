@@ -73,7 +73,7 @@
 	}
 </script>
 
-<div class="mb-1 flex gap-1 text-xs font-medium items-center text-gray-400 dark:text-gray-600">
+<div class="mb-1 flex gap-1 text-xs font-medium items-center text-gray-600 dark:text-gray-400">
 	{#if filteredPrompts.length > 0}
 		<Bolt />
 		{$i18n.t('Suggested')}
@@ -83,7 +83,7 @@
 		<div
 			class="flex w-full {$settings?.landingPageMode === 'chat'
 				? ' -mt-1'
-				: 'text-center items-center justify-center'}  self-start text-gray-400 dark:text-gray-600"
+				: 'text-center items-center justify-center'}  self-start text-gray-600 dark:text-gray-400"
 		>
 			{$WEBUI_NAME} ‧ v{WEBUI_VERSION}
 		</div>
@@ -107,7 +107,7 @@
 						>
 							{prompt.title[0]}
 						</div>
-						<div class="text-xs text-gray-500 font-normal line-clamp-1">
+						<div class="text-xs text-gray-600 dark:text-gray-400 font-normal line-clamp-1">
 							{prompt.title[1]}
 						</div>
 					{:else}
@@ -116,7 +116,9 @@
 						>
 							{prompt.content}
 						</div>
-						<div class="text-xs text-gray-500 font-normal line-clamp-1">{$i18n.t('Prompt')}</div>
+						<div class="text-xs text-gray-600 dark:text-gray-400 font-normal line-clamp-1">
+							{$i18n.t('Prompt')}
+						</div>
 					{/if}
 				</div>
 			</button>
