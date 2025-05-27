@@ -7,7 +7,7 @@
 		stiffness: 0.05
 	});
 
-	import { onMount, tick, setContext } from 'svelte';
+	import { onMount, tick, setContext, onDestroy } from 'svelte';
 	import {
 		config,
 		user,
@@ -443,6 +443,8 @@
 			}
 		}
 	};
+
+	const TOKEN_EXPIRY_BUFFER = 60; // seconds
 	const checkTokenExpiry = async () => {
 		const exp = ($user as any)?.expires_at; // token expiry time in unix timestamp
 		const now = Math.floor(Date.now() / 1000); // current time in unix timestamp
@@ -452,7 +454,7 @@
 			return;
 		}
 
-		if (now >= exp) {
+		if (now >= exp - TOKEN_EXPIRY_BUFFER) {
 			const res = await userSignOut();
 			user.set(null);
 			localStorage.removeItem('token');
@@ -474,6 +476,9 @@
 			if (document.visibilityState === 'visible') {
 				isLastActiveTab.set(true); // This tab is now the active tab
 				bc.postMessage('active'); // Notify other tabs that this tab is active
+
+				// Check token expiry when the tab becomes active
+				checkTokenExpiry();
 			}
 		};
 
@@ -507,6 +512,19 @@
 				}
 			};
 
+				$socket?.on('chat-events', chatEventHandler);
+				$socket?.on('channel-events', channelEventHandler);
+
+				// Set up the token expiry check
+				if (tokenTimer) {
+					clearInterval(tokenTimer);
+				}
+				tokenTimer = setInterval(checkTokenExpiry, 15000);
+			} else {
+				$socket?.off('chat-events', chatEventHandler);
+				$socket?.off('channel-events', channelEventHandler);
+			}
+		});
 			document.addEventListener('visibilitychange', handleVisibilityChange);
 			handleVisibilityChange(); // Call initially to set state on load
 
@@ -554,6 +572,8 @@
 					const currentUrl = `${window.location.pathname}${window.location.search}`;
 					const encodedUrl = encodeURIComponent(currentUrl);
 
+						await user.set(sessionUser);
+						await config.set(await getBackendConfig());
 					if (localStorage.token) {
 						const sessionUser = await getSessionUser(localStorage.token).catch((error) => {
 							toast.error(`${error}`);
