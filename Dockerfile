@@ -30,11 +30,13 @@ WORKDIR /app
 RUN apk add --no-cache git
 
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm i -g pnpm
+RUN pnpm update
+RUN pnpm i
 
 COPY . .
 ENV APP_BUILD_HASH=${BUILD_HASH}
-RUN npm run build
+RUN pnpm build
 
 ######## WebUI backend ########
 FROM python:3.11-slim-bookworm AS base

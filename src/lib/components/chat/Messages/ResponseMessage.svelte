@@ -6,6 +6,7 @@
 	import { onMount, tick, getContext } from 'svelte';
 	import type { Writable } from 'svelte/store';
 	import type { i18n as i18nType, t } from 'i18next';
+	import { slide } from 'svelte/transition';
 
 	const i18n = getContext<Writable<i18nType>>('i18n');
 
@@ -132,6 +133,8 @@
 
 	export let isLastMessage = true;
 	export let readOnly = false;
+
+	let collapsed = false; // Add collapsed state variable
 
 	let buttonsContainerElement: HTMLDivElement;
 	let showDeleteConfirm = false;
@@ -625,6 +628,24 @@
 						{model?.name ?? message.model}
 					</span>
 				</Tooltip>
+				<!-- Add collapse button -->
+				<button
+					class="self-center p-1 hover:bg-black/5 dark:hover:bg-white/5 dark:hover:text-white hover:text-black rounded-md transition"
+					on:click={() => {
+						collapsed = !collapsed;
+					}}
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="2.5"
+						stroke="currentColor"
+						class="size-3.5 transform {collapsed ? 'rotate-0' : 'rotate-180'} transition-transform"
+					>
+						<path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+					</svg>
+				</button>
 
 				{#if message.timestamp}
 					<div

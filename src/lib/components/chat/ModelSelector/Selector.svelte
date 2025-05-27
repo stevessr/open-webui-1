@@ -425,7 +425,7 @@
 						>
 							{#if (items.find((item) => item.model?.connection_type === 'local') && items.find((item) => item.model?.connection_type === 'external')) || items.find((item) => item.model?.direct) || tags.length > 0}
 								<button
-									class="min-w-fit outline-none p-1.5 {selectedTag === '' &&
+									class="min-w-fit outline-none py-2 px-3 {selectedTag === '' &&
 									selectedConnectionType === ''
 										? ''
 										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition capitalize"
@@ -465,7 +465,7 @@
 
 							{#if items.find((item) => item.model?.direct)}
 								<button
-									class="min-w-fit outline-none p-1.5 {selectedConnectionType === 'direct'
+									class="min-w-fit outline-none py-2 px-3 {selectedConnectionType === 'direct'
 										? ''
 										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition capitalize"
 									on:click={() => {
@@ -479,7 +479,7 @@
 
 							{#each tags as tag}
 								<button
-									class="min-w-fit outline-none p-1.5 {selectedTag === tag
+									class="min-w-fit outline-none py-2 px-3 {selectedTag === tag
 										? ''
 										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition capitalize"
 									on:click={() => {
@@ -690,12 +690,12 @@
 
 								{#if !$mobile && (item?.model?.tags ?? []).length > 0}
 									<div
-										class="flex gap-0.5 self-center items-center h-full translate-y-[0.5px] overflow-x-auto scrollbar-none"
+										class="flex flex-wrap gap-0.5 self-center items-center h-full translate-y-[0.5px]"
 									>
 										{#each item.model?.tags.sort((a, b) => a.name.localeCompare(b.name)) as tag}
 											<Tooltip content={tag.name} className="flex-shrink-0">
 												<div
-													class=" text-xs font-bold px-1 rounded-sm uppercase bg-gray-500/20 text-gray-700 dark:text-gray-200"
+													class=" text-xs font-bold px-1.5 py-0.5 rounded-sm uppercase bg-gray-500/20 text-gray-700 dark:text-gray-200"
 												>
 													{tag.name}
 												</div>

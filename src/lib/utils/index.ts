@@ -181,8 +181,26 @@ export const splitStream = (splitOn) => {
 	});
 };
 
-export const convertMessagesToHistory = (messages) => {
-	const history = {
+// Define Message and ChatHistory types
+export type Message = {
+	id: string;
+	parentId: string | null;
+	childrenIds: string[];
+	role: 'user' | 'assistant' | string; // Assuming other roles might exist
+	content: string;
+	model?: string; // Model might be optional
+	done: boolean;
+	context: any; // Context type is unknown from this file, using any for now
+	models?: string[]; // Added models based on usage in Message.svelte
+};
+
+export type ChatHistory = {
+	messages: Record<string, Message>;
+	currentId: string | null;
+};
+
+export const convertMessagesToHistory = (messages: Message[]): ChatHistory => {
+	const history: ChatHistory = {
 		messages: {},
 		currentId: null
 	};

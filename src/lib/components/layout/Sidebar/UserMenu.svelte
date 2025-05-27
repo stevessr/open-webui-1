@@ -1,11 +1,21 @@
 <script lang="ts">
 	import { DropdownMenu } from 'bits-ui';
 	import { createEventDispatcher, getContext, onMount } from 'svelte';
+	import type { Writable } from 'svelte/store';
+	import type { i18n as i18nType } from 'i18next';
 
 	import { flyAndScale } from '$lib/utils/transitions';
 	import { goto } from '$app/navigation';
 	import ArchiveBox from '$lib/components/icons/ArchiveBox.svelte';
-	import { showSettings, activeUserIds, USAGE_POOL, mobile, showSidebar, user } from '$lib/stores';
+	import {
+		showSettings,
+		activeUserIds,
+		USAGE_POOL,
+		mobile,
+		showSidebar,
+		user,
+		settings
+	} from '$lib/stores';
 	import { fade, slide } from 'svelte/transition';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import { userSignOut } from '$lib/apis/auths';
@@ -14,7 +24,7 @@
 	import Keyboard from '$lib/components/icons/Keyboard.svelte';
 	import ShortcutsModal from '$lib/components/chat/ShortcutsModal.svelte';
 
-	const i18n = getContext('i18n');
+	const i18n = getContext('i18n') as Writable<i18nType>;
 
 	export let show = false;
 	export let role = '';
@@ -45,6 +55,7 @@
 			side="bottom"
 			align="start"
 			transition={(e) => fade(e, { duration: 100 })}
+			style="opacity: {$settings?.menuOpacity !== undefined ? $settings.menuOpacity / 100 : 1};"
 		>
 			<button
 				class="flex rounded-md py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition"
