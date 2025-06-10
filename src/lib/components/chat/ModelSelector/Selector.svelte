@@ -440,7 +440,11 @@
 
 							{#if items.find((item) => item.model?.connection_type === 'local') && items.find((item) => item.model?.connection_type === 'external')}
 								<button
+<<<<<<< HEAD
 									class="min-w-fit outline-none py-2 px-3 {selectedConnectionType === 'local'
+=======
+									class="min-w-fit outline-none p-1.5 {selectedConnectionType === 'local'
+>>>>>>> origin/main
 										? ''
 										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition capitalize"
 									on:click={() => {
@@ -451,7 +455,11 @@
 									{$i18n.t('Local')}
 								</button>
 								<button
+<<<<<<< HEAD
 									class="min-w-fit outline-none py-2 px-3 {selectedConnectionType === 'external'
+=======
+									class="min-w-fit outline-none p-1.5 {selectedConnectionType === 'external'
+>>>>>>> origin/main
 										? ''
 										: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition capitalize"
 									on:click={() => {

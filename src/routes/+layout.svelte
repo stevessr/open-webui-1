@@ -65,11 +65,15 @@
 	const bc = new BroadcastChannel('active-tab-channel');
 
 	let loaded = false;
-	let tokenTimer = null;
+	let tokenTimer: ReturnType<typeof setInterval> | null = null;
 
 	const BREAKPOINT = 768;
 
+<<<<<<< HEAD
 	const setupSocket = async (enableWebsocket) => {
+=======
+	const setupSocket = async (enableWebsocket: boolean) => {
+>>>>>>> origin/main
 		const _socket = io(`${WEBUI_BASE_URL}` || undefined, {
 			reconnection: true,
 			reconnectionDelay: 1000,
@@ -116,6 +120,7 @@
 		});
 	};
 
+<<<<<<< HEAD
 	const setupSocket = async (enableWebsocket) => {
 		const _socket = io(`${WEBUI_BASE_URL}` || undefined, {
 			reconnection: true,
@@ -204,11 +209,16 @@
 		});
 	};
 
+=======
+>>>>>>> origin/main
 	const executePythonAsWorker = async (id: string, code: string, cb: (data: any) => void) => {
 		let result: any = null;
 		let stdout: string | null = null;
 		let stderr: string | null = null;
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/main
 		let executing = true;
 		let packages = [
 			code.includes('requests') ? 'requests' : null,
@@ -259,8 +269,6 @@
 		pyodideWorker.onmessage = (event) => {
 			const { id, ...data } = event.data;
 
-			
-
 			data['stdout'] && (stdout = data['stdout']);
 			data['stderr'] && (stderr = data['stderr']);
 			data['result'] && (result = data['result']);
@@ -284,7 +292,6 @@
 		};
 
 		pyodideWorker.onerror = (event) => {
-
 			if (cb) {
 				cb(
 					JSON.parse(
@@ -304,7 +311,9 @@
 	};
 
 	const executeTool = async (data: any, cb: (data: any) => void) => {
-		const toolServer = $settings?.toolServers?.find((server: any) => server.url === data.server?.url);
+		const toolServer = ($settings as any)?.toolServers?.find(
+			(server: any) => server.url === data.server?.url
+		);
 		const toolServerData = $toolServers?.find((server: any) => server.url === data.server?.url);
 
 		if (toolServer && toolServerData) {
@@ -354,7 +363,7 @@
 				const { done, content, title } = data;
 
 				if (done) {
-					if ($settings?.notificationSoundAlways ?? false) {
+					if ($settings?.notificationSound ?? false) {
 						playingNotificationSound.set(true);
 
 						const audio = new Audio(`/audio/notification.mp3`);
@@ -400,7 +409,7 @@
 				const { session_id, channel, form_data, model } = data;
 
 				try {
-					const directConnections = $settings?.directConnections ?? {};
+					const directConnections = ($settings as any)?.directConnections ?? {};
 
 					if (directConnections) {
 						const urlIdx = model?.urlIdx;
@@ -536,7 +545,7 @@
 
 	const TOKEN_EXPIRY_BUFFER = 60; // seconds
 	const checkTokenExpiry = async () => {
-		const exp = $user?.expires_at; // token expiry time in unix timestamp
+		const exp = ($user as any)?.expires_at; // token expiry time in unix timestamp
 		const now = Math.floor(Date.now() / 1000); // current time in unix timestamp
 
 		if (!exp) {
@@ -553,6 +562,7 @@
 		}
 	};
 
+<<<<<<< HEAD
 	onMount(async (): Promise<() => void> => {
 		if (typeof window !== 'undefined' && window.applyTheme) {
 			window.applyTheme();
@@ -581,10 +591,17 @@
 		bc.onmessage = (event) => {
 			if (event.data === 'active') {
 				isLastActiveTab.set(false); // Another tab became active
+=======
+	onMount(() => {
+		const onResize = () => {
+			if (window.innerWidth < BREAKPOINT) {
+				mobile.set(true);
+			} else {
+				mobile.set(false);
+>>>>>>> origin/main
 			}
 		};
 
-		// Set yourself as the last active tab when this tab is focused
 		const handleVisibilityChange = () => {
 			if (document.visibilityState === 'visible') {
 				isLastActiveTab.set(true); // This tab is now the active tab
@@ -595,29 +612,35 @@
 			}
 		};
 
-		// Add event listener for visibility state changes
-		document.addEventListener('visibilitychange', handleVisibilityChange);
-
-		// Call visibility change handler initially to set state on load
-		handleVisibilityChange();
-
-		theme.set(localStorage.theme);
-
-		mobile.set(window.innerWidth < BREAKPOINT);
-
-		const onResize = () => {
-			if (window.innerWidth < BREAKPOINT) {
-				mobile.set(true);
-			} else {
-				mobile.set(false);
+		(async () => {
+			if (typeof window !== 'undefined' && window.applyTheme) {
+				window.applyTheme();
 			}
-		};
-		window.addEventListener('resize', onResize);
 
-		user.subscribe((value) => {
-			if (value) {
-				$socket?.off('chat-events', chatEventHandler);
-				$socket?.off('channel-events', channelEventHandler);
+			if (window?.electronAPI) {
+				const info = await window.electronAPI.send({
+					type: 'app:info'
+				});
+
+				if (info) {
+					isApp.set(true);
+					appInfo.set(info);
+
+					const data = await window.electronAPI.send({
+						type: 'app:data'
+					});
+
+					if (data) {
+						appData.set(data);
+					}
+				}
+			}
+
+			bc.onmessage = (event) => {
+				if (event.data === 'active') {
+					isLastActiveTab.set(false); // Another tab became active
+				}
+			};
 
 				$socket?.on('chat-events', chatEventHandler);
 				$socket?.on('channel-events', channelEventHandler);
@@ -632,104 +655,118 @@
 				$socket?.off('channel-events', channelEventHandler);
 			}
 		});
+			document.addEventListener('visibilitychange', handleVisibilityChange);
+			handleVisibilityChange(); // Call initially to set state on load
 
-		let backendConfig = null;
-		try {
-			backendConfig = await getBackendConfig();
-		} catch (error) {
-			console.error('Error loading backend config:', error);
-		}
-		// Initialize i18n even if we didn't get a backend config,
-		// so `/error` can show something that's not `undefined`.
+			theme.set(localStorage.theme);
+			mobile.set(window.innerWidth < BREAKPOINT);
+			window.addEventListener('resize', onResize);
 
-		initI18n(localStorage?.locale);
-		if (!localStorage.locale) {
-			const languages = await getLanguages();
-			const browserLanguages = navigator.languages
-				? navigator.languages
-				: [navigator.language];
-			const lang = backendConfig.default_locale
-				? backendConfig.default_locale
-				: bestMatchingLanguage(languages, browserLanguages, 'en-US');
-			changeLanguage(lang);
-		}
+			user.subscribe((value) => {
+				if (value) {
+					$socket?.off('chat-events', chatEventHandler);
+					$socket?.off('channel-events', channelEventHandler);
 
-		if (backendConfig) {
-			// Save Backend Status to Store
-			await config.set(backendConfig);
-			await WEBUI_NAME.set(backendConfig.name);
-
-			if ($config) {
-				await setupSocket($config.features?.enable_websocket ?? true);
-
-				const currentUrl = `${window.location.pathname}${window.location.search}`;
-				const encodedUrl = encodeURIComponent(currentUrl);
-
-				if (localStorage.token) {
-					// Get Session User Info
-					const sessionUser = await getSessionUser(localStorage.token).catch((error) => {
-						toast.error(`${error}`);
-						return null;
-					});
-
-					if (sessionUser) {
-						// Save Session User to Store
-						$socket?.emit('user-join', { auth: { token: sessionUser.token } });
-
-						await user.set(sessionUser);
-						await config.set(await getBackendConfig());
-					} else {
-						// Redirect Invalid Session User to /auth Page
-						localStorage.removeItem('token');
-						await goto(`/auth?redirect=${encodedUrl}`);
-					}
+					$socket?.on('chat-events', chatEventHandler);
+					$socket?.on('channel-events', channelEventHandler);
 				} else {
-					// Don't redirect if we're already on the auth page
-					// Needed because we pass in tokens from OAuth logins via URL fragments
-					if ($page.url.pathname !== '/auth') {
-						await goto(`/auth?redirect=${encodedUrl}`);
-					}
-				}
-			}
-		} else {
-			// Redirect to /error when Backend Not Detected
-			await goto(`/error`);
-		}
-
-		await tick();
-
-		if (
-			document.documentElement.classList.contains('her') &&
-			document.getElementById('progress-bar')
-		) {
-			loadingProgress.subscribe((value) => {
-				const progressBar = document.getElementById('progress-bar');
-
-				if (progressBar) {
-					progressBar.style.width = `${value}%`;
+					$socket?.off('chat-events', chatEventHandler);
+					$socket?.off('channel-events', channelEventHandler);
 				}
 			});
 
-			await loadingProgress.set(100);
+			let backendConfig = null;
+			try {
+				backendConfig = await getBackendConfig();
+			} catch (error) {
+				console.error('Error loading backend config:', error);
+			}
 
-			document.getElementById('splash-screen')?.remove();
+			initI18n(localStorage?.locale);
+			if (!localStorage.locale) {
+				const languages = await getLanguages();
+				const browserLanguages = navigator.languages ? navigator.languages : [navigator.language];
+				const lang = backendConfig?.default_locale // Added optional chaining for backendConfig
+					? backendConfig.default_locale
+					: bestMatchingLanguage(languages, browserLanguages, 'en-US');
+				changeLanguage(lang);
+			}
 
-			const audio = new Audio(`/audio/greeting.mp3`);
-			const playAudio = () => {
-				audio.play();
-				document.removeEventListener('click', playAudio);
-			};
+			if (backendConfig) {
+				await config.set(backendConfig);
+				await WEBUI_NAME.set(backendConfig.name);
 
-			document.addEventListener('click', playAudio);
+				if ($config) {
+					await setupSocket(($config.features as any)?.enable_websocket ?? true);
 
-			loaded = true;
-		} else {
-			document.getElementById('splash-screen')?.remove();
-			loaded = true;
-		}
+					const currentUrl = `${window.location.pathname}${window.location.search}`;
+					const encodedUrl = encodeURIComponent(currentUrl);
+
+						await user.set(sessionUser);
+						await config.set(await getBackendConfig());
+					if (localStorage.token) {
+						const sessionUser = await getSessionUser(localStorage.token).catch((error) => {
+							toast.error(`${error}`);
+							return null;
+						});
+
+						if (sessionUser) {
+							$socket?.emit('user-join', { auth: { token: sessionUser.token } });
+							await user.set(sessionUser);
+							await config.set(await getBackendConfig()); // Re-fetch config after user set?
+
+							if (tokenTimer) {
+								clearInterval(tokenTimer);
+							}
+							tokenTimer = setInterval(checkTokenExpiry, 1000);
+						} else {
+							localStorage.removeItem('token');
+							await goto(`/auth?redirect=${encodedUrl}`);
+						}
+					} else {
+						if ($page.url.pathname !== '/auth') {
+							await goto(`/auth?redirect=${encodedUrl}`);
+						}
+					}
+				}
+			} else {
+				await goto(`/error`);
+			}
+
+			await tick();
+
+			if (
+				document.documentElement.classList.contains('her') &&
+				document.getElementById('progress-bar')
+			) {
+				loadingProgress.subscribe((value) => {
+					const progressBar = document.getElementById('progress-bar');
+					if (progressBar) {
+						progressBar.style.width = `${value}%`;
+					}
+				});
+				await loadingProgress.set(100);
+				document.getElementById('splash-screen')?.remove();
+				const audio = new Audio(`/audio/greeting.mp3`);
+				const playAudio = () => {
+					audio.play();
+					document.removeEventListener('click', playAudio);
+				};
+				document.addEventListener('click', playAudio);
+				loaded = true;
+			} else {
+				document.getElementById('splash-screen')?.remove();
+				loaded = true;
+			}
+		})();
 
 		return () => {
 			window.removeEventListener('resize', onResize);
+			document.removeEventListener('visibilitychange', handleVisibilityChange);
+			if (tokenTimer) {
+				clearInterval(tokenTimer);
+			}
+			bc.close();
 		};
 	});
 </script>

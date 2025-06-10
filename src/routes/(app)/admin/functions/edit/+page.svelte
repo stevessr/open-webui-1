@@ -18,7 +18,6 @@
 	let func = null;
 
 	const saveHandler = async (data) => {
-
 		const manifest = extractFrontmatter(data.content);
 		if (compareVersion(manifest?.required_open_webui_version ?? '0.0.0', WEBUI_VERSION)) {
 			toast.error(
@@ -64,7 +63,6 @@
 				goto('/admin/functions');
 				return null;
 			});
-
 		}
 	});
 </script>

@@ -41,15 +41,18 @@
 	export let triggerScroll;
 	export let readOnly = false;
 
-	$: siblings = history.messages[messageId]?.parentId !== null
-		? (history.messages[history.messages[messageId]?.parentId]?.childrenIds ?? [])
-		: (Object.values(history.messages).filter((message) => message.parentId === null).map((message) => message.id) ?? []);
+	$: siblings =
+		history.messages[messageId]?.parentId !== null
+			? (history.messages[history.messages[messageId]?.parentId]?.childrenIds ?? [])
+			: (Object.values(history.messages)
+					.filter((message) => message.parentId === null)
+					.map((message) => message.id) ?? []);
 </script>
 
 <div
 	class="flex flex-col justify-between px-5 mb-3 w-full {($settings?.widescreenMode ?? null)
-	? 'max-w-full'
-	: 'max-w-5xl'} mx-auto rounded-lg group"
+		? 'max-w-full'
+		: 'max-w-5xl'} mx-auto rounded-lg group"
 	style="opacity: {$settings?.bubbleOpacity !== undefined ? $settings.bubbleOpacity / 100 : 1};"
 	in:fade={{ duration: 150 }}
 	out:fade={{ duration: 150 }}

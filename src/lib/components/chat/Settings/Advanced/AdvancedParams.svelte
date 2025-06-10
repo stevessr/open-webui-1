@@ -1259,6 +1259,101 @@
 		<div class=" py-0.5 w-full justify-between">
 			<Tooltip
 				content={$i18n.t(
+<<<<<<< HEAD
+=======
+					'Enable Memory Mapping (mmap) to load model data. This option allows the system to use disk storage as an extension of RAM by treating disk files as if they were in RAM. This can improve model performance by allowing for faster data access. However, it may not work correctly with all systems and can consume a significant amount of disk space.'
+				)}
+				placement="top-start"
+				className="inline-tooltip"
+			>
+				<div class="flex w-full justify-between">
+					<div class=" self-center text-xs font-medium">
+						{$i18n.t('use_mmap (Ollama)')}
+					</div>
+					<button
+						class="p-1 px-3 text-xs flex rounded-sm transition shrink-0 outline-hidden"
+						type="button"
+						on:click={() => {
+							params.use_mmap = (params?.use_mmap ?? null) === null ? true : null;
+						}}
+					>
+						{#if (params?.use_mmap ?? null) === null}
+							<span class="ml-2 self-center">{$i18n.t('Default')}</span>
+						{:else}
+							<span class="ml-2 self-center">{$i18n.t('Custom')}</span>
+						{/if}
+					</button>
+				</div>
+			</Tooltip>
+
+			{#if (params?.use_mmap ?? null) !== null}
+				<div class="flex justify-between items-center mt-1">
+					<div class="text-xs text-gray-500">
+						{params.use_mmap ? 'Enabled' : 'Disabled'}
+					</div>
+					<div class=" pr-2">
+						<Switch
+							state={useMmapState}
+							on:change={(e) => {
+								params.use_mmap = e.detail.state ?? null;
+							}}
+						/>
+					</div>
+				</div>
+			{/if}
+		</div>
+
+		<div class=" py-0.5 w-full justify-between">
+			<Tooltip
+				content={$i18n.t(
+					"Enable Memory Locking (mlock) to prevent model data from being swapped out of RAM. This option locks the model's working set of pages into RAM, ensuring that they will not be swapped out to disk. This can help maintain performance by avoiding page faults and ensuring fast data access."
+				)}
+				placement="top-start"
+				className="inline-tooltip"
+			>
+				<div class="flex w-full justify-between">
+					<div class=" self-center text-xs font-medium">
+						{$i18n.t('use_mlock (Ollama)')}
+					</div>
+
+					<button
+						class="p-1 px-3 text-xs flex rounded-sm transition shrink-0 outline-hidden"
+						type="button"
+						on:click={() => {
+							params.use_mlock = (params?.use_mlock ?? null) === null ? true : null;
+						}}
+					>
+						{#if (params?.use_mlock ?? null) === null}
+							<span class="ml-2 self-center">{$i18n.t('Default')}</span>
+						{:else}
+							<span class="ml-2 self-center">{$i18n.t('Custom')}</span>
+						{/if}
+					</button>
+				</div>
+			</Tooltip>
+
+			{#if (params?.use_mlock ?? null) !== null}
+				<div class="flex justify-between items-center mt-1">
+					<div class="text-xs text-gray-500">
+						{params.use_mlock ? 'Enabled' : 'Disabled'}
+					</div>
+
+					<div class=" pr-2">
+						<Switch
+							state={useMlockState}
+							on:change={(e) => {
+								params.use_mlock = e.detail.state ?? null;
+							}}
+						/>
+					</div>
+				</div>
+			{/if}
+		</div>
+
+		<div class=" py-0.5 w-full justify-between">
+			<Tooltip
+				content={$i18n.t(
+>>>>>>> origin/main
 					'Set the number of worker threads used for computation. This option controls how many threads are used to process incoming requests concurrently. Increasing this value can improve performance under high concurrency workloads but may also consume more CPU resources.'
 				)}
 				placement="top-start"

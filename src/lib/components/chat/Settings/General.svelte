@@ -166,7 +166,6 @@
 			finalRequestFormat = undefined;
 		}
 
-
 		// Update the internal requestFormat state to match the final value being saved
 		if (finalRequestFormat === 'json') {
 			requestFormat = 'json';
@@ -175,7 +174,6 @@
 		} else {
 			requestFormat = null; // Reset internal state if it's undefined/null
 		}
-
 
 		saveSettings({
 			system: system !== '' ? system : undefined,
@@ -266,7 +264,6 @@
 			requestFormat = null; // Ensure requestFormat is null if not 'json' or valid object
 		}
 
-
 		keepAlive = $settings.keepAlive ?? null;
 
 		// Initialize params, converting null to undefined for use_mmap and use_mlock
@@ -307,7 +304,6 @@
 			});
 		});
 
-
 		// Add the new theme classes
 		themeToApply.split(' ').forEach((e) => {
 			document.documentElement.classList.add(e);
@@ -321,7 +317,6 @@
 			document.documentElement.style.setProperty('--color-gray-900', '');
 			document.documentElement.style.setProperty('--color-gray-950', '');
 		}
-
 
 		// Handle meta theme color (can be simplified or kept as is)
 		const metaThemeColor = document.querySelector('meta[name="theme-color"]');
@@ -448,8 +443,6 @@
 				</div>
 			</div>
 		</div>
-
-
 
 		{#if $user && ($user.role === 'admin' || $user.permissions?.chat?.controls)}
 			<hr class="border-gray-50 dark:border-gray-850 my-3" />

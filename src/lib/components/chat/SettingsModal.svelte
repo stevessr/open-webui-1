@@ -210,6 +210,7 @@
 				'alwaysonwebsearch'
 			]
 		},
+<<<<<<< HEAD
 		{
 			id: 'opacity', // Add new tab data
 			title: 'Opacity',
@@ -224,6 +225,8 @@
 				'gradient'
 			]
 		},
+=======
+>>>>>>> origin/main
 		...($user?.role === 'admin' ||
 		($user?.role === 'user' && $config?.features?.enable_direct_connections)
 			? [
@@ -245,7 +248,24 @@
 					}
 				]
 			: []),
+<<<<<<< HEAD
 
+=======
+		{
+			id: 'opacity', // Add new tab data
+			title: 'Opacity',
+			keywords: [
+				'opacity',
+				'transparency',
+				'transparent',
+				'sidebar',
+				'background',
+				'overlay',
+				'bubble',
+				'gradient'
+			]
+		},
+>>>>>>> origin/main
 		{
 			id: 'personalization',
 			title: 'Personalization',
