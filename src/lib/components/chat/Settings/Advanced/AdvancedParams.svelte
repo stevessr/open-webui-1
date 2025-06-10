@@ -1,59 +1,49 @@
 <script lang="ts">
 	import Switch from '$lib/components/common/Switch.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import { getContext, createEventDispatcher } from 'svelte';
-	import type { Writable } from 'svelte/store'; // Import Writable
-	import type { i18n as i18nType } from 'i18next'; // Import i18nType
+	import Plus from '$lib/components/icons/Plus.svelte';
+	import { getContext } from 'svelte';
 
-	const dispatch = createEventDispatcher();
+	const i18n = getContext('i18n');
 
-	const i18n: Writable<i18nType> = getContext('i18n'); // Type i18n as Writable<i18nType>
+	export let onChange: (params: any) => void = () => {};
 
 	export let admin = false;
+	export let custom = false;
 
-	export let params: {
-		stream_response?: boolean | null | undefined;
-		function_calling?: string | boolean | null | undefined; // Allow boolean based on General.svelte
-		seed?: number | null | undefined;
-		stop?: string | string[] | null | undefined;
-		temperature?: string | number | null | undefined;
-		reasoning_effort?: string | number | null | undefined; // Allow number based on $settings.params
-		logit_bias?: string | object | null | undefined;
-		frequency_penalty?: string | number | null | undefined;
-		presence_penalty?: string | number | null | undefined;
-		repeat_penalty?: string | number | null | undefined;
-		repeat_last_n?: string | number | null | undefined;
-		mirostat?: string | number | null | undefined;
-		mirostat_eta?: string | number | null | undefined;
-		mirostat_tau?: string | number | null | undefined;
-		top_k?: string | number | null | undefined;
-		top_p?: string | number | null | undefined;
-		min_p?: string | number | null | undefined;
-		tfs_z?: string | number | null | undefined;
-		num_ctx?: string | number | null | undefined;
-		num_batch?: string | number | null | undefined;
-		num_keep?: string | number | null | undefined;
-		max_tokens?: string | number | null | undefined;
-		num_gpu?: string | number | null | undefined;
-		use_mmap?: boolean | null | undefined;
-		use_mlock?: boolean | null | undefined;
-		num_thread?: string | number | null | undefined;
-		template?: string | null | undefined;
+	const defaultParams = {
+		// Advanced
+		stream_response: null, // Set stream responses for this model individually
+		function_calling: null,
+		seed: null,
+		stop: null,
+		temperature: null,
+		reasoning_effort: null,
+		logit_bias: null,
+		max_tokens: null,
+		top_k: null,
+		top_p: null,
+		min_p: null,
+		frequency_penalty: null,
+		presence_penalty: null,
+		mirostat: null,
+		mirostat_eta: null,
+		mirostat_tau: null,
+		repeat_last_n: null,
+		tfs_z: null,
+		repeat_penalty: null,
+		use_mmap: null,
+		use_mlock: null,
+		num_keep: null,
+		num_ctx: null,
+		num_batch: null,
+		num_thread: null,
+		num_gpu: null
 	};
 
-	let customFieldName = '';
-	let customFieldValue = '';
-
-	// Local reactive variables for Switch component binding
-	let useMmapState: boolean | undefined;
-	let useMlockState: boolean | undefined;
-
-	// Update local variables when params change
-	$: useMmapState = params?.use_mmap ?? undefined;
-	$: useMlockState = params?.use_mlock ?? undefined;
-
+	export let params = defaultParams;
 	$: if (params) {
-		dispatch('change', params);
+		onChange(params);
 	}
 </script>
 
@@ -156,7 +146,7 @@
 			<div class="flex mt-0.5 space-x-2">
 				<div class=" flex-1">
 					<input
-						class="w-full rounded-lg py-2 px-4 text-sm dark:text-gray-300 dark:bg-gray-850 outline-hidden"
+						class="text-sm w-full bg-transparent outline-hidden outline-none"
 						type="number"
 						placeholder={$i18n.t('Enter Seed')}
 						bind:value={params.seed}
@@ -201,7 +191,7 @@
 			<div class="flex mt-0.5 space-x-2">
 				<div class=" flex-1">
 					<input
-						class="w-full rounded-lg py-2 px-1 text-sm dark:text-gray-300 dark:bg-gray-850 outline-hidden"
+						class="text-sm w-full bg-transparent outline-hidden outline-none"
 						type="text"
 						placeholder={$i18n.t('Enter stop sequence')}
 						bind:value={params.stop}
@@ -299,7 +289,7 @@
 			<div class="flex mt-0.5 space-x-2">
 				<div class=" flex-1">
 					<input
-						class="w-full rounded-lg py-2 px-1 text-sm dark:text-gray-300 dark:bg-gray-850 outline-hidden"
+						class="text-sm w-full bg-transparent outline-hidden outline-none"
 						type="text"
 						placeholder={$i18n.t('Enter reasoning effort')}
 						bind:value={params.reasoning_effort}
@@ -342,7 +332,7 @@
 			<div class="flex mt-0.5 space-x-2">
 				<div class=" flex-1">
 					<input
-						class="w-full rounded-lg pl-2 py-2 px-1 text-sm dark:text-gray-300 dark:bg-gray-850 outline-hidden"
+						class="text-sm w-full bg-transparent outline-hidden outline-none"
 						type="text"
 						placeholder={$i18n.t(
 							'Enter comma-separated "token:bias_value" pairs (example: 5432:100, 413:-100)'
@@ -1269,6 +1259,8 @@
 		<div class=" py-0.5 w-full justify-between">
 			<Tooltip
 				content={$i18n.t(
+<<<<<<< HEAD
+=======
 					'Enable Memory Mapping (mmap) to load model data. This option allows the system to use disk storage as an extension of RAM by treating disk files as if they were in RAM. This can improve model performance by allowing for faster data access. However, it may not work correctly with all systems and can consume a significant amount of disk space.'
 				)}
 				placement="top-start"
@@ -1361,6 +1353,7 @@
 		<div class=" py-0.5 w-full justify-between">
 			<Tooltip
 				content={$i18n.t(
+>>>>>>> origin/main
 					'Set the number of worker threads used for computation. This option controls how many threads are used to process incoming requests concurrently. Increasing this value can improve performance under high concurrency workloads but may also consume more CPU resources.'
 				)}
 				placement="top-start"
@@ -1470,37 +1463,71 @@
 			{/if}
 		</div>
 
-		<!-- <div class=" py-0.5 w-full justify-between">
-			<div class="flex w-full justify-between">
-				<div class=" self-center text-xs font-medium">{$i18n.t('Template')}</div>
+		{#if custom && admin}
+			<div class="flex flex-col justify-center">
+				{#each Object.keys(params?.custom_params ?? {}) as key}
+					<div class=" py-0.5 w-full justify-between mb-1">
+						<div class="flex w-full justify-between">
+							<div class=" self-center text-xs font-medium">
+								<input
+									type="text"
+									class=" text-xs w-full bg-transparent outline-none"
+									placeholder={$i18n.t('Custom Parameter Name')}
+									value={key}
+									on:change={(e) => {
+										const newKey = e.target.value.trim();
+										if (newKey && newKey !== key) {
+											params.custom_params[newKey] = params.custom_params[key];
+											delete params.custom_params[key];
+											params = {
+												...params,
+												custom_params: { ...params.custom_params }
+											};
+										}
+									}}
+								/>
+							</div>
+							<button
+								class="p-1 px-3 text-xs flex rounded-sm transition shrink-0 outline-hidden"
+								type="button"
+								on:click={() => {
+									delete params.custom_params[key];
+									params = {
+										...params,
+										custom_params: { ...params.custom_params }
+									};
+								}}
+							>
+								{$i18n.t('Remove')}
+							</button>
+						</div>
+						<div class="flex mt-0.5 space-x-2">
+							<div class=" flex-1">
+								<input
+									bind:value={params.custom_params[key]}
+									type="text"
+									class="text-sm w-full bg-transparent outline-hidden outline-none"
+									placeholder={$i18n.t('Custom Parameter Value')}
+								/>
+							</div>
+						</div>
+					</div>
+				{/each}
 
 				<button
-					class="p-1 px-3 text-xs flex rounded-sm transition shrink-0 outline-hidden"
+					class=" flex gap-2 items-center w-full text-center justify-center mt-1 mb-5"
 					type="button"
 					on:click={() => {
-						params.template = (params?.template ?? null) === null ? '' : null;
+						params.custom_params = (params?.custom_params ?? {}) || {};
+						params.custom_params['custom_param_name'] = 'custom_param_value';
 					}}
 				>
-					{#if (params?.template ?? null) === null}
-						<span class="ml-2 self-center">{$i18n.t('Default')}</span>
-					{:else}
-						<span class="ml-2 self-center">{$i18n.t('Custom')}</span>
-					{/if}
+					<div>
+						<Plus />
+					</div>
+					<div>{$i18n.t('Add Custom Parameter')}</div>
 				</button>
 			</div>
-
-			{#if (params?.template ?? null) !== null}
-				<div class="flex mt-0.5 space-x-2">
-					<div class=" flex-1">
-						<textarea
-							class="px-3 py-1.5 text-sm w-full bg-transparent border dark:border-gray-600 outline-hidden rounded-lg -mb-1"
-							placeholder={$i18n.t('Write your model template content here')}
-							rows="4"
-							bind:value={params.template}
-						/>
-					</div>
-				</div>
-			{/if}
-		</div> -->
+		{/if}
 	{/if}
 </div>

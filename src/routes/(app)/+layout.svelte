@@ -37,7 +37,11 @@
 		showChangelog,
 		temporaryChatEnabled,
 		toolServers,
+<<<<<<< HEAD
+		showSearch,
+=======
 		showSearch
+>>>>>>> origin/main
 		theme // Add theme here
 	} from '$lib/stores';
 
