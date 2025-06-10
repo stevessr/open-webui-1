@@ -7,7 +7,7 @@
 		stiffness: 0.05
 	});
 
-	import { onMount, tick, setContext } from 'svelte';
+	import { onMount, tick, setContext, onDestroy } from 'svelte';
 	import {
 		config,
 		user,
@@ -27,11 +27,8 @@
 		isApp,
 		appInfo,
 		toolServers,
-<<<<<<< HEAD
-		playingNotificationSound
-=======
+		playingNotificationSound,
 		appData
->>>>>>> origin/main
 	} from '$lib/stores';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
@@ -52,7 +49,16 @@
 	import NotificationToast from '$lib/components/NotificationToast.svelte';
 	import AppSidebar from '$lib/components/app/AppSidebar.svelte';
 	import { chatCompletion } from '$lib/apis/openai';
-	import { setupSocket } from '$lib/utils/websocket';
+
+	import { beforeNavigate } from '$app/navigation';
+	import { updated } from '$app/state';
+
+	// handle frontend updates (https://svelte.dev/docs/kit/configuration#version)
+	beforeNavigate(({ willUnload, to }) => {
+		if (updated.current && !willUnload && to?.url) {
+			location.href = to.url.href;
+		}
+	});
 
 	setContext('i18n', i18n);
 
@@ -63,12 +69,100 @@
 
 	const BREAKPOINT = 768;
 
-<<<<<<< HEAD
-	const executePythonAsWorker = async (id, code, cb) => {
-		let result = null;
-		let stdout = null;
-		let stderr = null;
-=======
+	const setupSocket = async (enableWebsocket) => {
+		const _socket = io(`${WEBUI_BASE_URL}` || undefined, {
+			reconnection: true,
+			reconnectionDelay: 1000,
+			reconnectionDelayMax: 5000,
+			randomizationFactor: 0.5,
+			path: '/ws/socket.io',
+			transports: enableWebsocket ? ['websocket'] : ['polling', 'websocket'],
+			auth: { token: localStorage.token }
+		});
+
+		await socket.set(_socket);
+
+		_socket.on('connect_error', (err) => {
+			console.log('connect_error', err);
+		});
+
+		_socket.on('connect', () => {
+			console.log('connected', _socket.id);
+		});
+
+		_socket.on('reconnect_attempt', (attempt) => {
+			console.log('reconnect_attempt', attempt);
+		});
+
+		_socket.on('reconnect_failed', () => {
+			console.log('reconnect_failed');
+		});
+
+		_socket.on('disconnect', (reason, details) => {
+			console.log(`Socket ${_socket.id} disconnected due to ${reason}`);
+			if (details) {
+				console.log('Additional details:', details);
+			}
+		});
+
+		_socket.on('user-list', (data) => {
+			console.log('user-list', data);
+			activeUserIds.set(data.user_ids);
+		});
+
+		_socket.on('usage', (data) => {
+			console.log('usage', data);
+			USAGE_POOL.set(data['models']);
+		});
+	};
+
+	const setupSocket = async (enableWebsocket) => {
+		const _socket = io(`${WEBUI_BASE_URL}` || undefined, {
+			reconnection: true,
+			reconnectionDelay: 1000,
+			reconnectionDelayMax: 5000,
+			randomizationFactor: 0.5,
+			path: '/ws/socket.io',
+			transports: enableWebsocket ? ['websocket'] : ['polling', 'websocket'],
+			auth: { token: localStorage.token }
+		});
+
+		await socket.set(_socket);
+
+		_socket.on('connect_error', (err) => {
+			console.log('connect_error', err);
+		});
+
+		_socket.on('connect', () => {
+			console.log('connected', _socket.id);
+		});
+
+		_socket.on('reconnect_attempt', (attempt) => {
+			console.log('reconnect_attempt', attempt);
+		});
+
+		_socket.on('reconnect_failed', () => {
+			console.log('reconnect_failed');
+		});
+
+		_socket.on('disconnect', (reason, details) => {
+			console.log(`Socket ${_socket.id} disconnected due to ${reason}`);
+			if (details) {
+				console.log('Additional details:', details);
+			}
+		});
+
+		_socket.on('user-list', (data) => {
+			console.log('user-list', data);
+			activeUserIds.set(data.user_ids);
+		});
+
+		_socket.on('usage', (data) => {
+			console.log('usage', data);
+			USAGE_POOL.set(data['models']);
+		});
+	};
+
 	const setupSocket = async (enableWebsocket: boolean) => {
 		const _socket = io(WEBUI_BASE_URL, {
 			reconnection: true,
@@ -114,7 +208,6 @@
 		let result: any = null;
 		let stdout: string | null = null;
 		let stderr: string | null = null;
->>>>>>> origin/main
 
 		let executing = true;
 		let packages = [
@@ -441,7 +534,7 @@
 		}
 	};
 
-<<<<<<< HEAD
+	const TOKEN_EXPIRY_BUFFER = 60; // seconds
 	const checkTokenExpiry = async () => {
 		const exp = $user?.expires_at; // token expiry time in unix timestamp
 		const now = Math.floor(Date.now() / 1000); // current time in unix timestamp
@@ -451,19 +544,16 @@
 			return;
 		}
 
-		if (now >= exp) {
-			await userSignOut();
+		if (now >= exp - TOKEN_EXPIRY_BUFFER) {
+			const res = await userSignOut();
 			user.set(null);
-
 			localStorage.removeItem('token');
-			location.href = '/auth';
+
+			location.href = res?.redirect_url ?? '/auth';
 		}
 	};
 
-	onMount(async () => {
-=======
 	onMount(async (): Promise<() => void> => {
->>>>>>> origin/main
 		if (typeof window !== 'undefined' && window.applyTheme) {
 			window.applyTheme();
 		}
@@ -499,6 +589,9 @@
 			if (document.visibilityState === 'visible') {
 				isLastActiveTab.set(true); // This tab is now the active tab
 				bc.postMessage('active'); // Notify other tabs that this tab is active
+
+				// Check token expiry when the tab becomes active
+				checkTokenExpiry();
 			}
 		};
 
@@ -528,6 +621,12 @@
 
 				$socket?.on('chat-events', chatEventHandler);
 				$socket?.on('channel-events', channelEventHandler);
+
+				// Set up the token expiry check
+				if (tokenTimer) {
+					clearInterval(tokenTimer);
+				}
+				tokenTimer = setInterval(checkTokenExpiry, 15000);
 			} else {
 				$socket?.off('chat-events', chatEventHandler);
 				$socket?.off('channel-events', channelEventHandler);
@@ -561,6 +660,8 @@
 			await WEBUI_NAME.set(backendConfig.name);
 
 			if ($config) {
+				await setupSocket($config.features?.enable_websocket ?? true);
+
 				const currentUrl = `${window.location.pathname}${window.location.search}`;
 				const encodedUrl = encodeURIComponent(currentUrl);
 
@@ -572,18 +673,11 @@
 					});
 
 					if (sessionUser) {
-						await setupSocket($config.features?.enable_websocket ?? true);
 						// Save Session User to Store
 						$socket?.emit('user-join', { auth: { token: sessionUser.token } });
 
 						await user.set(sessionUser);
 						await config.set(await getBackendConfig());
-
-						// Set up the token expiry check
-						if (tokenTimer) {
-							clearInterval(tokenTimer);
-						}
-						tokenTimer = setInterval(checkTokenExpiry, 1000);
 					} else {
 						// Redirect Invalid Session User to /auth Page
 						localStorage.removeItem('token');

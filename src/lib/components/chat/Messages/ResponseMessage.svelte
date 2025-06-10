@@ -160,6 +160,10 @@
 	const copyToClipboard = async (text) => {
 		text = removeAllDetails(text);
 
+		if (($config?.ui?.response_watermark ?? '').trim() !== '') {
+			text = `${text}\n\n${$config?.ui?.response_watermark}`;
+		}
+
 		const res = await _copyToClipboard(text, $settings?.copyFormatted ?? false);
 		if (res) {
 			toast.success($i18n.t('Copying to clipboard was successful!'));
@@ -211,6 +215,8 @@
 
 		speaking = true;
 
+		const content = removeAllDetails(message.content);
+
 		if ($config.audio.tts.engine === '') {
 			let voices = [];
 			const getVoicesLoop = setInterval(() => {
@@ -227,7 +233,7 @@
 
 					console.log(voice);
 
-					const speak = new SpeechSynthesisUtterance(message.content);
+					const speak = new SpeechSynthesisUtterance(content);
 					speak.rate = $settings.audio?.tts?.playbackRate ?? 1;
 
 					console.log(speak);
@@ -250,7 +256,7 @@
 			loadingSpeech = true;
 
 			const messageContentParts: string[] = getMessageContentParts(
-				message.content,
+				content,
 				$config?.audio?.tts?.split_on ?? 'punctuation'
 			);
 
@@ -380,7 +386,7 @@
 
 	const editMessageConfirmHandler = async () => {
 		const messageContent = postprocessAfterEditing(editedContent ? editedContent : '');
-		editMessage(message.id, messageContent, false);
+		editMessage(message.id, { content: messageContent }, false);
 
 		edit = false;
 		editedContent = '';
@@ -391,7 +397,7 @@
 	const saveAsCopyHandler = async () => {
 		const messageContent = postprocessAfterEditing(editedContent ? editedContent : '');
 
-		editMessage(message.id, messageContent);
+		editMessage(message.id, { content: messageContent });
 
 		edit = false;
 		editedContent = '';
@@ -563,13 +569,18 @@
 		await tick();
 		if (buttonsContainerElement) {
 			console.log(buttonsContainerElement);
-			buttonsContainerElement.addEventListener('wheel', function (event) {
-				// console.log(event.deltaY);
 
-				event.preventDefault();
-				if (event.deltaY !== 0) {
-					// Adjust horizontal scroll position based on vertical scroll
-					buttonsContainerElement.scrollLeft += event.deltaY;
+			buttonsContainerElement.addEventListener('wheel', function (event) {
+				if (buttonsContainerElement.scrollWidth <= buttonsContainerElement.clientWidth) {
+					// If the container is not scrollable, horizontal scroll
+					return;
+				} else {
+					event.preventDefault();
+
+					if (event.deltaY !== 0) {
+						// Adjust horizontal scroll position based on vertical scroll
+						buttonsContainerElement.scrollLeft += event.deltaY;
+					}
 				}
 			});
 		}
@@ -598,7 +609,7 @@
 			/>
 		</div>
 
-		<div class="flex-auto w-0 pl-1">
+		<div class="flex-auto w-0 pl-1 relative">
 			<Name>
 				<Tooltip content={model?.name ?? message.model} placement="top-start">
 					<span class="line-clamp-1 text-black dark:text-white">
@@ -806,6 +817,7 @@
 										sources={message.sources}
 										floatingButtons={message?.done && !readOnly}
 										save={!readOnly}
+										preview={!readOnly}
 										{model}
 										onTaskClick={async (e) => {
 											console.log(e);
@@ -840,27 +852,12 @@
 										onAddMessages={({ modelId, parentId, messages }) => {
 											addMessages({ modelId, parentId, messages });
 										}}
-										on:update={(e) => {
-											const { raw, oldContent, newContent } = e.detail;
-
+										onSave={({ raw, oldContent, newContent }) => {
 											history.messages[message.id].content = history.messages[
 												message.id
 											].content.replace(raw, raw.replace(oldContent, newContent));
 
 											updateChat();
-										}}
-										on:select={(e) => {
-											const { type, content } = e.detail;
-
-											if (type === 'explain') {
-												submitMessage(
-													message.id,
-													`Explain this section to me in more detail\n\n\`\`\`\n${content}\n\`\`\``
-												);
-											} else if (type === 'ask') {
-												const input = e.detail?.input ?? '';
-												submitMessage(message.id, `\`\`\`\n${content}\n\`\`\`\n${input}`);
-											}
 										}}
 									/>
 								{/if}
@@ -1194,6 +1191,7 @@
 														.join('\n')
 												)}</pre>`
 											: ''}
+										tippyOptions={{ interactive: true }}
 										placement="bottom"
 									>
 										<button
@@ -1415,11 +1413,11 @@
 														actionMessage(action.id, message);
 													}}
 												>
-													{#if action.icon_url}
+													{#if action?.icon}
 														<div class="size-4">
 															<img
-																src={action.icon_url}
-																class="w-4 h-4 {action.icon_url.includes('svg')
+																src={action.icon}
+																class="w-4 h-4 {action.icon.includes('svg')
 																	? 'dark:invert-[80%]'
 																	: ''}"
 																style="fill: currentColor;"
@@ -1451,6 +1449,12 @@
 					{/if}
 				{/if}
 			</div>
+
+			{#if message?.done}
+				<div aria-live="polite" class="sr-only">
+					{message?.content ?? ''}
+				</div>
+			{/if}
 		</div>
 	</div>
 {/key}

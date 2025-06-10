@@ -18,6 +18,7 @@
 	import { compareVersion } from '$lib/utils';
 	import { onMount, getContext } from 'svelte';
 	import { toast } from 'svelte-sonner';
+	import Textarea from '$lib/components/common/Textarea.svelte';
 
 	const i18n = getContext('i18n');
 
@@ -58,10 +59,10 @@
 			};
 		});
 
-		console.log(version);
+		console.info(version);
 
 		updateAvailable = compareVersion(version.latest, version.current);
-		console.log(updateAvailable);
+		console.info(updateAvailable);
 	};
 
 	const updateLdapServerHandler = async () => {
@@ -83,7 +84,7 @@
 		if (res) {
 			saveHandler();
 		} else {
-			toast.error(i18n.t('Failed to update settings'));
+			toast.error($i18n.t('Failed to update settings'));
 		}
 	};
 
@@ -229,12 +230,61 @@
 						<Switch bind:state={adminConfig.ENABLE_SIGNUP} />
 					</div>
 
+					<div class=" flex w-full justify-between pr-2">
+						<div class="self-center text-xs font-medium">
+							{$i18n.t('Enable Sign Up Verify')}
+						</div>
+
+						<Switch bind:state={adminConfig.ENABLE_SIGNUP_VERIFY} />
+					</div>
+					<div class="mb-2.5 text-xs text-gray-300 font-medium">
+						{$i18n.t('After verify, will auto change to role User')}
+					</div>
+
+					<div class="mb-2.5 flex w-full flex-col pr-2">
+						<div class=" text-xs font-medium">
+							{$i18n.t('Sign Up Email Domain Whitelist')}
+						</div>
+
+						<input
+							class="w-full mt-1 rounded-lg text-sm dark:text-gray-300 bg-transparent outline-hidden"
+							type="text"
+							placeholder={`e.g.) outlook.com,gmail.com`}
+							bind:value={adminConfig.SIGNUP_EMAIL_DOMAIN_WHITELIST}
+						/>
+					</div>
+
 					<div class="mb-2.5 flex w-full items-center justify-between pr-2">
 						<div class=" self-center text-xs font-medium">
 							{$i18n.t('Show Admin Details in Account Pending Overlay')}
 						</div>
 
 						<Switch bind:state={adminConfig.SHOW_ADMIN_DETAILS} />
+					</div>
+
+					<div class="mb-2.5">
+						<div class=" self-center text-xs font-medium mb-2">
+							{$i18n.t('Pending User Overlay Title')}
+						</div>
+						<Textarea
+							rows={2}
+							placeholder={$i18n.t(
+								'Enter a title for the pending user info overlay. Leave empty for default.'
+							)}
+							bind:value={adminConfig.PENDING_USER_OVERLAY_TITLE}
+						/>
+					</div>
+
+					<div class="mb-2.5">
+						<div class=" self-center text-xs font-medium mb-2">
+							{$i18n.t('Pending User Overlay Content')}
+						</div>
+						<Textarea
+							placeholder={$i18n.t(
+								'Enter content for the pending user info overlay. Leave empty for default.'
+							)}
+							bind:value={adminConfig.PENDING_USER_OVERLAY_CONTENT}
+						/>
 					</div>
 
 					<div class="mb-2.5 flex w-full justify-between pr-2">
@@ -491,6 +541,13 @@
 													/>
 												</div>
 											</div>
+											<div class="flex justify-between items-center text-xs">
+												<div class=" font-medium">Validate certificate</div>
+
+												<div class="mt-1">
+													<Switch bind:state={LDAP_SERVER.validate_cert} />
+												</div>
+											</div>
 											<div class="flex w-full gap-2">
 												<div class="w-full">
 													<div class=" self-center text-xs font-medium min-w-fit mb-1">
@@ -555,6 +612,16 @@
 						</div>
 
 						<Switch bind:state={adminConfig.ENABLE_USER_WEBHOOKS} />
+					</div>
+
+					<div class="mb-2.5">
+						<div class=" self-center text-xs font-medium mb-2">
+							{$i18n.t('Response Watermark')}
+						</div>
+						<Textarea
+							placeholder={$i18n.t('Enter a watermark for the response. Leave empty for none.')}
+							bind:value={adminConfig.RESPONSE_WATERMARK}
+						/>
 					</div>
 
 					<div class="mb-2.5 w-full justify-between">

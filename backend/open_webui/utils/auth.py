@@ -8,11 +8,15 @@ import hashlib
 import requests
 import os
 
-
 from datetime import datetime, timedelta
 import pytz
 from pytz import UTC
 from typing import Optional, Union, List, Dict
+
+from opentelemetry import trace
+
+from open_webui.config import WEBUI_URL
+from open_webui.utils.smtp import send_email
 
 from open_webui.models.users import Users
 
@@ -23,12 +27,17 @@ from open_webui.env import (
     STATIC_DIR,
     SRC_LOG_LEVELS,
     FRONTEND_BUILD_DIR,
+    REDIS_URL,
+    REDIS_SENTINEL_HOSTS,
+    REDIS_SENTINEL_PORT,
+    WEBUI_NAME,
 )
 
 from fastapi import BackgroundTasks, Depends, HTTPException, Request, Response, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from passlib.context import CryptContext
 
+from open_webui.utils.redis import get_redis_connection, get_sentinels_from_env
 
 logging.getLogger("passlib").setLevel(logging.ERROR)
 
@@ -37,6 +46,7 @@ log.setLevel(SRC_LOG_LEVELS["OAUTH"])
 
 SESSION_SECRET = WEBUI_SECRET_KEY
 ALGORITHM = "HS256"
+
 
 ##############
 # Auth Utils
@@ -243,7 +253,17 @@ def get_current_user(
                     status.HTTP_403_FORBIDDEN, detail=ERROR_MESSAGES.API_KEY_NOT_ALLOWED
                 )
 
-        return get_current_user_by_api_key(token)
+        user = get_current_user_by_api_key(token)
+
+        # Add user info to current span
+        current_span = trace.get_current_span()
+        if current_span:
+            current_span.set_attribute("client.user.id", user.id)
+            current_span.set_attribute("client.user.email", user.email)
+            current_span.set_attribute("client.user.role", user.role)
+            current_span.set_attribute("client.auth.type", "api_key")
+
+        return user
 
     # auth by jwt token
     try:
@@ -262,6 +282,14 @@ def get_current_user(
                 detail=ERROR_MESSAGES.INVALID_TOKEN,
             )
         else:
+            # Add user info to current span
+            current_span = trace.get_current_span()
+            if current_span:
+                current_span.set_attribute("client.user.id", user.id)
+                current_span.set_attribute("client.user.email", user.email)
+                current_span.set_attribute("client.user.role", user.role)
+                current_span.set_attribute("client.auth.type", "jwt")
+
             # Refresh the user's last active timestamp asynchronously
             # to prevent blocking the request
             if background_tasks:
@@ -283,6 +311,14 @@ def get_current_user_by_api_key(api_key: str):
             detail=ERROR_MESSAGES.INVALID_TOKEN,
         )
     else:
+        # Add user info to current span
+        current_span = trace.get_current_span()
+        if current_span:
+            current_span.set_attribute("client.user.id", user.id)
+            current_span.set_attribute("client.user.email", user.email)
+            current_span.set_attribute("client.user.role", user.role)
+            current_span.set_attribute("client.auth.type", "api_key")
+
         Users.update_user_last_active_by_id(user.id)
 
     return user
@@ -304,3 +340,198 @@ def get_admin_user(user=Depends(get_current_user)):
             detail=ERROR_MESSAGES.ACCESS_PROHIBITED,
         )
     return user
+
+
+verify_email_template = """<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>账户激活</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .email-header {
+            background: linear-gradient(135deg, #6B73FF 0%%, #5DADE2 100%%);
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .email-header img {
+            max-width: 100px;
+            height: auto;
+        }
+        
+        .email-header h1 {
+            color: white;
+            font-size: 24px;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+        
+        .email-content {
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .welcome-text {
+            font-size: 18px;
+            margin-bottom: 25px;
+            color: #2c3e50;
+        }
+        
+        .instruction-text {
+            font-size: 16px;
+            margin-bottom: 30px;
+            color: #5d6778;
+        }
+        
+        .activate-button {
+            display: inline-block;
+            background: linear-gradient(to right, #5D8CF7, #4286F5);
+            color: white;
+            text-decoration: none;
+            padding: 14px 30px;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 16px;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(65, 132, 234, 0.35);
+        }
+        
+        .activate-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(65, 132, 234, 0.40);
+        }
+        
+        .note {
+            font-size: 14px;
+            color: #8a94a6;
+            margin-top: 30px;
+        }
+        
+        .email-footer {
+            background-color: #f8fafc;
+            padding: 20px;
+            text-align: center;
+            font-size: 13px;
+            color: #8a94a6;
+            border-top: 1px solid #eaeef3;
+        }
+        
+        .social-links {
+            margin: 15px 0;
+        }
+        
+        .social-link {
+            display: inline-block;
+            margin: 0 8px;
+            width: 32px;
+            height: 32px;
+            background-color: #e1e5eb;
+            border-radius: 50%%;
+            line-height: 32px;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+        
+        .social-link:hover {
+            background-color: #d0d5dd;
+        }
+        
+        @media only screen and (max-width: 600px) {
+            .email-container {
+                border-radius: 0;
+            }
+            
+            .email-header, .email-content {
+                padding: 25px 20px;
+            }
+            
+            .email-header h1 {
+                font-size: 22px;
+            }
+            
+            .welcome-text {
+                font-size: 16px;
+            }
+            
+            .instruction-text {
+                font-size: 15px;
+            }
+            
+            .activate-button {
+                padding: 12px 25px;
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <h1>%(title)s</h1>
+        </div>
+        
+        <div class="email-content">
+            <p class="instruction-text">请点击下方按钮激活您的账户，开始精彩体验。激活链接有效期为24小时。</p>
+            <a href="%(link)s" class="activate-button">立即激活账户</a>
+            <p class="note">如果您没有注册我们的服务，请忽略此邮件。</p>
+        </div>
+    </div>
+</body>
+</html>"""
+
+
+def get_email_code_key(code: str) -> str:
+    return f"email_verify:{code}"
+
+
+def send_verify_email(email: str):
+    redis = get_redis_connection(
+        redis_url=REDIS_URL,
+        redis_sentinels=get_sentinels_from_env(
+            REDIS_SENTINEL_HOSTS, REDIS_SENTINEL_PORT
+        ),
+    )
+    code = f"{uuid.uuid4().hex}{uuid.uuid1().hex}"
+    redis.set(name=get_email_code_key(code=code), value=email, ex=timedelta(days=1))
+    link = f"{WEBUI_URL.value.rstrip('/')}/api/v1/auths/signup_verify/{code}"
+    send_email(
+        receiver=email,
+        subject=f"{WEBUI_NAME} Email Verify",
+        body=verify_email_template
+        % {"title": f"{WEBUI_NAME} Email Verify", "link": link},
+    )
+
+
+def verify_email_by_code(code: str) -> str:
+    redis = get_redis_connection(
+        redis_url=REDIS_URL,
+        redis_sentinels=get_sentinels_from_env(
+            REDIS_SENTINEL_HOSTS, REDIS_SENTINEL_PORT
+        ),
+    )
+    return redis.get(name=get_email_code_key(code=code))

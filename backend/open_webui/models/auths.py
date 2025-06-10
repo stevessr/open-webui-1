@@ -7,7 +7,6 @@ from open_webui.models.users import UserModel, Users
 from open_webui.env import SRC_LOG_LEVELS
 from pydantic import BaseModel
 from sqlalchemy import Boolean, Column, String, Text
-from open_webui.utils.auth import verify_password
 
 log = logging.getLogger(__name__)
 log.setLevel(SRC_LOG_LEVELS["MODELS"])
@@ -128,13 +127,20 @@ class AuthsTable:
                 return None
 
     def authenticate_user(self, email: str, password: str) -> Optional[UserModel]:
+        # to avoid cycle-import error
+        from open_webui.utils.auth import verify_password
+
         log.info(f"authenticate_user: {email}")
+
+        user = Users.get_user_by_email(email)
+        if not user:
+            return None
+
         try:
             with get_db() as db:
-                auth = db.query(Auth).filter_by(email=email, active=True).first()
+                auth = db.query(Auth).filter_by(id=user.id, active=True).first()
                 if auth:
                     if verify_password(password, auth.password):
-                        user = Users.get_user_by_id(auth.id)
                         return user
                     else:
                         return None
@@ -155,8 +161,8 @@ class AuthsTable:
         except Exception:
             return False
 
-    def authenticate_user_by_trusted_header(self, email: str) -> Optional[UserModel]:
-        log.info(f"authenticate_user_by_trusted_header: {email}")
+    def authenticate_user_by_email(self, email: str) -> Optional[UserModel]:
+        log.info(f"authenticate_user_by_email: {email}")
         try:
             with get_db() as db:
                 auth = db.query(Auth).filter_by(email=email, active=True).first()

@@ -224,16 +224,28 @@
 				'gradient'
 			]
 		},
-		{
-			id: 'connections',
-			title: 'Connections',
-			keywords: []
-		},
-		{
-			id: 'tools',
-			title: 'Tools',
-			keywords: []
-		},
+		...($user?.role === 'admin' ||
+		($user?.role === 'user' && $config?.features?.enable_direct_connections)
+			? [
+					{
+						id: 'connections',
+						title: 'Connections',
+						keywords: []
+					}
+				]
+			: []),
+
+		...($user?.role === 'admin' ||
+		($user?.role === 'user' && $user?.permissions?.features?.direct_tool_servers)
+			? [
+					{
+						id: 'tools',
+						title: 'Tools',
+						keywords: []
+					}
+				]
+			: []),
+
 		{
 			id: 'personalization',
 			title: 'Personalization',

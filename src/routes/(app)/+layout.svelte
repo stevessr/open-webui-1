@@ -37,6 +37,7 @@
 		showChangelog,
 		temporaryChatEnabled,
 		toolServers,
+		showSearch,
 		theme // Add theme here
 	} from '$lib/stores';
 
@@ -77,6 +78,15 @@
 				// IndexedDB Not Found
 			}
 
+			const chatInputKeys = Object.keys(localStorage).filter((key) =>
+				key.startsWith('chat-input-')
+			);
+			if (chatInputKeys.length > 0) {
+				chatInputKeys.forEach((key) => {
+					localStorage.removeItem(key);
+				});
+			}
+
 			const userSettings = await getUserSettings(localStorage.token).catch((error) => {
 				console.error(error);
 				return null;
@@ -114,6 +124,13 @@
 				const isCtrlPressed = event.ctrlKey || event.metaKey; // metaKey is for Cmd key on Mac
 				// Check if the Shift key is pressed
 				const isShiftPressed = event.shiftKey;
+
+				// Check if Ctrl  + K is pressed
+				if (isCtrlPressed && event.key.toLowerCase() === 'k') {
+					event.preventDefault();
+					console.log('search');
+					showSearch.set(!$showSearch);
+				}
 
 				// Check if Ctrl + Shift + O is pressed
 				if (isCtrlPressed && isShiftPressed && event.key.toLowerCase() === 'o') {
@@ -199,7 +216,7 @@
 				showChangelog.set($settings?.version !== $config.version);
 			}
 
-			if ($user?.permissions?.chat?.temporary ?? true) {
+			if ($user?.role === 'admin' || ($user?.permissions?.chat?.temporary ?? true)) {
 				if ($page.url.searchParams.get('temporary-chat') === 'true') {
 					temporaryChatEnabled.set(true);
 				}

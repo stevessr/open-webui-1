@@ -105,6 +105,7 @@ class CreditLogSimpleDetail(BaseModel):
 class CreditLogSimpleModel(CreditLogModel):
     model_config = ConfigDict(from_attributes=True)
     detail: CreditLogSimpleDetail
+    username: Optional[str] = Field(default="")
 
 
 class SetCreditFormDetail(BaseModel):
@@ -287,12 +288,23 @@ TradeTickets = TradeTicketTable()
 
 
 class CreditLogTable:
-    def get_credit_log_by_user_id(
-        self, user_id: str, offset: Optional[int] = None, limit: Optional[int] = None
+    def count_credit_log(self, user_ids: list[str] = None) -> int:
+        with get_db() as db:
+            query = db.query(CreditLog).order_by(CreditLog.created_at.desc())
+            if user_ids:
+                query = query.filter(CreditLog.user_id.in_(user_ids))
+            return query.count()
+
+    def get_credit_log_by_page(
+        self,
+        user_ids: list[str] = None,
+        offset: Optional[int] = None,
+        limit: Optional[int] = None,
     ) -> list[CreditLogSimpleModel]:
         with get_db() as db:
-            query = db.query(CreditLog).filter(CreditLog.user_id == user_id)
-            query = query.order_by(CreditLog.created_at.desc())
+            query = db.query(CreditLog).order_by(CreditLog.created_at.desc())
+            if user_ids:
+                query = query.filter(CreditLog.user_id.in_(user_ids))
             if offset:
                 query = query.offset(offset)
             if limit:
