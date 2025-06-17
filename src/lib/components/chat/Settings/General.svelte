@@ -5,16 +5,14 @@
 	import { getLanguages, changeLanguage } from '$lib/i18n';
 	const dispatch = createEventDispatcher();
 
-	import { models, settings, theme, user } from '$lib/stores';
-	import type { TFunction, i18n as i18nType } from 'i18next'; // Import TFunction and i18nType
+	import { settings, theme, user } from '$lib/stores';
+	import type { i18n as i18nType } from 'i18next';
 
-	const i18n: Writable<i18nType> = getContext('i18n'); // Get i18n store from context
+	const i18n: Writable<i18nType> = getContext('i18n');
 
 	import AdvancedParams from './Advanced/AdvancedParams.svelte';
 	import Textarea from '$lib/components/common/Textarea.svelte';
-
 	export let saveSettings: Function;
-	export let getModels: Function;
 
 	// General
 	let themes = [
@@ -54,39 +52,8 @@
 	};
 
 	// Advanced
-	let requestFormat: string | object | null = null;
-	let requestFormatString: string = ''; // New variable for textarea binding
-	let keepAlive: string | number | null = null;
 
-	let params: {
-		stream_response: boolean | null;
-		function_calling: string | boolean | null; // Allow boolean based on $settings.params
-		seed: number | null;
-		stop: string | string[] | null;
-		temperature: string | number | null;
-		reasoning_effort: string | number | null | undefined; // Allow undefined
-		logit_bias: string | object | null;
-		frequency_penalty: string | number | null;
-		presence_penalty: string | number | null;
-		repeat_penalty: string | number | null;
-		repeat_last_n: string | number | null;
-		mirostat: string | number | null;
-		mirostat_eta: string | number | null;
-		mirostat_tau: string | number | null;
-		top_k: string | number | null;
-		top_p: string | number | null;
-		min_p: string | number | null;
-		tfs_z: string | number | null;
-		num_ctx: string | number | null;
-		num_batch: string | number | null;
-		num_keep: string | number | null;
-		max_tokens: string | number | null;
-		num_gpu: string | number | null;
-		use_mmap: boolean | null | undefined; // Allow undefined
-		use_mlock: boolean | null | undefined; // Allow undefined
-		num_thread: string | number | null;
-		template: string | null;
-	} = {
+	let params: any = {
 		// Advanced
 		stream_response: null,
 		function_calling: null, // Initialize with null
@@ -114,123 +81,45 @@
 		use_mmap: null,
 		use_mlock: null,
 		num_thread: null,
-		template: null
-	};
-
-	const validateJSON = (json: string): boolean => {
-		try {
-			const obj = JSON.parse(json);
-
-			if (obj && typeof obj === 'object') {
-				return true;
-			}
-		} catch (e) {}
-		return false;
-	};
-
-	const toggleRequestFormat = async () => {
-		if (requestFormat === null) {
-			requestFormat = 'json';
-			requestFormatString = 'json'; // Update string representation
-		} else {
-			requestFormat = null;
-			requestFormatString = ''; // Update string representation
-		}
-
-		// No need to save here immediately, let the main save button handle it
-		// saveSettings({ requestFormat: requestFormat !== null ? requestFormat : undefined });
+		template: null,
+		think: null,
+		keep_alive: null,
+		format: null
 	};
 
 	const saveHandler = async () => {
-		let finalRequestFormat: string | object | undefined = undefined;
-
-		// Determine the final requestFormat based on requestFormatString
-		if (requestFormatString === 'json') {
-			finalRequestFormat = 'json';
-		} else if (requestFormatString && requestFormatString.trim() !== '') {
-			if (validateJSON(requestFormatString)) {
-				try {
-					finalRequestFormat = JSON.parse(requestFormatString);
-				} catch (e) {
-					console.error('Invalid JSON schema during save:', requestFormatString, e);
-					toast.error($i18n.t('Invalid JSON schema'));
-					return; // Stop saving if JSON is invalid
-				}
-			} else {
-				console.error('Invalid JSON schema during save:', requestFormatString);
-				toast.error($i18n.t('Invalid JSON schema'));
-				return; // Stop saving if JSON is invalid
-			}
-		} else {
-			// If requestFormatString is empty or null, set finalRequestFormat to undefined
-			finalRequestFormat = undefined;
-		}
-
-		// Update the internal requestFormat state to match the final value being saved
-		if (finalRequestFormat === 'json') {
-			requestFormat = 'json';
-		} else if (typeof finalRequestFormat === 'object') {
-			requestFormat = finalRequestFormat; // Keep it as an object internally for potential future use
-		} else {
-			requestFormat = null; // Reset internal state if it's undefined/null
-		}
-
 		saveSettings({
 			system: system !== '' ? system : undefined,
 			params: {
 				stream_response: params.stream_response !== null ? params.stream_response : undefined,
 				function_calling: params.function_calling !== null ? params.function_calling : undefined,
 				seed: (params.seed !== null ? params.seed : undefined) ?? undefined,
-				stop:
-					typeof params.stop === 'string'
-						? params.stop.split(',').filter((e: string) => e.trim() !== '')
-						: undefined,
-				temperature: params.temperature !== null ? params.temperature : undefined, // Use null check
-				reasoning_effort: params.reasoning_effort !== null ? params.reasoning_effort : undefined, // Use null check
-				logit_bias: params.logit_bias !== null ? params.logit_bias : undefined, // Use null check
-				frequency_penalty: params.frequency_penalty !== null ? params.frequency_penalty : undefined, // Use null check
-				presence_penalty: params.presence_penalty !== null ? params.presence_penalty : undefined, // Use null check
-				repeat_penalty: params.repeat_penalty !== null ? params.repeat_penalty : undefined, // Use null check
-				repeat_last_n: params.repeat_last_n !== null ? params.repeat_last_n : undefined, // Use null check
-				mirostat: params.mirostat !== null ? params.mirostat : undefined, // Use null check
-				mirostat_eta: params.mirostat_eta !== null ? params.mirostat_eta : undefined, // Use null check
-				mirostat_tau: params.mirostat_tau !== null ? params.mirostat_tau : undefined, // Use null check
-				top_k: params.top_k !== null ? params.top_k : undefined, // Use null check
-				top_p: params.top_p !== null ? params.top_p : undefined, // Use null check
-				min_p: params.min_p !== null ? params.min_p : undefined, // Use null check
-				tfs_z: params.tfs_z !== null ? params.tfs_z : undefined, // Use null check
-				num_ctx: params.num_ctx !== null ? params.num_ctx : undefined, // Use null check
-				num_batch: params.num_batch !== null ? params.num_batch : undefined, // Use null check
-				num_keep: params.num_keep !== null ? params.num_keep : undefined, // Use null check
-				max_tokens: params.max_tokens !== null ? params.max_tokens : undefined, // Use null check
-				use_mmap: params.use_mmap !== null ? params.use_mmap : undefined, // Use null check
-				use_mlock: params.use_mlock !== null ? params.use_mlock : undefined, // Use null check
-				num_thread: params.num_thread !== null ? params.num_thread : undefined, // Use null check
-				num_gpu: params.num_gpu !== null ? params.num_gpu : undefined // Use null check
-			},
-			keepAlive: keepAlive
-				? typeof keepAlive === 'number'
-					? keepAlive
-					: parseInt(keepAlive as string)
-				: undefined,
-			requestFormat: finalRequestFormat, // Save the determined format
-
-			theme: selectedTheme // Add theme to settings
+				stop: params.stop ? (typeof params.stop === 'string' ? params.stop.split(',').filter((e: string) => e) : params.stop) : undefined,
+				temperature: params.temperature !== null ? params.temperature : undefined,
+				reasoning_effort: params.reasoning_effort !== null ? params.reasoning_effort : undefined,
+				logit_bias: params.logit_bias !== null ? params.logit_bias : undefined,
+				frequency_penalty: params.frequency_penalty !== null ? params.frequency_penalty : undefined,
+				presence_penalty: params.presence_penalty !== null ? params.presence_penalty : undefined,
+				repeat_penalty: params.repeat_penalty !== null ? params.repeat_penalty : undefined,
+				repeat_last_n: params.repeat_last_n !== null ? params.repeat_last_n : undefined,
+				mirostat: params.mirostat !== null ? params.mirostat : undefined,
+				mirostat_eta: params.mirostat_eta !== null ? params.mirostat_eta : undefined,
+				mirostat_tau: params.mirostat_tau !== null ? params.mirostat_tau : undefined,
+				top_k: params.top_k !== null ? params.top_k : undefined,
+				top_p: params.top_p !== null ? params.top_p : undefined,
+				min_p: params.min_p !== null ? params.min_p : undefined,
+				tfs_z: params.tfs_z !== null ? params.tfs_z : undefined,
+				num_ctx: params.num_ctx !== null ? params.num_ctx : undefined,
+				num_batch: params.num_batch !== null ? params.num_batch : undefined,
+				num_keep: params.num_keep !== null ? params.num_keep : undefined,
+				max_tokens: params.max_tokens !== null ? params.max_tokens : undefined,
+				use_mmap: params.use_mmap !== null ? params.use_mmap : undefined,
+				use_mlock: params.use_mlock !== null ? params.use_mlock : undefined,
+				num_thread: params.num_thread !== null ? params.num_thread : undefined,
+				num_gpu: params.num_gpu !== null ? params.num_gpu : undefined
+			}
 		});
 		dispatch('save');
-
-		// Ensure requestFormatString is correctly formatted after saving (especially for objects)
-		if (typeof finalRequestFormat === 'object') {
-			try {
-				requestFormatString = JSON.stringify(finalRequestFormat, null, 2);
-			} catch (e) {
-				// This should ideally not happen if validation passed, but handle just in case
-				console.error('Error stringifying finalRequestFormat after save:', e);
-				requestFormatString = '';
-			}
-		} else {
-			requestFormatString = finalRequestFormat === 'json' ? 'json' : '';
-		}
 	};
 
 	onMount(async () => {
@@ -246,34 +135,8 @@
 		notificationEnabled = $settings.notificationEnabled ?? false;
 		system = $settings.system ?? '';
 
-		requestFormat = $settings.requestFormat ?? null;
-
-		// Initialize requestFormatString based on loaded requestFormat
-		if (requestFormat === 'json') {
-			requestFormatString = 'json';
-		} else if (typeof requestFormat === 'object' && requestFormat !== null) {
-			try {
-				requestFormatString = JSON.stringify(requestFormat, null, 2);
-			} catch (e) {
-				console.error('Error stringifying requestFormat on mount:', e);
-				requestFormatString = ''; // Fallback to empty string on error
-				requestFormat = null; // Reset requestFormat if it's invalid
-			}
-		} else {
-			requestFormatString = ''; // Default to empty if null or not 'json'/object
-			requestFormat = null; // Ensure requestFormat is null if not 'json' or valid object
-		}
-
-		keepAlive = $settings.keepAlive ?? null;
-
-		// Initialize params, converting null to undefined for use_mmap and use_mlock
-		params = {
-			...params,
-			...$settings.params,
-			use_mmap: $settings.params?.use_mmap ?? undefined,
-			use_mlock: $settings.params?.use_mlock ?? undefined
-		};
-		params.stop = Array.isArray($settings?.params?.stop) ? $settings?.params?.stop.join(',') : null; // Ensure null is used
+		params = { ...params, ...$settings.params };
+		params.stop = $settings?.params?.stop ? (Array.isArray($settings?.params?.stop) ? $settings?.params?.stop.join(',') : $settings?.params?.stop) : null;
 	});
 
 	const applyTheme = (_theme: string) => {
@@ -400,7 +263,7 @@
 						class=" dark:bg-gray-900 w-fit pr-8 rounded-sm py-2 px-2 text-xs bg-transparent outline-hidden text-right"
 						bind:value={lang}
 						placeholder="Select a language"
-						on:change={(e) => {
+						on:change={() => {
 							changeLanguage(lang);
 						}}
 					>
@@ -471,67 +334,6 @@
 
 				{#if showAdvanced}
 					<AdvancedParams admin={$user?.role === 'admin'} bind:params />
-					<hr class=" border-gray-100 dark:border-gray-850" />
-
-					<div class=" w-full justify-between">
-						<div class="flex w-full justify-between">
-							<div class=" self-center text-xs font-medium">{$i18n.t('Keep Alive')}</div>
-
-							<button
-								class="p-1 px-3 text-xs flex rounded-sm transition"
-								type="button"
-								on:click={() => {
-									keepAlive = keepAlive === null ? '5m' : null;
-								}}
-							>
-								{#if keepAlive === null}
-									<span class="ml-2 self-center"> {$i18n.t('Default')} </span>
-								{:else}
-									<span class="ml-2 self-center"> {$i18n.t('Custom')} </span>
-								{/if}
-							</button>
-						</div>
-
-						{#if keepAlive !== null}
-							<div class="flex mt-1 space-x-2">
-								<input
-									class="w-full text-sm dark:text-gray-300 dark:bg-gray-850 outline-hidden"
-									type="text"
-									placeholder={$i18n.t("e.g. '30s','10m'. Valid time units are 's', 'm', 'h'.")}
-									bind:value={keepAlive}
-								/>
-							</div>
-						{/if}
-					</div>
-
-					<div>
-						<div class=" flex w-full justify-between">
-							<div class=" self-center text-xs font-medium">{$i18n.t('Request Mode')}</div>
-
-							<button
-								class="p-1 px-3 text-xs flex rounded-sm transition"
-								on:click={() => {
-									toggleRequestFormat();
-								}}
-							>
-								{#if requestFormat === null}
-									<span class="ml-2 self-center"> {$i18n.t('Default')} </span>
-								{:else}
-									<span class="ml-2 self-center"> {$i18n.t('JSON')} </span>
-								{/if}
-							</button>
-						</div>
-
-						{#if requestFormat !== null}
-							<div class="flex mt-1 space-x-2">
-								<Textarea
-									className="w-full  text-sm dark:text-gray-300 dark:bg-gray-900 outline-hidden"
-									placeholder={$i18n.t('e.g. "json" or a JSON schema')}
-									bind:value={requestFormatString}
-								/>
-							</div>
-						{/if}
-					</div>
 				{/if}
 			</div>
 		{/if}
