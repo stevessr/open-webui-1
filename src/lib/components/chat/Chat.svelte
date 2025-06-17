@@ -193,6 +193,7 @@
 			return;
 		}
 		sessionStorage.selectedModels = JSON.stringify(selectedModels);
+		console.log('saveSessionSelectedModels', selectedModels, sessionStorage.selectedModels);
 	};
 
 	let oldSelectedModelIds = [''];
@@ -1956,23 +1957,24 @@
 		: 1};"
 >
 	{#if !loading}
-		{#if $settings?.backgroundImageUrl ?? null}
-			<div
-				class="absolute {$showSidebar
-					? 'md:max-w-[calc(100%-260px)] md:translate-x-[260px]'
-					: ''} top-0 left-0 w-full h-full bg-cover bg-center bg-no-repeat"
-				style="background-image: url({$settings.backgroundImageUrl})  "
-			/>
+		<div in:fade={{ duration: 50 }} class="w-full h-full flex flex-col">
+			{#if $settings?.backgroundImageUrl ?? null}
+				<div
+					class="absolute {$showSidebar
+						? 'md:max-w-[calc(100%-260px)] md:translate-x-[260px]'
+						: ''} top-0 left-0 w-full h-full bg-cover bg-center bg-no-repeat"
+					style="background-image: url({$settings.backgroundImageUrl})  "
+				/>
 
-			<div
-				class="absolute top-0 left-0 w-full h-full bg-linear-to-t from-white to-white/85 dark:from-gray-900 dark:to-gray-900/90 z-0"
-				style="opacity: {$settings?.overlayOpacity !== undefined
-					? $settings.overlayOpacity / 100
-					: 1};"
-			/>
-		{/if}
+				<div
+					class="absolute top-0 left-0 w-full h-full bg-linear-to-t from-white to-white/85 dark:from-gray-900 dark:to-gray-900/90 z-0"
+					style="opacity: {$settings?.overlayOpacity !== undefined
+						? $settings.overlayOpacity / 100
+						: 1};"
+				/>
+			{/if}
 
-		<PaneGroup direction="horizontal" class="w-full h-full">
+			<PaneGroup direction="horizontal" class="w-full h-full">
 				<Pane defaultSize={50} class="h-full flex relative max-w-full flex-col">
 					<Navbar
 						bind:this={navbarElement}
@@ -2149,6 +2151,7 @@
 					{eventTarget}
 				/>
 			</PaneGroup>
+		</div>
 	{:else if loading}
 		<div class=" flex items-center justify-center h-full w-full">
 			<div class="m-auto">

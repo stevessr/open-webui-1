@@ -115,11 +115,11 @@
 			USAGE_POOL.set(data['models']);
 		});
 	};
-
 	const executePythonAsWorker = async (id: string, code: string, cb: (data: any) => void) => {
 		let result: any = null;
 		let stdout: string | null = null;
 		let stderr: string | null = null;
+
 		let executing = true;
 		let packages = [
 			code.includes('requests') ? 'requests' : null,
