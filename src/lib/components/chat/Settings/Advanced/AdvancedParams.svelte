@@ -1259,8 +1259,6 @@
 		<div class=" py-0.5 w-full justify-between">
 			<Tooltip
 				content={$i18n.t(
-<<<<<<< HEAD
-=======
 					'Enable Memory Mapping (mmap) to load model data. This option allows the system to use disk storage as an extension of RAM by treating disk files as if they were in RAM. This can improve model performance by allowing for faster data access. However, it may not work correctly with all systems and can consume a significant amount of disk space.'
 				)}
 				placement="top-start"
@@ -1353,7 +1351,6 @@
 		<div class=" py-0.5 w-full justify-between">
 			<Tooltip
 				content={$i18n.t(
->>>>>>> origin/main
 					'Set the number of worker threads used for computation. This option controls how many threads are used to process incoming requests concurrently. Increasing this value can improve performance under high concurrency workloads but may also consume more CPU resources.'
 				)}
 				placement="top-start"
