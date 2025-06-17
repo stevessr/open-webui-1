@@ -37,7 +37,7 @@
 		showChangelog,
 		temporaryChatEnabled,
 		toolServers,
-		showSearch
+		showSearch,
 		theme // Add theme here
 	} from '$lib/stores';
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { io } from 'socket.io-client';
+	import { io, type Socket } from 'socket.io-client';
 	import { spring } from 'svelte/motion';
 	import PyodideWorker from '$lib/workers/pyodide.worker?worker';
 
@@ -456,10 +456,13 @@
 
 		if (now >= exp - TOKEN_EXPIRY_BUFFER) {
 			const res = await userSignOut();
-			user.set(null);
+			user.set(undefined);
 			localStorage.removeItem('token');
 
-			location.href = res?.redirect_url ?? '/auth';
+			if (res) {
+				const data = await res.json();
+				location.href = data?.redirect_url ?? '/auth';
+			}
 		}
 	};
 
@@ -482,7 +485,7 @@
 			}
 		};
 
-		(async () => {
+		const init = async () => {
 			if (typeof window !== 'undefined' && window.applyTheme) {
 				window.applyTheme();
 			}
@@ -512,19 +515,16 @@
 				}
 			};
 
-				$socket?.on('chat-events', chatEventHandler);
-				$socket?.on('channel-events', channelEventHandler);
+			if ($socket) {
+				($socket as Socket)?.on('chat-events', chatEventHandler);
+				($socket as Socket)?.on('channel-events', channelEventHandler);
 
 				// Set up the token expiry check
 				if (tokenTimer) {
 					clearInterval(tokenTimer);
 				}
 				tokenTimer = setInterval(checkTokenExpiry, 15000);
-			} else {
-				$socket?.off('chat-events', chatEventHandler);
-				$socket?.off('channel-events', channelEventHandler);
 			}
-		});
 			document.addEventListener('visibilitychange', handleVisibilityChange);
 			handleVisibilityChange(); // Call initially to set state on load
 
@@ -533,15 +533,17 @@
 			window.addEventListener('resize', onResize);
 
 			user.subscribe((value) => {
-				if (value) {
-					$socket?.off('chat-events', chatEventHandler);
-					$socket?.off('channel-events', channelEventHandler);
+				if ($socket) {
+					if (value) {
+						($socket as Socket).off('chat-events', chatEventHandler);
+						($socket as Socket).off('channel-events', channelEventHandler);
 
-					$socket?.on('chat-events', chatEventHandler);
-					$socket?.on('channel-events', channelEventHandler);
-				} else {
-					$socket?.off('chat-events', chatEventHandler);
-					$socket?.off('channel-events', channelEventHandler);
+						($socket as Socket).on('chat-events', chatEventHandler);
+						($socket as Socket).on('channel-events', channelEventHandler);
+					} else {
+						($socket as Socket).off('chat-events', chatEventHandler);
+						($socket as Socket).off('channel-events', channelEventHandler);
+					}
 				}
 			});
 
@@ -572,8 +574,6 @@
 					const currentUrl = `${window.location.pathname}${window.location.search}`;
 					const encodedUrl = encodeURIComponent(currentUrl);
 
-						await user.set(sessionUser);
-						await config.set(await getBackendConfig());
 					if (localStorage.token) {
 						const sessionUser = await getSessionUser(localStorage.token).catch((error) => {
 							toast.error(`${error}`);
@@ -581,7 +581,7 @@
 						});
 
 						if (sessionUser) {
-							$socket?.emit('user-join', { auth: { token: sessionUser.token } });
+							($socket as Socket)?.emit('user-join', { auth: { token: sessionUser.token } });
 							await user.set(sessionUser);
 							await config.set(await getBackendConfig()); // Re-fetch config after user set?
 
@@ -628,7 +628,8 @@
 				document.getElementById('splash-screen')?.remove();
 				loaded = true;
 			}
-		})();
+		};
+		init();
 
 		return () => {
 			window.removeEventListener('resize', onResize);

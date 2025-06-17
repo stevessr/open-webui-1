@@ -1239,22 +1239,14 @@
 															showTools = !showTools;
 														}}
 													>
-														<button
-															class="translate-y-[0.5px] flex gap-1 items-center text-gray-600 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200 rounded-lg p-1 self-center transition"
-															aria-label="Available Tools"
-															type="button"
-															on:click={() => {
-																showTools = !showTools;
-															}}
-														>
-															<Wrench className="size-4" strokeWidth="1.75" />
+														<Wrench className="size-4" strokeWidth="1.75" />
 
-															<span class="text-sm font-medium text-gray-600 dark:text-gray-300">
-																{toolServers.length + selectedToolIds.length}
-															</span>
-														</button>
-													</Tooltip>
-												{/if}
+														<span class="text-sm font-medium text-gray-600 dark:text-gray-300">
+															{toolServers.length + selectedToolIds.length}
+														</span>
+													</button>
+												</Tooltip>
+											{/if}
 
 												{#each toggleFilters as filter, filterIdx (filter.id)}
 													<Tooltip content={filter?.description} placement="top">
@@ -1356,7 +1348,6 @@
 													</Tooltip>
 												{/if}
 											</div>
-										{/if}
 									</div>
 
 									<div class="self-end flex space-x-1 mr-1 shrink-0">
