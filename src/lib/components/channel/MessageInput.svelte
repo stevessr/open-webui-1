@@ -20,7 +20,7 @@
 	import FilesOverlay from '../chat/MessageInput/FilesOverlay.svelte';
 
 	export let placeholder = $i18n.t('Send a Message');
-	export let transparentBackground = false;
+	export const transparentBackground = false;
 
 	export let id = null;
 

@@ -976,11 +976,7 @@
 	"Other": "Egyéb",
 	"OUTPUT": "KIMENET",
 	"Output format": "Kimeneti formátum",
-<<<<<<< HEAD
-	"Output Format": "",
-=======
-	"overlayOpacity": "",
->>>>>>> origin/main
+"overlayOpacity": "",
 	"Overview": "Áttekintés",
 	"page": "oldal",
 	"Paginate": "",

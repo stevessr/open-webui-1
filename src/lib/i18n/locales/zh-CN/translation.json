@@ -184,13 +184,8 @@
 	"Chat": "对话",
 	"Chat Background Gradient Opacity": "",
 	"Chat Background Image": "对话背景图片",
-<<<<<<< HEAD
-	"chatBackgroundGradientOpacity": "聊天背景渐变透明度",
-	"Chat Bubble UI": "对话气泡样式",
-=======
 	"Chat Background Opacity": "",
 	"Chat Bubble UI": "气泡样式对话",
->>>>>>> origin/main
 	"Chat Controls": "对话高级设置",
 	"Chat direction": "对话样式方向",
 	"Chat Overview": "对话概述",
@@ -1380,10 +1375,6 @@
 	"Updated": "已更新",
 	"Updated at": "更新于",
 	"Updated At": "更新于",
-<<<<<<< HEAD
-	"Upgrade to a licensed plan for enhanced capabilities, including custom theming and branding, and dedicated support.": "升级到授权计划以获得增强功能，包括自定义主题与品牌以及专属支持",
-=======
->>>>>>> origin/main
 	"Upload": "上传",
 	"Upload a GGUF model": "上传一个 GGUF 模型",
 	"Upload Audio": "上传音频",

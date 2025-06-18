@@ -976,11 +976,7 @@
 	"Other": "Diğer",
 	"OUTPUT": "ÇIKTI",
 	"Output format": "Çıktı formatı",
-<<<<<<< HEAD
-	"Output Format": "",
-=======
-	"overlayOpacity": "",
->>>>>>> origin/main
+"overlayOpacity": "",
 	"Overview": "Genel Bakış",
 	"page": "sayfa",
 	"Paginate": "",

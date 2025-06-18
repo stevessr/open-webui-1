@@ -976,11 +976,7 @@
 	"Other": "Muu",
 	"OUTPUT": "VÄLJUND",
 	"Output format": "Väljundformaat",
-<<<<<<< HEAD
-	"Output Format": "",
-=======
-	"overlayOpacity": "",
->>>>>>> origin/main
+"overlayOpacity": "",
 	"Overview": "Ülevaade",
 	"page": "leht",
 	"Paginate": "",

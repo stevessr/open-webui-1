@@ -1,15 +1,15 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
-	import { getContext, onMount } from 'svelte';
-	const i18n = getContext('i18n');
+	import { getContext } from 'svelte';
+	const i18n: any = getContext('i18n');
 
 	import Modal from '$lib/components/common/Modal.svelte';
 	import { extractFrontmatter } from '$lib/utils';
 
 	export let show = false;
 
-	export let onImport = (e) => {};
-	export let onClose = () => {};
+	export let onImport = (e: any) => {};
+	export const onClose = () => {};
 
 	export let loadUrlHandler: Function = () => {};
 	export let successMessage: string = '';
@@ -26,7 +26,7 @@
 			return;
 		}
 
-		const res = await loadUrlHandler(url).catch((err) => {
+		const res = await loadUrlHandler(url).catch((err: any) => {
 			toast.error(`${err}`);
 			loading = false;
 			return null;
@@ -39,10 +39,10 @@
 
 			toast.success(successMessage);
 
-			let func = res;
+			let func: any = res;
 			func.id = func.id || func.name.replace(/\s+/g, '_').toLowerCase();
 
-			const frontmatter = extractFrontmatter(res.content); // Ensure frontmatter is extracted
+			const frontmatter: any = extractFrontmatter(res.content); // Ensure frontmatter is extracted
 
 			if (frontmatter?.title) {
 				func.name = frontmatter.title;

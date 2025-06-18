@@ -976,11 +976,7 @@
 	"Other": "دیگر",
 	"OUTPUT": "خروجی",
 	"Output format": "قالب خروجی",
-<<<<<<< HEAD
-	"Output Format": "",
-=======
-	"overlayOpacity": "",
->>>>>>> origin/main
+"overlayOpacity": "",
 	"Overview": "نمای کلی",
 	"page": "صفحه",
 	"Paginate": "",

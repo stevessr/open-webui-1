@@ -976,11 +976,7 @@
 	"Other": "Jiné",
 	"OUTPUT": "VÝSTUP",
 	"Output format": "Formát výstupu",
-<<<<<<< HEAD
-	"Output Format": "",
-=======
-	"overlayOpacity": "",
->>>>>>> origin/main
+"overlayOpacity": "",
 	"Overview": "Přehled",
 	"page": "stránka",
 	"Paginate": "",

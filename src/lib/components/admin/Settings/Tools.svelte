@@ -1,14 +1,8 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
-	import { createEventDispatcher, onMount, getContext, tick } from 'svelte';
-	import { getModels as _getModels } from '$lib/apis';
+	import { onMount, getContext } from 'svelte';
 
-	const dispatch = createEventDispatcher();
 	const i18n = getContext('i18n');
-
-	import { models, settings, user } from '$lib/stores';
-
-	import Switch from '$lib/components/common/Switch.svelte';
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import Plus from '$lib/components/icons/Plus.svelte';
@@ -17,12 +11,12 @@
 	import AddServerModal from '$lib/components/AddServerModal.svelte';
 	import { getToolServerConnections, setToolServerConnections } from '$lib/apis/configs';
 
-	export let saveSettings: Function;
+	export const saveSettings: Function = () => {};
 
-	let servers = null;
+	let servers: any = null;
 	let showConnectionModal = false;
 
-	const addConnectionHandler = async (server) => {
+	const addConnectionHandler = async (server: any) => {
 		servers = [...servers, server];
 		await updateHandler();
 	};
@@ -30,7 +24,7 @@
 	const updateHandler = async () => {
 		const res = await setToolServerConnections(localStorage.token, {
 			TOOL_SERVER_CONNECTIONS: servers
-		}).catch((err) => {
+		}).catch(() => {
 			toast.error($i18n.t('Failed to save connections'));
 
 			return null;

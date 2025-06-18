@@ -1363,7 +1363,7 @@
 					</div>
 					<div class=" pr-2">
 						<Switch
-							state={useMmapState}
+							state={params.use_mmap ?? false}
 							on:change={(e) => {
 								params.use_mmap = e.detail.state ?? null;
 							}}
@@ -1410,7 +1410,7 @@
 
 					<div class=" pr-2">
 						<Switch
-							state={useMlockState}
+							state={params.use_mlock ?? false}
 							on:change={(e) => {
 								params.use_mlock = e.detail.state ?? null;
 							}}

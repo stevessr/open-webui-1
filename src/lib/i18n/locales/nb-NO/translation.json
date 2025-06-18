@@ -976,11 +976,7 @@
 	"Other": "Annet",
 	"OUTPUT": "UTDATA",
 	"Output format": "Format på utdata",
-<<<<<<< HEAD
-	"Output Format": "",
-=======
-	"overlayOpacity": "",
->>>>>>> origin/main
+"overlayOpacity": "",
 	"Overview": "Oversikt",
 	"page": "side",
 	"Paginate": "",

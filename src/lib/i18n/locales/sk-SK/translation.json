@@ -976,11 +976,7 @@
 	"Other": "Iné",
 	"OUTPUT": "VÝSTUP",
 	"Output format": "Formát výstupu",
-<<<<<<< HEAD
-	"Output Format": "",
-=======
-	"overlayOpacity": "",
->>>>>>> origin/main
+"overlayOpacity": "",
 	"Overview": "Prehľad",
 	"page": "stránka",
 	"Paginate": "",

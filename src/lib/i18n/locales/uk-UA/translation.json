@@ -976,11 +976,7 @@
 	"Other": "Інше",
 	"OUTPUT": "ВИХІД",
 	"Output format": "Формат відповіді",
-<<<<<<< HEAD
-	"Output Format": "",
-=======
-	"overlayOpacity": "",
->>>>>>> origin/main
+"overlayOpacity": "",
 	"Overview": "Огляд",
 	"page": "сторінка",
 	"Paginate": "",

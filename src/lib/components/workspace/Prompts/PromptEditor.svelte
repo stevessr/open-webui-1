@@ -4,7 +4,7 @@
 	import Textarea from '$lib/components/common/Textarea.svelte';
 	import { toast } from 'svelte-sonner';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import AccessControl from '../common/AccessControl.svelte';
+
 	import LockClosed from '$lib/components/icons/LockClosed.svelte';
 	import AccessControlModal from '../common/AccessControlModal.svelte';
 	import { user } from '$lib/stores';
@@ -12,8 +12,8 @@
 
 	export let onSubmit: Function;
 	export let edit = false;
-	export let prompt = null;
-	export let clone = false;
+	export let prompt: any = null;
+	export const clone = false;
 
 	const i18n = getContext('i18n');
 
@@ -34,7 +34,7 @@
 	}
 
 	// Track manual edits
-	function handleCommandInput(e: Event) {
+	function handleCommandInput() {
 		hasManualEdit = true;
 	}
 
@@ -57,7 +57,7 @@
 		loading = false;
 	};
 
-	const validateCommandString = (inputString) => {
+	const validateCommandString = (inputString: string) => {
 		// Regular expression to match only alphanumeric characters and hyphen
 		const regex = /^[a-zA-Z0-9-]+$/;
 

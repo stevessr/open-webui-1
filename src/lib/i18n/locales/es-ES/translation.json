@@ -976,11 +976,7 @@
 	"Other": "Otro",
 	"OUTPUT": "SALIDA",
 	"Output format": "Formato de salida",
-<<<<<<< HEAD
-	"Output Format": "",
-=======
-	"overlayOpacity": "",
->>>>>>> origin/main
+"overlayOpacity": "",
 	"Overview": "Vista General",
 	"page": "página",
 	"Paginate": "",

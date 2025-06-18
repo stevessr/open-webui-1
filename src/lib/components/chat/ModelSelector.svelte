@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { models, showSettings, settings, user, mobile, config } from '$lib/stores';
-	import { onMount, tick, getContext } from 'svelte';
+	import { models, settings, user } from '$lib/stores';
+	import { getContext } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import Selector from './ModelSelector/Selector.svelte';
 	import Tooltip from '../common/Tooltip.svelte';
@@ -129,16 +129,9 @@
 </div>
 
 {#if showSetDefault}
-<<<<<<< HEAD
-	<div
-		class="absolute text-left mt-[1px] ml-1 text-[0.7rem] text-gray-600 dark:text-gray-400 font-primary"
-	>
-		<button on:click={saveDefaultModel}> {$i18n.t('Set as default')}</button>
-=======
 	<div class=" absolute text-left mt-[1px] ml-1 text-[0.7rem] text-gray-500 font-primary">
 		<button on:click={saveDefaultModel} id="set-as-default-button">
 			{$i18n.t('Set as default')}</button
 		>
->>>>>>> origin/main
 	</div>
 {/if}

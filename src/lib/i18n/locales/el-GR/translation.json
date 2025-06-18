@@ -976,11 +976,7 @@
 	"Other": "Άλλο",
 	"OUTPUT": "ΕΞΟΔΟΣ",
 	"Output format": "Μορφή εξόδου",
-<<<<<<< HEAD
-	"Output Format": "",
-=======
-	"overlayOpacity": "",
->>>>>>> origin/main
+"overlayOpacity": "",
 	"Overview": "Επισκόπηση",
 	"page": "σελίδα",
 	"Paginate": "",

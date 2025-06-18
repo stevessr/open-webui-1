@@ -976,11 +976,7 @@
 	"Other": "Bestelakoa",
 	"OUTPUT": "IRTEERA",
 	"Output format": "Irteera formatua",
-<<<<<<< HEAD
-	"Output Format": "",
-=======
-	"overlayOpacity": "",
->>>>>>> origin/main
+"overlayOpacity": "",
 	"Overview": "Ikuspegi orokorra",
 	"page": "orria",
 	"Paginate": "",

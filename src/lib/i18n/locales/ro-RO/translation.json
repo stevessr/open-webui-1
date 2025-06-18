@@ -976,11 +976,7 @@
 	"Other": "Altele",
 	"OUTPUT": "Output rezultatat",
 	"Output format": "Formatul de ieșire",
-<<<<<<< HEAD
-	"Output Format": "",
-=======
-	"overlayOpacity": "",
->>>>>>> origin/main
+"overlayOpacity": "",
 	"Overview": "Privire de ansamblu",
 	"page": "pagina",
 	"Paginate": "",
