@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { WEBUI_BASE_URL } from '$lib/constants';
+	import { getStaticUrl } from '$lib/constants';
 
 	export let className = 'size-8';
-	export let src = `${WEBUI_BASE_URL}/static/favicon.png`;
+	export let src = getStaticUrl('static/favicon.png');
 </script>
 
 <img
-	src={src ?? `${WEBUI_BASE_URL}/static/favicon.png`}
+	src={src ?? getStaticUrl('static/favicon.png')}
 	class=" {className} object-cover rounded-full"
 	alt="profile"
 	draggable="false"

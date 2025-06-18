@@ -222,7 +222,7 @@
 }
 
 .pink .flex-1.flex.flex-col {
-	background-color: var(--her-surface) !important;
+	background-color: var(--bg-content) !important;
 }
 .pink div#sidebar {
 	background-color: var(--sidebar-color) !important;

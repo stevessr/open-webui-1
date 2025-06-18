@@ -5,7 +5,7 @@
 	import { getLanguages, changeLanguage } from '$lib/i18n';
 	const dispatch = createEventDispatcher();
 
-	import { settings, theme, user } from '$lib/stores';
+	import { settings, theme, user, baseUrl, validateBaseUrl, testBaseUrlConnection } from '$lib/stores';
 	import type { i18n as i18nType } from 'i18next';
 
 	const i18n: Writable<i18nType> = getContext('i18n');
@@ -15,18 +15,10 @@
 	export let saveSettings: Function;
 
 	// General
-	let themes = [
-		'dark',
-		'light',
-		'rosepine',
-		'rosepine-dawn',
-		'oled-dark',
-		'pink',
-		'green',
-		'blue',
-		'gem'
-	];
 	let selectedTheme = 'system';
+	let customBaseUrl = '';
+	let baseUrlTesting = false;
+	let baseUrlTestResult: { success?: boolean; error?: string } | null = null;
 
 	let languages: Awaited<ReturnType<typeof getLanguages>> = [];
 	let lang = $i18n.language; // Use i18n.language directly
@@ -49,6 +41,39 @@
 				)
 			);
 		}
+	};
+
+	const testBaseUrl = async () => {
+		if (!customBaseUrl.trim()) {
+			baseUrlTestResult = { success: false, error: 'Please enter a base URL' };
+			return;
+		}
+
+		baseUrlTesting = true;
+		baseUrlTestResult = null;
+
+		try {
+			const result = await testBaseUrlConnection(customBaseUrl.trim());
+			baseUrlTestResult = result;
+
+			if (result.success) {
+				toast.success($i18n.t('Base URL connection test successful'));
+			} else {
+				toast.error($i18n.t('Base URL connection test failed: {{error}}', { error: result.error }));
+			}
+		} catch (error) {
+			baseUrlTestResult = { success: false, error: 'Test failed' };
+			toast.error($i18n.t('Base URL connection test failed'));
+		} finally {
+			baseUrlTesting = false;
+		}
+	};
+
+	const resetBaseUrl = () => {
+		customBaseUrl = '';
+		baseUrl.reset();
+		baseUrlTestResult = null;
+		toast.success($i18n.t('Base URL reset to default'));
 	};
 
 	// Advanced
@@ -88,7 +113,18 @@
 	};
 
 	const saveHandler = async () => {
+		// Validate and save base URL if provided
+		if (customBaseUrl.trim()) {
+			const validation = validateBaseUrl(customBaseUrl.trim());
+			if (!validation.valid) {
+				toast.error($i18n.t('Invalid base URL: {{error}}', { error: validation.error }));
+				return;
+			}
+			baseUrl.set(customBaseUrl.trim());
+		}
+
 		saveSettings({
+			baseUrl: customBaseUrl.trim() || undefined,
 			system: system !== '' ? system : undefined,
 			params: {
 				stream_response: params.stream_response !== null ? params.stream_response : undefined,
@@ -122,15 +158,28 @@
 		dispatch('save');
 	};
 
-	onMount(async () => {
-		selectedTheme = localStorage.theme ?? 'system';
+	// Function to sync theme across all sources
+	const syncTheme = () => {
+		// Priority: settings > localStorage > system default
+		const themeFromSettings = $settings?.theme;
+		const themeFromLocalStorage = localStorage.theme;
+		const finalTheme = themeFromSettings || themeFromLocalStorage || 'system';
 
+		// Update all sources to be consistent
+		selectedTheme = finalTheme;
+		theme.set(finalTheme);
+		localStorage.setItem('theme', finalTheme);
+		applyTheme(finalTheme);
+	};
+
+	onMount(async () => {
 		languages = await getLanguages();
 
-		// Load theme preference from settings, fallback to localStorage or system
-		selectedTheme = $settings?.theme ?? localStorage.theme ?? 'system';
-		theme.set(selectedTheme); // Ensure theme store is updated on load
-		applyTheme(selectedTheme); // Apply the loaded theme
+		// Sync theme from all sources
+		syncTheme();
+
+		// Initialize base URL
+		customBaseUrl = $settings.baseUrl || $baseUrl || '';
 
 		notificationEnabled = $settings.notificationEnabled ?? false;
 		system = $settings.system ?? '';
@@ -150,21 +199,42 @@
 			themeToApply = 'dark rosepine'; // Apply both dark and rosepine classes
 		} else if (_theme === 'rosepine-dawn') {
 			themeToApply = 'light rosepine-dawn'; // Apply both light and rosepine-dawn classes
+		} else if (_theme === 'her') {
+			themeToApply = 'her'; // Her theme has its own class
 		} else if (_theme === 'pink') {
-			themeToApply = 'light pink'; // Assuming pink is a light theme
+			themeToApply = 'light pink'; // Pink is a light theme
+		} else if (_theme === 'pink-dark') {
+			themeToApply = 'dark pink-dark'; // Pink dark theme
 		} else if (_theme === 'green') {
-			themeToApply = 'light green'; // Assuming green is a light theme
+			themeToApply = 'light green'; // Green is a light theme
+		} else if (_theme === 'green-dark') {
+			themeToApply = 'dark green-dark'; // Green dark theme
 		} else if (_theme === 'blue') {
-			themeToApply = 'light blue'; // Assuming blue is a light theme
+			themeToApply = 'light blue'; // Blue is a light theme
+		} else if (_theme === 'blue-dark') {
+			themeToApply = 'dark blue-dark'; // Blue dark theme
 		} else if (_theme === 'gem') {
-			themeToApply = 'dark gem'; // Assuming gem is a dark theme
+			themeToApply = 'dark gem'; // Gem is a dark theme
 		}
 
 		// Remove all existing theme classes first
-		themes.forEach((e) => {
-			e.split(' ').forEach((cls) => {
-				document.documentElement.classList.remove(cls);
-			});
+		const allThemeClasses = [
+			'dark',
+			'light',
+			'oled',
+			'rosepine',
+			'rosepine-dawn',
+			'her',
+			'pink',
+			'pink-dark',
+			'green',
+			'green-dark',
+			'blue',
+			'blue-dark',
+			'gem'
+		];
+		allThemeClasses.forEach((cls) => {
+			document.documentElement.classList.remove(cls);
 		});
 
 		// Add the new theme classes
@@ -303,6 +373,53 @@
 							<span class="ml-2 self-center">{$i18n.t('Off')}</span>
 						{/if}
 					</button>
+				</div>
+			</div>
+
+			<div class="mt-3">
+				<div class="mb-2 text-xs font-medium">{$i18n.t('Custom Base URL')}</div>
+				<div class="flex flex-col space-y-2">
+					<div class="flex space-x-2">
+						<input
+							class="flex-1 text-xs bg-white dark:text-gray-300 dark:bg-gray-900 outline-hidden px-3 py-2 rounded-sm border border-gray-200 dark:border-gray-700"
+							placeholder={$i18n.t('Enter custom base URL (e.g., http://localhost:8080)')}
+							bind:value={customBaseUrl}
+							type="url"
+						/>
+						<button
+							class="px-3 py-2 text-xs bg-blue-500 hover:bg-blue-600 text-white rounded-sm transition disabled:opacity-50"
+							on:click={testBaseUrl}
+							disabled={baseUrlTesting || !customBaseUrl.trim()}
+							type="button"
+						>
+							{#if baseUrlTesting}
+								{$i18n.t('Testing...')}
+							{:else}
+								{$i18n.t('Test')}
+							{/if}
+						</button>
+						<button
+							class="px-3 py-2 text-xs bg-gray-500 hover:bg-gray-600 text-white rounded-sm transition"
+							on:click={resetBaseUrl}
+							type="button"
+						>
+							{$i18n.t('Reset')}
+						</button>
+					</div>
+
+					{#if baseUrlTestResult}
+						<div class="text-xs {baseUrlTestResult.success ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}">
+							{#if baseUrlTestResult.success}
+								✓ {$i18n.t('Connection successful')}
+							{:else}
+								✗ {baseUrlTestResult.error || $i18n.t('Connection failed')}
+							{/if}
+						</div>
+					{/if}
+
+					<div class="text-xs text-gray-500 dark:text-gray-400">
+						{$i18n.t('Leave empty to use default URL. Changes require page refresh to take full effect.')}
+					</div>
 				</div>
 			</div>
 		</div>

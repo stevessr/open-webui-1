@@ -1,10 +1,10 @@
 import { io } from 'socket.io-client';
 
 import { socket, activeUserIds, USAGE_POOL } from '$lib/stores';
-import { WEBUI_BASE_URL } from '$lib/constants';
+import { getWebuiBaseUrl } from '$lib/constants';
 
 export const setupSocket = async (enableWebsocket) => {
-	const _socket = io(`${WEBUI_BASE_URL}` || undefined, {
+	const _socket = io(`${getWebuiBaseUrl()}` || undefined, {
 		reconnection: true,
 		reconnectionDelay: 1000,
 		reconnectionDelayMax: 5000,

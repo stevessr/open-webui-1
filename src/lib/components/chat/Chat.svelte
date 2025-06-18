@@ -12,7 +12,7 @@
 
 	import { get, type Unsubscriber, type Writable } from 'svelte/store';
 	import type { i18n as i18nType } from 'i18next';
-	import { WEBUI_BASE_URL, WEBUI_API_BASE_URL } from '$lib/constants';
+	import { getWebuiBaseUrl, getWebuiApiBaseUrl } from '$lib/constants';
 	import { uploadFile } from '$lib/apis/files';
 
 	import {
@@ -91,6 +91,7 @@
 	import NotificationToast from '../NotificationToast.svelte';
 	import Spinner from '../common/Spinner.svelte';
 	import { fade } from 'svelte/transition';
+	import BackgroundManager from '$lib/components/BackgroundManager.svelte';
 
 	export let chatIdProp = '';
 
@@ -597,7 +598,7 @@
 			fileItem.id = uploadedFile.id;
 			fileItem.size = file.size;
 			fileItem.collection_name = uploadedFile?.meta?.collection_name;
-			fileItem.url = `${WEBUI_API_BASE_URL}/files/${uploadedFile.id}`;
+			fileItem.url = `${getWebuiApiBaseUrl()}/files/${uploadedFile.id}`;
 
 			files = files;
 			toast.success($i18n.t('File uploaded successfully'));
@@ -1666,7 +1667,7 @@
 						}
 					: {})
 			},
-			`${WEBUI_BASE_URL}/api`
+			`${getWebuiBaseUrl()}/api`
 		).catch(async (error) => {
 			toast.error(`${error}`);
 
@@ -1962,6 +1963,8 @@
 		eventCallback(false);
 	}}
 />
+
+<BackgroundManager />
 
 <div
 	class="h-screen max-h-[100dvh] transition-width duration-200 ease-in-out {$showSidebar

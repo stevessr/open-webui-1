@@ -63,6 +63,7 @@
 		imageCompressionSize?: { width: string; height: string };
 		backgroundImageUrl?: string;
 		webSearch?: string;
+		baseUrl?: string; // Custom base URL for API endpoints
 	};
 
 	type ModelOptions = {
@@ -86,7 +87,7 @@
 	// End of copied types
 
 	import { toast } from 'svelte-sonner';
-	import { config, models, settings, user } from '$lib/stores';
+	import { config, models, settings, user, baseUrl } from '$lib/stores';
 	import { updateUserSettings } from '$lib/apis/users';
 	import { getModels as _getModels } from '$lib/apis';
 	import { goto } from '$app/navigation';
@@ -105,7 +106,8 @@
 	import XMark from '../icons/XMark.svelte';
 	import Connections from './Settings/Connections.svelte';
 	import Tools from './Settings/Tools.svelte';
-	import Opacity from './Settings/Opacity.svelte'; // Import the new component
+	import Opacity from './Settings/Opacity.svelte';
+	import Background from './Settings/Background.svelte';
 
 	const i18n: Writable<i18nType> = getContext('i18n'); // Add type annotation
 
@@ -328,6 +330,11 @@
 				'bubble',
 				'gradient'
 			]
+		},
+		{
+			id: 'background',
+			title: 'Background',
+			keywords: ['background', 'image', 'video', 'wallpaper']
 		},
 		{
 			id: 'personalization',
@@ -598,6 +605,16 @@
 		// Add type
 		console.log(updated);
 		settings.set({ ...$settings, ...updated });
+
+		// Sync baseUrl to baseUrl store if it's being updated
+		if (updated.baseUrl !== undefined) {
+			if (updated.baseUrl) {
+				baseUrl.set(updated.baseUrl);
+			} else {
+				baseUrl.reset();
+			}
+		}
+
 		models.set(await getModels());
 		await updateUserSettings(localStorage.token, { ui: $settings });
 	};
@@ -773,23 +790,50 @@
 									selectedTab = 'opacity';
 								}}
 							>
-								<div class=" self-center mr-2">
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										viewBox="0 0 16 16"
-										fill="currentColor"
-										class="w-4 h-4"
-									>
-										<path
-											fill-rule="evenodd"
-											d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14Zm0-2A5 5 0 1 0 8 3a5 5 0 0 0 0 10Z"
-											clip-rule="evenodd"
-										/>
-									</svg>
-								</div>
-								<div class=" self-center">{$i18n.t('Opacity')}</div>
-							</button>
-						{:else if tabId === 'connections'}
+																<div class=" self-center mr-2">
+																	<svg
+																		xmlns="http://www.w3.org/2000/svg"
+																		viewBox="0 0 16 16"
+																		fill="currentColor"
+																		class="w-4 h-4"
+																	>
+																		<path
+																			fill-rule="evenodd"
+																			d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14Zm0-2A5 5 0 1 0 8 3a5 5 0 0 0 0 10Z"
+																			clip-rule="evenodd"
+																		/>
+																	</svg>
+																</div>
+																<div class=" self-center">{$i18n.t('Opacity')}</div>
+															</button>
+														{:else if tabId === 'background'}
+															<button
+																class="px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition {selectedTab ===
+																'background'
+																	? ''
+																	: ' text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'}"
+																on:click={() => {
+																	selectedTab = 'background';
+																}}
+															>
+																<div class=" self-center mr-2">
+																	<svg
+																		xmlns="http://www.w3.org/2000/svg"
+																		viewBox="0 0 16 16"
+																		fill="currentColor"
+																		class="w-4 h-4"
+																	>
+																		<path
+																			d="M1 3.5A1.5 1.5 0 0 1 2.5 2h11A1.5 1.5 0 0 1 15 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 1 12.5v-9ZM2.5 3a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-11Z"
+																		/>
+																		<path
+																			d="M10.854 8.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L7.5 10.293l2.646-2.647a.5.5 0 0 1 .708 0Z"
+																		/>
+																	</svg>
+																</div>
+																<div class=" self-center">{$i18n.t('Background')}</div>
+															</button>
+														{:else if tabId === 'connections'}
 							{#if $user?.role === 'admin' || ($user?.role === 'user' && $config?.features?.enable_direct_connections)}
 								<button
 									class={`px-0.5 py-1 min-w-fit rounded-lg flex-1 md:flex-none flex text-left transition
@@ -1073,7 +1117,6 @@
 			<div class="flex-1 md:min-h-[32rem] max-h-[32rem]">
 				{#if selectedTab === 'general'}
 					<General
-						{getModels}
 						{saveSettings}
 						on:save={() => {
 							toast.success($i18n.t('Settings saved successfully!'));
@@ -1088,6 +1131,13 @@
 					/>
 				{:else if selectedTab === 'opacity'}
 					<Opacity
+						{saveSettings}
+						on:save={() => {
+							toast.success($i18n.t('Settings saved successfully!'));
+						}}
+					/>
+				{:else if selectedTab === 'background'}
+					<Background
 						{saveSettings}
 						on:save={() => {
 							toast.success($i18n.t('Settings saved successfully!'));

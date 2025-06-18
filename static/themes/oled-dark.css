@@ -13,49 +13,49 @@
   --border-color: var(--subtle-color); /* Default border */
 }
 
-.oled-dark body {
+.oled body {
   background-color: var(--bg-color) !important;
   color: var(--text-color) !important;
 }
 
-.oled-dark * {
+.oled * {
   border-color: var(--border-color) !important;
 }
 
 /* Add more specific overrides as needed */
-.oled-dark #nav {
+.oled #nav {
   background-color: var(--overlay-color);
 }
 
-.oled-dark .message.user {
+.oled .message.user {
   background-color: var(--surface-color);
 }
 
-.oled-dark .message.assistant {
+.oled .message.assistant {
    background-color: var(--bg-color); /* Keep assistant messages pure black */
    border: 1px solid var(--border-color);
 }
 
-.oled-dark input,
-.oled-dark textarea,
-.oled-dark select {
+.oled input,
+.oled textarea,
+.oled select {
   background-color: var(--surface-color) !important;
   color: var(--text-color) !important;
 
 }
 
-.oled-dark button {
+.oled button {
    color: var(--text-color) !important;
    background-color: var(--surface-color) !important;
- 
+
 }
-.oled-dark button:hover {
+.oled button:hover {
    background-color: var(--highlight-color) !important;
    border-color: var(--primary-color) !important;
 }
 
 /* OLED Dark theme checkbox styles */
-.oled-dark input[type='checkbox'] {
+.oled input[type='checkbox'] {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -70,12 +70,12 @@
   transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
 }
 
-.oled-dark input[type='checkbox']:checked {
+.oled input[type='checkbox']:checked {
   background-color: var(--primary-color);
   border-color: var(--primary-color);
 }
 
-.oled-dark input[type='checkbox']:checked::before {
+.oled input[type='checkbox']:checked::before {
   content: '';
   display: block;
   width: 0.3rem;
@@ -89,17 +89,17 @@
   top: 0.05rem;
 }
 
-.oled-dark input[type='checkbox']:focus {
+.oled input[type='checkbox']:focus {
   outline: 2px solid var(--secondary-color);
   outline-offset: 1px;
 }
 
-.oled-dark input[type='checkbox']:disabled {
+.oled input[type='checkbox']:disabled {
   background-color: var(--subtle-color);
   border-color: var(--subtle-color);
   cursor: not-allowed;
 }
 
-.oled-dark input[type='checkbox']:disabled:checked::before {
+.oled input[type='checkbox']:disabled:checked::before {
   border-color: var(--muted-color);
 }

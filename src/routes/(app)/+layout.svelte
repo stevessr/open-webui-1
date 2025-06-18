@@ -38,7 +38,8 @@
 		temporaryChatEnabled,
 		toolServers,
 		showSearch,
-		theme // Add theme here
+		theme, // Add theme here
+		initializeBaseUrlFromSettings
 	} from '$lib/stores';
 
 	import Sidebar from '$lib/components/layout/Sidebar.svelte';
@@ -94,9 +95,12 @@
 			if (userSettings) {
 				settings.set(userSettings.ui);
 				if (userSettings.theme) {
-					// Add this check
-					theme.set(userSettings.theme); // Update theme store
+					// Update theme store and localStorage
+					theme.set(userSettings.theme);
+					localStorage.setItem('theme', userSettings.theme);
 				}
+				// Initialize base URL from user settings
+				initializeBaseUrlFromSettings(userSettings);
 			} else {
 				let localStorageSettings = {} as Parameters<(typeof settings)['set']>[0];
 
@@ -278,14 +282,14 @@
 		{#if !['user', 'admin'].includes($user?.role)}
 			<AccountPending />
 		{:else if localDBChats.length > 0}
-			<div class="fixed w-full h-full flex z-50">
+			<div class="fixed w-full h-full flex z-overlay">
 				<div
 					class="absolute w-full h-full backdrop-blur-md bg-white/20 dark:bg-gray-900/50 flex justify-center"
 					style="opacity: {$settings.backgroundOverlayOpacity / 100};"
 				>
 					<div class="m-auto pb-44 flex flex-col justify-center">
 						<div class="max-w-md">
-							<div class="text-center dark:text-white text-2xl font-medium z-50">
+							<div class="text-center dark:text-white text-2xl font-medium z-content">
 								Important Update<br /> Action Required for Chat Log Storage
 							</div>
 

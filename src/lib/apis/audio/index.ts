@@ -1,9 +1,9 @@
-import { AUDIO_API_BASE_URL } from '$lib/constants';
+import { getAudioApiBaseUrl } from '$lib/constants';
 
 export const getAudioConfig = async (token: string) => {
 	let error = null;
 
-	const res = await fetch(`${AUDIO_API_BASE_URL}/config`, {
+	const res = await fetch(`${getAudioApiBaseUrl()}/config`, {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
@@ -37,7 +37,7 @@ type OpenAIConfigForm = {
 export const updateAudioConfig = async (token: string, payload: OpenAIConfigForm) => {
 	let error = null;
 
-	const res = await fetch(`${AUDIO_API_BASE_URL}/config/update`, {
+	const res = await fetch(`${getAudioApiBaseUrl()}/config/update`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ export const transcribeAudio = async (token: string, file: File, language?: stri
 	}
 
 	let error = null;
-	const res = await fetch(`${AUDIO_API_BASE_URL}/transcriptions`, {
+	const res = await fetch(`${getAudioApiBaseUrl()}/transcriptions`, {
 		method: 'POST',
 		headers: {
 			Accept: 'application/json',
@@ -105,7 +105,7 @@ export const synthesizeOpenAISpeech = async (
 ) => {
 	let error = null;
 
-	const res = await fetch(`${AUDIO_API_BASE_URL}/speech`, {
+	const res = await fetch(`${getAudioApiBaseUrl()}/speech`, {
 		method: 'POST',
 		headers: {
 			Authorization: `Bearer ${token}`,
@@ -142,7 +142,7 @@ interface AvailableModelsResponse {
 export const getModels = async (token: string = ''): Promise<AvailableModelsResponse> => {
 	let error = null;
 
-	const res = await fetch(`${AUDIO_API_BASE_URL}/models`, {
+	const res = await fetch(`${getAudioApiBaseUrl()}/models`, {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
@@ -170,7 +170,7 @@ export const getModels = async (token: string = ''): Promise<AvailableModelsResp
 export const getVoices = async (token: string = '') => {
 	let error = null;
 
-	const res = await fetch(`${AUDIO_API_BASE_URL}/voices`, {
+	const res = await fetch(`${getAudioApiBaseUrl()}/voices`, {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',

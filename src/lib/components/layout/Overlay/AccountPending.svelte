@@ -15,14 +15,14 @@
 	});
 </script>
 
-<div class="fixed w-full h-full flex z-999">
+<div class="fixed w-full h-full flex z-overlay">
 	<div
 		class="absolute w-full h-full backdrop-blur-lg bg-white/10 dark:bg-gray-900/50 flex justify-center"
 	>
 		<div class="m-auto pb-10 flex flex-col justify-center">
 			<div class="max-w-md">
 				<div
-					class="text-center dark:text-white text-2xl font-medium z-50"
+					class="text-center dark:text-white text-2xl font-medium z-content"
 					style="white-space: pre-wrap;"
 				>
 					{#if ($config?.ui?.pending_user_overlay_title ?? '').trim() !== ''}

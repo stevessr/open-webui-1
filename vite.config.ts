@@ -35,9 +35,65 @@ export default defineConfig({
 		APP_BUILD_HASH: JSON.stringify(process.env.APP_BUILD_HASH || 'dev-build')
 	},
 	build: {
-		sourcemap: true
+		sourcemap: true,
+		rollupOptions: {
+			external: ['path', 'fs', 'url', 'source-map-js']
+		}
 	},
 	worker: {
 		format: 'es'
+	},
+	optimizeDeps: {
+		include: [
+			'socket.io-client',
+			'svelte-sonner',
+			'idb',
+			'file-saver',
+			'mermaid',
+			'dompurify',
+			'marked',
+			'yaml',
+			'uuid',
+			'js-sha256',
+			'dayjs',
+			'dayjs/plugin/relativeTime',
+			'dayjs/plugin/isToday',
+			'dayjs/plugin/isYesterday',
+			'dayjs/plugin/localizedFormat',
+			'highlight.js',
+			'svelte-confetti',
+			'tippy.js',
+			'i18next',
+			'i18next-resources-to-backend',
+			'i18next-browser-languagedetector',
+			'katex',
+			'focus-trap',
+			'bits-ui',
+			'kokoro-js',
+			'@huggingface/transformers',
+			'sortablejs',
+			'fuse.js',
+			'panzoom',
+			'codemirror',
+			'@codemirror/view',
+			'@codemirror/state',
+			'@codemirror/autocomplete',
+			'@codemirror/commands',
+			'@codemirror/language',
+			'@codemirror/language-data',
+			'@codemirror/theme-one-dark',
+			'codemirror-lang-hcl',
+			'codemirror-lang-elixir',
+			'katex/contrib/mhchem'
+		]
+	},
+	server: {
+		fs: {
+			allow: [
+				'.',
+				'../node_modules',
+				'./static'
+			]
+		}
 	}
 });

@@ -1,6 +1,9 @@
-@import 'tailwindcss';
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
 
-@config '../tailwind.config.js';
+/* Import z-index layer system */
+@import './lib/styles/z-index.css';
 
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,
@@ -38,8 +41,6 @@
 
 	input::placeholder,
 	textarea::placeholder {
-		color: theme(--color-gray-400);
+		color: theme('colors.gray.400');
 	}
 }
-
-@custom-variant hover (&:hover);

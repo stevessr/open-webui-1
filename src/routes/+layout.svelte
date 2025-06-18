@@ -36,19 +36,23 @@
 
 	import { executeToolServer, getBackendConfig } from '$lib/apis';
 	import { getSessionUser, userSignOut } from '$lib/apis/auths';
+	import { getStaticUrl } from '$lib/constants';
 
 	import '../tailwind.css';
 	import '../app.css';
 
 	import 'tippy.js/dist/tippy.css';
 
-	import { WEBUI_BASE_URL, WEBUI_HOSTNAME } from '$lib/constants';
+	import { getWebuiBaseUrl, WEBUI_HOSTNAME } from '$lib/constants';
 	import i18n, { initI18n, getLanguages, changeLanguage } from '$lib/i18n';
 	import { bestMatchingLanguage } from '$lib/utils';
 	import { getAllTags, getChatList } from '$lib/apis/chats';
 	import NotificationToast from '$lib/components/NotificationToast.svelte';
 	import AppSidebar from '$lib/components/app/AppSidebar.svelte';
 	import { chatCompletion } from '$lib/apis/openai';
+	import { connectionError, initConnectionMonitoring } from '$lib/utils/connectionHandler';
+	import ConnectionErrorModal from '$lib/components/common/ConnectionErrorModal.svelte';
+	import { baseUrl, initializeBaseUrlFromSettings, onBaseUrlChange } from '$lib/stores';
 
 	import { beforeNavigate } from '$app/navigation';
 	import { updated } from '$app/state';
@@ -70,7 +74,7 @@
 	const BREAKPOINT = 768;
 
 	const setupSocket = async (enableWebsocket: boolean) => {
-		const _socket = io(`${WEBUI_BASE_URL}` || undefined, {
+		const _socket = io(`${$baseUrl}` || undefined, {
 			reconnection: true,
 			reconnectionDelay: 1000,
 			reconnectionDelayMax: 5000,
@@ -278,7 +282,7 @@
 						if ($settings?.notificationEnabled ?? false) {
 							new Notification(`${title} • Open WebUI`, {
 								body: content,
-								icon: `${WEBUI_BASE_URL}/static/favicon.png`
+								icon: `${getWebuiBaseUrl()}/static/favicon.png`
 							});
 						}
 					}
@@ -424,7 +428,7 @@
 					if ($settings?.notificationEnabled ?? false) {
 						new Notification(`${data?.user?.name} (#${event?.channel?.name}) • Open WebUI`, {
 							body: data?.content,
-							icon: data?.user?.profile_image_url ?? `${WEBUI_BASE_URL}/static/favicon.png`
+							icon: data?.user?.profile_image_url ?? `${getWebuiBaseUrl()}/static/favicon.png`
 						});
 					}
 				}
@@ -486,6 +490,18 @@
 		};
 
 		const init = async () => {
+			// Initialize connection monitoring
+			initConnectionMonitoring();
+
+			// Handle base URL changes
+			onBaseUrlChange((newUrl, oldUrl) => {
+				console.log(`Base URL changed from ${oldUrl} to ${newUrl}`);
+				// Reload the page to reinitialize all connections with new base URL
+				if (confirm('Base URL has been changed. The page will reload to apply the changes.')) {
+					window.location.reload();
+				}
+			});
+
 			if (typeof window !== 'undefined' && window.applyTheme) {
 				window.applyTheme();
 			}
@@ -528,7 +544,12 @@
 			document.addEventListener('visibilitychange', handleVisibilityChange);
 			handleVisibilityChange(); // Call initially to set state on load
 
-			theme.set(localStorage.theme);
+			// Initialize theme with fallback to system
+			const initialTheme = localStorage.theme || 'system';
+			theme.set(initialTheme);
+			if (!localStorage.theme) {
+				localStorage.setItem('theme', 'system');
+			}
 			mobile.set(window.innerWidth < BREAKPOINT);
 			window.addEventListener('resize', onResize);
 
@@ -644,7 +665,7 @@
 
 <svelte:head>
 	<title>{$WEBUI_NAME}</title>
-	<link crossorigin="anonymous" rel="icon" href="{WEBUI_BASE_URL}/static/favicon.png" />
+	<link crossorigin="anonymous" rel="icon" href="{getStaticUrl('static/favicon.png')}" />
 
 	<!-- rosepine themes have been disabled as it's not up to date with our latest version. -->
 	<!-- feel free to make a PR to fix if anyone wants to see it return -->
@@ -681,4 +702,18 @@
 	richColors
 	position="top-right"
 	closeButton
+/>
+
+<ConnectionErrorModal
+	bind:show={$connectionError.show}
+	error={$connectionError.error}
+	currentUrl={$connectionError.currentUrl}
+	on:retry={() => {
+		if ($connectionError.retryCallback) {
+			$connectionError.retryCallback();
+		}
+	}}
+	on:close={() => {
+		connectionError.update(state => ({ ...state, show: false }));
+	}}
 />

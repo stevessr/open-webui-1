@@ -8,7 +8,7 @@
 
 <div class="px-3">
 	<div class="text-center text-6xl mb-3">📄</div>
-	<div class="text-center dark:text-white text-xl font-semibold z-50">
+	<div class="text-center dark:text-white text-xl font-semibold z-content">
 		{#if title}
 			{title}
 		{:else}

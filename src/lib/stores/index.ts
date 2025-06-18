@@ -27,6 +27,22 @@ export const USAGE_POOL: Writable<null | string[]> = writable(null);
 
 export const theme = writable('system');
 
+// Export base URL stores
+export {
+	baseUrl,
+	webuiApiBaseUrl,
+	ollamaApiBaseUrl,
+	openaiApiBaseUrl,
+	audioApiBaseUrl,
+	imagesApiBaseUrl,
+	retrievalApiBaseUrl,
+	validateBaseUrl,
+	testBaseUrlConnection,
+	initializeBaseUrlFromSettings,
+	syncBaseUrlToSettings,
+	onBaseUrlChange
+} from './baseUrl.js';
+
 export const shortCodesToEmojis = writable(
 	Object.entries(emojiShortCodes).reduce(
 		(acc: Record<string, string>, [key, value]) => {
@@ -75,7 +91,15 @@ export const settings: Writable<Settings> = writable({
 	chatBackgroundGradientOpacity: 100,
 	overlayOpacity: 40, // Changed default value to 40
 	settingsModalOpacity: 100, // Add default value for settings modal opacity
-	widescreenMode: false
+	widescreenMode: false,
+
+	// Video Background Settings
+	backgroundType: 'none',
+	backgroundValue: '',
+	backgroundVideoUnmute: false,
+	backgroundVideoAutoplay: true,
+	backgroundVideoLoop: true,
+	backgroundVideoControls: false
 });
 
 export const showSidebar = writable(false);
@@ -241,6 +265,15 @@ type Settings = {
 	backgroundImageUrl?: string;
 	webSearch?: string;
 	theme?: string;
+	baseUrl?: string; // Custom base URL for API endpoints
+
+	// Video Background Settings
+	backgroundType?: 'none' | 'image' | 'video';
+	backgroundValue?: string;
+	backgroundVideoUnmute?: boolean;
+	backgroundVideoAutoplay?: boolean;
+	backgroundVideoLoop?: boolean;
+	backgroundVideoControls?: boolean;
 };
 
 type ModelOptions = {

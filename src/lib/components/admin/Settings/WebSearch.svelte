@@ -42,18 +42,24 @@
 	const submitHandler = async () => {
 		// Convert domain filter string to array before sending
 		if (webConfig.WEB_SEARCH_DOMAIN_FILTER_LIST) {
-			webConfig.WEB_SEARCH_DOMAIN_FILTER_LIST = webConfig.WEB_SEARCH_DOMAIN_FILTER_LIST.split(',')
-				.map((domain) => domain.trim())
-				.filter((domain) => domain.length > 0);
+			// Check if it's already an array or a string
+			if (typeof webConfig.WEB_SEARCH_DOMAIN_FILTER_LIST === 'string') {
+				webConfig.WEB_SEARCH_DOMAIN_FILTER_LIST = webConfig.WEB_SEARCH_DOMAIN_FILTER_LIST.split(',')
+					.map((domain) => domain.trim())
+					.filter((domain) => domain.length > 0);
+			}
 		} else {
 			webConfig.WEB_SEARCH_DOMAIN_FILTER_LIST = [];
 		}
 
 		// Convert Youtube loader language string to array before sending
 		if (webConfig.YOUTUBE_LOADER_LANGUAGE) {
-			webConfig.YOUTUBE_LOADER_LANGUAGE = webConfig.YOUTUBE_LOADER_LANGUAGE.split(',')
-				.map((lang) => lang.trim())
-				.filter((lang) => lang.length > 0);
+			// Check if it's already an array or a string
+			if (typeof webConfig.YOUTUBE_LOADER_LANGUAGE === 'string') {
+				webConfig.YOUTUBE_LOADER_LANGUAGE = webConfig.YOUTUBE_LOADER_LANGUAGE.split(',')
+					.map((lang) => lang.trim())
+					.filter((lang) => lang.length > 0);
+			}
 		} else {
 			webConfig.YOUTUBE_LOADER_LANGUAGE = [];
 		}
@@ -62,8 +68,13 @@
 			web: webConfig
 		});
 
-		webConfig.WEB_SEARCH_DOMAIN_FILTER_LIST = webConfig.WEB_SEARCH_DOMAIN_FILTER_LIST.join(',');
-		webConfig.YOUTUBE_LOADER_LANGUAGE = webConfig.YOUTUBE_LOADER_LANGUAGE.join(',');
+		// Convert back to string for display
+		if (Array.isArray(webConfig.WEB_SEARCH_DOMAIN_FILTER_LIST)) {
+			webConfig.WEB_SEARCH_DOMAIN_FILTER_LIST = webConfig.WEB_SEARCH_DOMAIN_FILTER_LIST.join(',');
+		}
+		if (Array.isArray(webConfig.YOUTUBE_LOADER_LANGUAGE)) {
+			webConfig.YOUTUBE_LOADER_LANGUAGE = webConfig.YOUTUBE_LOADER_LANGUAGE.join(',');
+		}
 	};
 
 	onMount(async () => {
@@ -73,11 +84,13 @@
 			webConfig = res.web;
 
 			// Convert array back to comma-separated string for display
-			if (webConfig?.WEB_SEARCH_DOMAIN_FILTER_LIST) {
+			if (webConfig?.WEB_SEARCH_DOMAIN_FILTER_LIST && Array.isArray(webConfig.WEB_SEARCH_DOMAIN_FILTER_LIST)) {
 				webConfig.WEB_SEARCH_DOMAIN_FILTER_LIST = webConfig.WEB_SEARCH_DOMAIN_FILTER_LIST.join(',');
 			}
 
-			webConfig.YOUTUBE_LOADER_LANGUAGE = webConfig.YOUTUBE_LOADER_LANGUAGE.join(',');
+			if (webConfig?.YOUTUBE_LOADER_LANGUAGE && Array.isArray(webConfig.YOUTUBE_LOADER_LANGUAGE)) {
+				webConfig.YOUTUBE_LOADER_LANGUAGE = webConfig.YOUTUBE_LOADER_LANGUAGE.join(',');
+			}
 		}
 	});
 </script>

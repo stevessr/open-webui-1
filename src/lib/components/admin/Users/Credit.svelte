@@ -230,7 +230,7 @@
 						borderRadius: [5, 5, 0, 0]
 					},
 					itemStyle: {
-						barBorderRadius: [5, 5, 0, 0]
+						borderRadius: [5, 5, 0, 0]
 					},
 					colorBy: 'data',
 					label: {
@@ -284,7 +284,7 @@
 						borderRadius: [5, 5, 0, 0]
 					},
 					itemStyle: {
-						barBorderRadius: [5, 5, 0, 0]
+						borderRadius: [5, 5, 0, 0]
 					},
 					colorBy: 'data',
 					label: {

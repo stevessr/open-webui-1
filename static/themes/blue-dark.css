@@ -1,5 +1,5 @@
 /* Blue Theme - Dark Mode */
-html.dark .blue {
+.blue-dark {
 	--bg-app: #00008b; /* Dark Blue */
 	--bg-nav: #0000cd; /* Medium Blue */
 	--bg-content: #4169e1; /* Royal Blue */
@@ -33,53 +33,53 @@ html.dark .blue {
 }
 
 /* Override Tailwind dark classes */
-html.dark .blue .bg-white.dark\:bg-gray-800 {
+.blue-dark .bg-white.dark\:bg-gray-800 {
 	background: var(--bg-content);
 }
 
-html.dark .blue .bg-gradient-to-t.from-white.dark\:from-gray-800.from-40\%.pb-2 {
+.blue-dark .bg-gradient-to-t.from-white.dark\:from-gray-800.from-40\%.pb-2 {
 	background: var(--bg-input-container) !important;
 }
 
-html.dark .blue .m-auto.rounded-xl.max-w-full.w-\[40rem\].mx-2.bg-gray-50.dark\:bg-gray-900.shadow-3xl {
+.blue-dark .m-auto.rounded-xl.max-w-full.w-\[40rem\].mx-2.bg-gray-50.dark\:bg-gray-900.shadow-3xl {
 	background-color: var(--bg-modal);
 }
 
-html.dark .blue
+.blue-dark
 	.text-white.bg-gray-100.dark\:text-gray-800.dark\:bg-gray-600.disabled.transition.rounded-lg.p-1.mr-0\.5.w-7.h-7.self-center {
 	background-color: var(--bg-button-disabled);
 }
 
-html.dark .blue
+.blue-dark
 	.bg-black.text-white.hover\:bg-gray-900.dark\:bg-white.dark\:text-black.dark\:hover\:bg-gray-100.transition.rounded-lg.p-1.mr-0\.5.w-7.h-7.self-center {
 	background-color: var(--bg-button);
 }
 
-html.dark .blue
+.blue-dark
 	.bg-black.text-white.hover\:bg-gray-900.dark\:bg-white.dark\:text-black.dark\:hover\:bg-gray-100.transition.rounded-lg.p-1.mr-0\.5.w-7.h-7.self-center:hover {
     background-color: var(--bg-button-hover);
 }
 
-html.dark .blue
+.blue-dark
 	.px-2\.5.py-2\.5.min-w-fit.rounded-lg.flex-1.md\:flex-none.flex.text-right.transition.bg-gray-200.dark\:bg-gray-700 {
 	background-color: var(--bg-control);
 }
 
-html.dark .blue
+.blue-dark
 	.px-2\.5.py-2\.5.min-w-fit.rounded-lg.flex-1.md\:flex-none.flex.text-right.transition.hover\:bg-gray-300.dark\:hover\:bg-gray-800:hover {
 	background-color: var(--bg-control-hover);
 }
 
-html.dark .blue .text-xs.text-gray-700.uppercase.bg-gray-50.dark\:bg-gray-700.dark\:text-gray-400 {
+.blue-dark .text-xs.text-gray-700.uppercase.bg-gray-50.dark\:bg-gray-700.dark\:text-gray-400 {
 	background-color: var(--bg-header);
 }
 
-html.dark .blue
+.blue-dark
 	.w-full.rounded.p-4.text-sm.dark\:text-gray-300.dark\:bg-gray-800.outline-none.resize-none {
 	background-color: var(--bg-textarea);
 }
 
-html.dark .blue
+.blue-dark
 	.w-full.rounded.py-2.px-4.text-sm.dark\:text-gray-300.dark\:bg-gray-800.outline-none.svelte-1vx7r9s {
 	background-color: var(--bg-input);
 }

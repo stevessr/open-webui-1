@@ -1,9 +1,9 @@
-import { WEBUI_API_BASE_URL } from '$lib/constants';
+import { getWebuiApiBaseUrl } from '$lib/constants';
 
 export const getCreditConfig = async (token: string) => {
 	let error = null;
 
-	const res = await fetch(`${WEBUI_API_BASE_URL}/credit/config`, {
+	const res = await fetch(`${getWebuiApiBaseUrl()}/credit/config`, {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
@@ -30,7 +30,7 @@ export const getCreditConfig = async (token: string) => {
 export const createTradeTicket = async (token: string, payType: string, amount: number) => {
 	let error = null;
 
-	const res = await fetch(`${WEBUI_API_BASE_URL}/credit/tickets`, {
+	const res = await fetch(`${getWebuiApiBaseUrl()}/credit/tickets`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -61,7 +61,7 @@ export const createTradeTicket = async (token: string, payType: string, amount: 
 export const listCreditLog = async (token: string, page: number) => {
 	let error = null;
 
-	const res = await fetch(`${WEBUI_API_BASE_URL}/credit/logs?page=${page}`, {
+	const res = await fetch(`${getWebuiApiBaseUrl()}/credit/logs?page=${page}`, {
 		method: 'GET',
 		headers: {
 			Authorization: `Bearer ${token}`
@@ -93,7 +93,7 @@ export const listAllCreditLog = async (
 	let error = null;
 
 	const res = await fetch(
-		`${WEBUI_API_BASE_URL}/credit/all_logs?page=${page}&limit=${limit}&query=${query}`,
+		`${getWebuiApiBaseUrl()}/credit/all_logs?page=${page}&limit=${limit}&query=${query}`,
 		{
 			method: 'GET',
 			headers: {
@@ -121,7 +121,7 @@ export const listAllCreditLog = async (
 export const getCreditStats = async (token: string, data: object) => {
 	let error = null;
 
-	const res = await fetch(`${WEBUI_API_BASE_URL}/credit/statistics`, {
+	const res = await fetch(`${getWebuiApiBaseUrl()}/credit/statistics`, {
 		method: 'POST',
 		headers: {
 			Authorization: `Bearer ${token}`,

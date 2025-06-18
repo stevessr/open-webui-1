@@ -2,11 +2,11 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<link rel="icon" type="image/png" href="/static/favicon.png" />
-		<link rel="icon" type="image/png" href="/static/favicon-96x96.png" sizes="96x96" />
-		<link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
-		<link rel="shortcut icon" href="/static/favicon.ico" />
-		<link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png" />
+		<link rel="icon" type="image/png" href="/favicon.png" />
+		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="shortcut icon" href="/favicon.ico" />
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 		<meta name="apple-mobile-web-app-title" content="Open WebUI" />
 		<style url="/static/assets/css/_fonts.css"></style>
 
@@ -24,13 +24,13 @@
 			title="Open WebUI"
 			href="/opensearch.xml"
 		/>
-		<script src="/static/loader.js" defer></script>
+		<script src="/loader.js" defer></script>
 
-		<script src="/static/qrcode.min.js?v=202505151942"></script>
-		<script src="/static/code-pretty.js?v=202505151942"></script>
-		<link href="/static/code-pretty.css?v=202505151942" rel="stylesheet" />
-		<script src="/static/enhanced-editor.js?v=202505151942"></script>
-		<link href="/static/enhanced-editor.css?v=202505151942" rel="stylesheet" />
+		<script src="/qrcode.min.js?v=202505151942"></script>
+		<script src="/code-pretty.js?v=202505151942"></script>
+		<link href="/code-pretty.css?v=202505151942" rel="stylesheet" />
+		<script src="/enhanced-editor.js?v=202505151942"></script>
+		<link href="/enhanced-editor.css?v=202505151942" rel="stylesheet" />
 
 		<script>
 			function resizeIframe(obj) {
@@ -108,16 +108,16 @@
 				const allThemeClasses = [
 					'dark',
 					'light',
+					'oled',
 					'rosepine',
 					'rosepine-dawn',
-					'oled',
 					'her',
-					'blue',
-					'blue-dark',
-					'green',
-					'green-dark',
 					'pink',
 					'pink-dark',
+					'green',
+					'green-dark',
+					'blue',
+					'blue-dark',
 					'gem'
 				]; // List all possible classes
 				allThemeClasses.forEach((cls) => {
@@ -172,21 +172,21 @@
 					if (logo) {
 						if (isDarkMode) {
 							const darkImage = new Image();
-							darkImage.src = '/static/splash-dark.png';
+							darkImage.src = '/splash-dark.png';
 
 							darkImage.onload = () => {
-								logo.src = '/static/splash-dark.png';
+								logo.src = '/splash-dark.png';
 								logo.style.filter = ''; // Ensure no inversion is applied if splash-dark.png exists
 							};
 
 							darkImage.onerror = () => {
 								// Fallback: Use default splash and invert if dark splash is missing
-								logo.src = '/static/splash.png';
+								logo.src = '/splash.png';
 								logo.style.filter = 'invert(1)';
 							};
 						} else {
 							// For light themes, use the default splash.png
-							logo.src = '/static/splash.png';
+							logo.src = '/splash.png';
 							logo.style.filter = '';
 						}
 					}

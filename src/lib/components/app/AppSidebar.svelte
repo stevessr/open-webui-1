@@ -2,6 +2,7 @@
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import Plus from '$lib/components/icons/Plus.svelte';
 	import { theme } from '$lib/stores';
+	import { getStaticUrl } from '$lib/constants';
 
 	let selected = '';
 
@@ -49,7 +50,7 @@
 				}}
 			>
 				<img
-					src="/static/splash.png"
+					src={getStaticUrl('static/splash.png')}
 					class="size-11 dark:invert p-0.5"
 					alt="logo"
 					draggable="false"
@@ -73,7 +74,7 @@
 			}}
 		>
 			<img
-				src="/static/favicon.png"
+				src={getStaticUrl('static/favicon.png')}
 				class="size-10 {selected === '' ? 'rounded-2xl' : 'rounded-full'}"
 				alt="logo"
 				draggable="false"

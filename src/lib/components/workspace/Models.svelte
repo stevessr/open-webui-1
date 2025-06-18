@@ -34,6 +34,7 @@
 	import Switch from '../common/Switch.svelte';
 	import Spinner from '../common/Spinner.svelte';
 	import { capitalizeFirstLetter, copyToClipboard } from '$lib/utils';
+	import { getStaticUrl } from '$lib/constants';
 	import XMark from '../icons/XMark.svelte';
 	import EyeSlash from '../icons/EyeSlash.svelte';
 	import Eye from '../icons/Eye.svelte';
@@ -276,7 +277,7 @@
 								: 'opacity-50 dark:opacity-50'} "
 						>
 							<img
-								src={model?.meta?.profile_image_url ?? '/static/favicon.png'}
+								src={model?.meta?.profile_image_url ?? getStaticUrl('static/favicon.png')}
 								alt="modelfile profile"
 								class=" rounded-full w-full h-auto object-cover"
 							/>

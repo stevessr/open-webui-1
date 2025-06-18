@@ -16,7 +16,7 @@
 	import { goto } from '$app/navigation';
 
 	import { compressImage, copyToClipboard, splitStream } from '$lib/utils';
-	import { WEBUI_API_BASE_URL, WEBUI_BASE_URL } from '$lib/constants';
+	import { getWebuiApiBaseUrl, getWebuiBaseUrl } from '$lib/constants';
 	import { uploadFile } from '$lib/apis/files';
 
 	import dayjs from '$lib/dayjs';
@@ -308,7 +308,7 @@
 				fileItem.collection_name =
 					uploadedFile?.meta?.collection_name || uploadedFile?.collection_name;
 
-				fileItem.url = `${WEBUI_API_BASE_URL}/files/${uploadedFile.id}`;
+				fileItem.url = `${getWebuiApiBaseUrl()}/files/${uploadedFile.id}`;
 
 				files = files;
 			} else {
@@ -516,7 +516,7 @@ Provide the enhanced notes in markdown format. Use markdown syntax for headings,
 					}
 				]
 			},
-			`${WEBUI_BASE_URL}/api`
+			`${getWebuiBaseUrl()}/api`
 		);
 
 		await tick();

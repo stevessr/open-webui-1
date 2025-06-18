@@ -1,0 +1,86 @@
+/* Z-Index Layer System for Open WebUI */
+/* 
+ * This file defines a consistent z-index layer system to prevent display conflicts
+ * between different UI components. Each layer has a specific purpose and range.
+ */
+
+:root {
+  /* Base layers (0-99) */
+  --z-base: 0;
+  --z-content: 1;
+  --z-sticky: 10;
+  
+  /* Navigation and layout (100-199) */
+  --z-sidebar: 100;
+  --z-navbar: 110;
+  --z-header: 120;
+  
+  /* Overlays and backdrops (200-299) */
+  --z-overlay: 200;
+  --z-backdrop: 210;
+  --z-files-overlay: 220;
+  
+  /* Dropdowns and menus (300-399) */
+  --z-dropdown: 300;
+  --z-menu: 310;
+  --z-context-menu: 320;
+  
+  /* Tooltips (400-499) */
+  --z-tooltip: 400;
+  
+  /* Modals and dialogs (500-599) */
+  --z-drawer: 500;
+  --z-modal: 510;
+  --z-dialog: 520;
+  
+  /* Critical alerts and confirmations (600-699) */
+  --z-confirm-dialog: 600;
+  --z-alert: 610;
+  --z-critical: 620;
+  
+  /* Toast notifications (700-799) */
+  --z-toast: 700;
+  --z-notification: 710;
+  
+  /* Debug and development (900-999) */
+  --z-debug: 900;
+}
+
+/* Utility classes for z-index values */
+.z-base { z-index: var(--z-base); }
+.z-content { z-index: var(--z-content); }
+.z-sticky { z-index: var(--z-sticky); }
+
+.z-sidebar { z-index: var(--z-sidebar); }
+.z-navbar { z-index: var(--z-navbar); }
+.z-header { z-index: var(--z-header); }
+
+.z-overlay { z-index: var(--z-overlay); }
+.z-backdrop { z-index: var(--z-backdrop); }
+.z-files-overlay { z-index: var(--z-files-overlay); }
+
+.z-dropdown { z-index: var(--z-dropdown); }
+.z-menu { z-index: var(--z-menu); }
+.z-context-menu { z-index: var(--z-context-menu); }
+
+.z-tooltip { z-index: var(--z-tooltip); }
+
+.z-drawer { z-index: var(--z-drawer); }
+.z-modal { z-index: var(--z-modal); }
+.z-dialog { z-index: var(--z-dialog); }
+
+.z-confirm-dialog { z-index: var(--z-confirm-dialog); }
+.z-alert { z-index: var(--z-alert); }
+.z-critical { z-index: var(--z-critical); }
+
+.z-toast { z-index: var(--z-toast); }
+.z-notification { z-index: var(--z-notification); }
+
+.z-debug { z-index: var(--z-debug); }
+
+/* Legacy z-index values for backward compatibility */
+/* These should be gradually replaced with the new system */
+.z-50 { z-index: 50; }
+.z-999 { z-index: 999; }
+.z-9999 { z-index: 9999; }
+.z-99999999 { z-index: 99999999; }
